@@ -1,0 +1,58 @@
+<Project>
+    <PropertyGroup>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+        <CodeAnalysisTreatWarningsAsErrors>true</CodeAnalysisTreatWarningsAsErrors>
+        <AnalysisMode>All</AnalysisMode>
+        <EnableNETAnalyzers>true</EnableNETAnalyzers>
+        <AnalysisLevel>latest</AnalysisLevel>
+    </PropertyGroup>
+
+    <!-- Enable a readme for all projects and configurations -->
+    <PropertyGroup>
+        <!-- Set the readme file for the project -->
+        <ReadmeFile>$(MSBuildProjectDirectory)/README.md</ReadmeFile>
+    </PropertyGroup>
+
+    <!-- Enable XML documentation for all projects and configurations -->
+    <PropertyGroup>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <NoWarn>$(NoWarn);1591</NoWarn>
+    </PropertyGroup>
+
+    <!-- Set the NuGet repository URL for all projects -->
+    <PropertyGroup>
+        <PackageId>$(projectName)</PackageId>
+        <Authors>Patrick Moreau</Authors>
+        <Copyright>Drifter Apps Inc.</Copyright>
+        <PackageProjectUrl>https://github.com/patmoreau/drifterapps-seed-work</PackageProjectUrl>
+        <PackageLicense>https://github.com/patmoreau/drifterapps-seed-work/blob/main/LICENSE</PackageLicense>
+<!--        <PackageIcon>icons/icon.png</PackageIcon>-->
+        <RepositoryUrl>https://github.com/patmoreau/drifterapps-seed-work</RepositoryUrl>
+<!--        <PackageReadmeFile>README.md</PackageReadmeFile>-->
+    </PropertyGroup>
+
+    <!-- Allow dotnet pack to create NuGet packages -->
+    <PropertyGroup>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <IncludeSymbols>true</IncludeSymbols>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <!-- Set the README file for all projects -->
+    </PropertyGroup>
+    <ItemGroup>
+        <!-- Add the icon file to the NuGet package -->
+        <None Include="$(ReadmeFile)">
+            <Pack>true</Pack>
+            <PackagePath>readme</PackagePath>
+        </None>
+<!--        <None Include="README.md" Pack="true" PackagePath="readme" />-->
+        <None Include="../../icon.png" Pack="true" PackagePath="icons" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <AssemblyAttribute Include="System.CLSCompliantAttribute">
+            <_Parameter1>false</_Parameter1>
+        </AssemblyAttribute>
+    </ItemGroup>
+</Project>
