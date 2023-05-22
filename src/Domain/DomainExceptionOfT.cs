@@ -1,18 +1,30 @@
-namespace Holefeeder.Domain.SeedWork;
+namespace DrifterApps.Seeds.Domain;
 
-/// <inheritdoc />
+/// <summary>
+///     Represents domain errors that occur during application execution
+/// </summary>
+/// <typeparam name="TContext">Context type for exception</typeparam>
+#pragma warning disable S3925
 public class DomainException<TContext> : DomainException
+#pragma warning restore S3925
 {
-    /// <inheritdoc />
-    protected DomainException() => Context = typeof(TContext).Name;
+    private static readonly string ContextTypeName = typeof(TContext).Name;
 
     /// <inheritdoc />
-    protected DomainException(string message) : base(message) => Context = typeof(TContext).Name;
+    public DomainException()
+    {
+    }
 
     /// <inheritdoc />
-    protected DomainException(string message, Exception innerException) : base(message, innerException) =>
-        Context = nameof(TContext);
+    public DomainException(string message) : base(message)
+    {
+    }
 
     /// <inheritdoc />
-    public override string Context { get; }
+    public DomainException(string message, Exception innerException) : base(message, innerException)
+    {
+    }
+
+    /// <inheritdoc />
+    public override string Context => ContextTypeName;
 }

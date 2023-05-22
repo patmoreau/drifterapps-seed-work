@@ -1,7 +1,7 @@
 using System.Globalization;
 using System.Text.RegularExpressions;
 
-namespace DrifterApps.Seeds.Tests.Infrastructure;
+namespace DrifterApps.Seeds.Testing.Infrastructure;
 
 public partial class ApiResource
 {

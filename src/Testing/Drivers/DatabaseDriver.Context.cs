@@ -4,7 +4,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
-namespace DrifterApps.Seeds.Tests.Drivers;
+namespace DrifterApps.Seeds.Testing.Drivers;
 
 public abstract partial class DatabaseDriver<TDbContext> : ISaveBuilder where TDbContext : DbContext
 {

@@ -1,6 +1,8 @@
 # Drifter Apps - Seeds of work
 
-This library is a collections of utility classes, mostly abstract, that I use with various clients for which in the role of the TechLead.
+<img alt='paper plane icons' src='./icon.svg' height='10%' width='10%'>
+
+This library is a collections of utility classes, mostly abstract, that I use with various clients for which as a TechLead I help their teams build robust software.
 
 This usually includes a variety of APIs using [ASP.NET](https://dotnet.microsoft.com/en-us/apps/aspnet) and frontend [Angular](https://angular.io/) applications.
 
@@ -13,12 +15,6 @@ I tone my craft by developing a budgeting application [Holefeeder](https://githu
 ## Libraries
 
 - [Application](./src/Application/README.md)
-- [Application.Hangfire](./src/Application.Hangfire/README.md)
 - [Domain](./src/Domain/README.md)
+- [Infrastructure.Hangfire](./src/Infrastructure.Hangfire/README.md)
 - [Testing](./src/Testing/README.md)
-
-## Footnote
-
-[Paper plane icons created by Freepik - Flaticon](https://www.flaticon.com/free-icons/paper-plane)
-
-<img src="./icon.png"  width="50" height="50">

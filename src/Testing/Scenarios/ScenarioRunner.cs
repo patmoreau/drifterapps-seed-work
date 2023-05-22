@@ -2,7 +2,7 @@ using FluentAssertions;
 using FluentAssertions.Execution;
 using Xunit.Abstractions;
 
-namespace DrifterApps.Seeds.Tests.Scenarios;
+namespace DrifterApps.Seeds.Testing.Scenarios;
 
 internal sealed class ScenarioRunner : IScenarioRunner, IStepRunner
 {

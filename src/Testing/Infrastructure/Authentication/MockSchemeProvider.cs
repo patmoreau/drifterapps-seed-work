@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Options;
 
-namespace DrifterApps.Seeds.Tests.Infrastructure.Authentication;
+namespace DrifterApps.Seeds.Testing.Infrastructure.Authentication;
 
 public sealed class MockSchemeProvider : AuthenticationSchemeProvider
 {

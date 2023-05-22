@@ -3,7 +3,7 @@
 
 using Bogus;
 
-namespace DrifterApps.Seeds.Tests;
+namespace DrifterApps.Seeds.Testing;
 
 internal abstract class RootBuilder<T> where T : class
 {

@@ -1,6 +1,6 @@
 using Bogus;
 
-namespace DrifterApps.Seeds.Tests;
+namespace DrifterApps.Seeds.Testing;
 
 internal static class Globals
 {

@@ -2,12 +2,12 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
-using DrifterApps.Seeds.Tests.Infrastructure;
-using DrifterApps.Seeds.Tests.Infrastructure.Authentication;
+using DrifterApps.Seeds.Testing.Infrastructure;
+using DrifterApps.Seeds.Testing.Infrastructure.Authentication;
 using FluentAssertions;
 using Xunit.Abstractions;
 
-namespace DrifterApps.Seeds.Tests.Drivers;
+namespace DrifterApps.Seeds.Testing.Drivers;
 
 public class HttpClientDriver
 {
@@ -82,11 +82,6 @@ public class HttpClientDriver
             .And.Subject.StatusCode.Should().Be(httpStatus);
     }
 
-    public void ShouldNotHaveResponseWithOneOfStatuses(params HttpStatusCode[] httpStatuses) =>
-        ResponseMessage.Should()
-            .NotBeNull()
-            .And.Subject.StatusCode.Should().BeOneOf(httpStatuses);
-
     public void ShouldHaveResponseWithStatus(Func<HttpStatusCode?, bool> httpStatusPredicate)
     {
         if (httpStatusPredicate == null)
@@ -97,6 +92,11 @@ public class HttpClientDriver
         ResponseMessage.Should().NotBeNull();
         httpStatusPredicate(ResponseMessage!.StatusCode).Should().BeTrue();
     }
+
+    public void ShouldNotHaveResponseWithOneOfStatuses(params HttpStatusCode[] httpStatuses) =>
+        ResponseMessage.Should()
+            .NotBeNull()
+            .And.Subject.StatusCode.Should().BeOneOf(httpStatuses);
 
     public T? DeserializeContent<T>()
     {

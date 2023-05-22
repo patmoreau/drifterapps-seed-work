@@ -5,7 +5,7 @@ using System.Data.Common;
 using MySqlConnector;
 using Testcontainers.MariaDb;
 
-namespace DrifterApps.Seeds.Tests.Infrastructure.Persistence;
+namespace DrifterApps.Seeds.Testing.Infrastructure.Persistence;
 
 public class MariaDatabaseServer : IDatabaseServer
 {

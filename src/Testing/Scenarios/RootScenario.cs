@@ -1,19 +1,17 @@
 using System.Globalization;
 using System.Net;
-using System.Net.Http.Headers;
 using System.Text;
 using System.Text.RegularExpressions;
-using DrifterApps.Seeds.Tests.Drivers;
-using DrifterApps.Seeds.Tests.Infrastructure;
+using DrifterApps.Seeds.Testing.Drivers;
+using DrifterApps.Seeds.Testing.Infrastructure;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
 using Nito.AsyncEx;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace DrifterApps.Seeds.Tests.Scenarios;
+namespace DrifterApps.Seeds.Testing.Scenarios;
 
 /// <summary>
 ///     <P>Base class for scenario tests in this namespace</P>

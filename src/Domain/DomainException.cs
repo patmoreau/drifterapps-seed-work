@@ -1,37 +1,30 @@
-namespace Holefeeder.Domain.SeedWork;
+namespace DrifterApps.Seeds.Domain;
 
 /// <summary>
-///
+///     Represents domain errors that occur during application execution
 /// </summary>
+#pragma warning disable S3925
 public class DomainException : Exception
+#pragma warning restore S3925
 {
-    /// <summary>
-    ///
-    /// </summary>
-    protected DomainException()
+    /// <inheritdoc />
+    public DomainException()
     {
     }
 
-    /// <summary>
-    ///
-    /// </summary>
-    /// <param name="message"></param>
-    protected DomainException(string message) : base(message)
+    /// <inheritdoc />
+    public DomainException(string message) : base(message)
     {
     }
 
 
-    /// <summary>
-    ///
-    /// </summary>
-    /// <param name="message"></param>
-    /// <param name="innerException"></param>
-    protected DomainException(string message, Exception innerException) : base(message, innerException)
+    /// <inheritdoc />
+    public DomainException(string message, Exception innerException) : base(message, innerException)
     {
     }
 
     /// <summary>
-    ///
+    ///     Domain context for this exception
     /// </summary>
     public virtual string Context => nameof(DomainException);
 }

@@ -4,7 +4,7 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 
-namespace DrifterApps.Seeds.Tests.Infrastructure.Authentication;
+namespace DrifterApps.Seeds.Testing.Infrastructure.Authentication;
 
 public sealed class MockAuthenticationSchemeOptions : AuthenticationSchemeOptions
 {

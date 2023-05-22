@@ -1,10 +1,13 @@
-namespace Holefeeder.Domain.SeedWork;
+namespace DrifterApps.Seeds.Domain;
 
-#pragma warning disable CA1040
 /// <summary>
-/// 
+/// Interface to identify the root of an aggregate
+/// <seealso href="https://martinfowler.com/bliki/DDD_Aggregate.html">Martin Fowler</seealso>
 /// </summary>
 public interface IAggregateRoot
-#pragma warning restore CA1040
 {
+    /// <summary>
+    /// Aggregate Id
+    /// </summary>
+    public Guid Id { get; }
 }

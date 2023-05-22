@@ -1,8 +1,8 @@
-using DrifterApps.Seeds.Tests.Infrastructure.Persistence;
+using DrifterApps.Seeds.Testing.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 
-namespace DrifterApps.Seeds.Tests.Drivers;
+namespace DrifterApps.Seeds.Testing.Drivers;
 
 public abstract partial class DatabaseDriver<TDbContext> : IAsyncLifetime where TDbContext : DbContext
 {

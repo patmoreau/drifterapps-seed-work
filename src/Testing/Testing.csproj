@@ -4,10 +4,12 @@
         <TargetFramework>net7.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <AssemblyName>DrifterApps.Seeds.Tests</AssemblyName>
-        <RootNamespace>DrifterApps.Seeds.Tests</RootNamespace>
-        <PackageId>DrifterApps.Seeds.Tests</PackageId>
-        <Authors>DrifterApps.Seeds.Tests</Authors>
+        <AssemblyName>DrifterApps.Seeds.Testing</AssemblyName>
+        <RootNamespace>DrifterApps.Seeds.Testing</RootNamespace>
+        <PackageId>DrifterApps.Seeds.Testing</PackageId>
+        <Authors>DrifterApps.Seeds.Testing</Authors>
+        <Company>DrifterApps.Seeds.Testing</Company>
+        <Product>DrifterApps.Seeds.Testing</Product>
     </PropertyGroup>
 
     <ItemGroup>
@@ -20,12 +22,15 @@
       <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.2.0" />
       <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
       <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.5" />
+      <PackageReference Include="Microsoft.FeatureManagement.AspNetCore" Version="2.5.1" />
       <PackageReference Include="Nito.AsyncEx" Version="5.1.2" />
       <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="7.0.0" />
       <PackageReference Include="Respawn" Version="6.0.0" />
+      <PackageReference Include="System.Linq.Async" Version="6.0.1" />
       <PackageReference Include="Testcontainers" Version="3.1.0" />
       <PackageReference Include="Testcontainers.MariaDb" Version="3.1.0" />
-      <PackageReference Include="xunit.extensibility.core" Version="2.4.2" />
+      <PackageReference Include="xunit.categories" Version="2.0.6" />
+      <PackageReference Include="xunit.extensibility.core" Version="2.4.1" />
     </ItemGroup>
 
 </Project>

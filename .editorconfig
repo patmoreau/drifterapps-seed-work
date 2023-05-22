@@ -27,6 +27,8 @@ csharp_style_expression_bodied_accessors = true:suggestion
 csharp_style_unused_value_expression_statement_preference = discard_variable
 
 dotnet_diagnostic.CA1812.severity = none
+dotnet_diagnostic.CA1848.severity = none
+dotnet_diagnostic.CA1040.severity = none
 
 [*.xaml]
 indent_size = 2

@@ -1,7 +1,7 @@
-using DrifterApps.Seeds.Tests.Drivers;
+using DrifterApps.Seeds.Testing.Drivers;
 using FluentAssertions;
 
-namespace DrifterApps.Seeds.Tests.StepDefinitions;
+namespace DrifterApps.Seeds.Testing.StepDefinitions;
 
 public abstract class RootStepDefinition
 {
@@ -11,7 +11,7 @@ public abstract class RootStepDefinition
 
     public Guid WithCreatedId()
     {
-        Created? result = HttpClientDriver.DeserializeContent<Created>();
+        var result = HttpClientDriver.DeserializeContent<Created>();
 
         result.Should().NotBeNull();
 
@@ -20,7 +20,7 @@ public abstract class RootStepDefinition
 
     public TResult WithResultAs<TResult>()
     {
-        TResult? result = HttpClientDriver.DeserializeContent<TResult>();
+        var result = HttpClientDriver.DeserializeContent<TResult>();
         result.Should().NotBeNull();
 
         return result!;

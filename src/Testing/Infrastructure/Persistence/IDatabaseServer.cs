@@ -3,7 +3,7 @@
 
 using System.Data.Common;
 
-namespace DrifterApps.Seeds.Tests.Infrastructure.Persistence;
+namespace DrifterApps.Seeds.Testing.Infrastructure.Persistence;
 
 public interface IDatabaseServer : IAsyncDisposable
 {

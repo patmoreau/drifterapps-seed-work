@@ -3,7 +3,7 @@
 
 using Xunit.Abstractions;
 
-namespace DrifterApps.Seeds.Tests.Drivers;
+namespace DrifterApps.Seeds.Testing.Drivers;
 
 public interface IApplicationDriver
 {
