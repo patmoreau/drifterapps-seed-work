@@ -13,9 +13,9 @@ public sealed class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRe
 {
     private static readonly string RequestName = typeof(TRequest).FullName ?? nameof(TRequest);
 
-    private readonly ILogger<LoggingBehavior<TRequest, TResponse>> _logger;
+    private readonly ILogger<TRequest> _logger;
 
-    public LoggingBehavior(ILogger<LoggingBehavior<TRequest, TResponse>> logger) => _logger = logger;
+    public LoggingBehavior(ILogger<TRequest> logger) => _logger = logger;
 
     public Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next,
         CancellationToken cancellationToken)

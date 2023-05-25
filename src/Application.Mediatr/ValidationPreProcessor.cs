@@ -7,15 +7,12 @@ public sealed class ValidationPreProcessor<TRequest> : IRequestPreProcessor<TReq
 {
     private readonly IReadOnlyCollection<IValidator<TRequest>> _validators;
 
-    public ValidationPreProcessor(IReadOnlyCollection<IValidator<TRequest>> validators) =>
-        _validators = validators ?? throw new ArgumentNullException(nameof(validators));
+    public ValidationPreProcessor(IEnumerable<IValidator<TRequest>> validators) =>
+        _validators = validators.ToList() ?? throw new ArgumentNullException(nameof(validators));
 
     public async Task Process(TRequest request, CancellationToken cancellationToken)
     {
-        if (_validators.Count == 0)
-        {
-            return;
-        }
+        if (_validators.Count == 0) return;
 
         var validationContext = new ValidationContext<TRequest>(request);
         var failures = await Task
@@ -25,9 +22,6 @@ public sealed class ValidationPreProcessor<TRequest> : IRequestPreProcessor<TReq
         var validationFailures =
             failures.SelectMany(result => result.Errors).Where(failure => failure != null).ToList();
 
-        if (validationFailures.Count != 0)
-        {
-            throw new ValidationException(validationFailures);
-        }
+        if (validationFailures.Count != 0) throw new ValidationException(validationFailures);
     }
 }

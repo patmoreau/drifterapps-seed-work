@@ -27,7 +27,7 @@ public class UnitOfWorkExceptionHandlerTests
         _driver.ShouldHaveCalledRollbackWork();
     }
 
-    private class Driver : IDriverOf<UnitOfWorkExceptionHandler<SampleRequest, SampleResponse>>
+    private class Driver : IDriverOf<UnitOfWorkExceptionHandler<SampleRequest, SampleResponse, ArgumentException>>
     {
         private readonly IUnitOfWork _unitOfWork = Substitute.For<IUnitOfWork>();
 
@@ -37,7 +37,7 @@ public class UnitOfWorkExceptionHandlerTests
 
         public RequestExceptionHandlerState<SampleResponse> State { get; } = new();
 
-        public UnitOfWorkExceptionHandler<SampleRequest, SampleResponse> Build() => new(_unitOfWork);
+        public UnitOfWorkExceptionHandler<SampleRequest, SampleResponse, ArgumentException> Build() => new(_unitOfWork);
 
         public Driver ShouldHaveCalledRollbackWork()
         {

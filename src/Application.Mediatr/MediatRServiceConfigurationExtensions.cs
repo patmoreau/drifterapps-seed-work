@@ -16,12 +16,15 @@ public static class MediatRServiceConfigurationExtensions
     /// <returns>
     ///     <see cref="MediatRServiceConfiguration" />
     /// </returns>
-    public static MediatRServiceConfiguration RegisterServicesFromApplication(this MediatRServiceConfiguration config)
+    /// <remarks>It strongly recommended to call this method before anything else in your MediatR configuration</remarks>
+    public static MediatRServiceConfiguration RegisterServicesFromApplicationSeeds(
+        this MediatRServiceConfiguration config)
     {
         ArgumentNullException.ThrowIfNull(config);
 
-        config.RegisterServicesFromAssemblies(typeof(ApplicationMediatR).Assembly)
-            .AddOpenBehavior(typeof(LoggingBehavior<,>));
+        config
+            .AddOpenBehavior(typeof(LoggingBehavior<,>))
+            .RegisterServicesFromAssemblies(typeof(ApplicationMediatR).Assembly);
 
         return config;
     }

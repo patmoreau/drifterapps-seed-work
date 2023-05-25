@@ -10,7 +10,7 @@ namespace DrifterApps.Seeds.Application.Mediatr.Tests;
 [UnitTest]
 public class LoggingBehaviorTests
 {
-    private readonly LoggingBehaviorDriver _driver = new();
+    private readonly Driver _driver = new();
 
     [Fact]
     public async Task Handle_WithRequest_LogsStartAndEnd()
@@ -22,52 +22,41 @@ public class LoggingBehaviorTests
         await sut.Handle(_driver.Request, _driver.Next, CancellationToken.None);
 
         // Assert
-        _driver.ShouldHaveLoggedRequestStarted()
+        _driver
+            .ShouldHaveLoggedRequestStarted()
             .ShouldHaveLoggedRequestEnded();
     }
 
-    private class LoggingBehaviorDriver : IDriverOf<LoggingBehavior<SampleRequest, SampleResponse>>
+    private class Driver : IDriverOf<LoggingBehavior<IRequest<string>, string>>
     {
-        private readonly LoggerMock<LoggingBehavior<SampleRequest, SampleResponse>> _logger =
-            Substitute.ForPartsOf<LoggerMock<LoggingBehavior<SampleRequest, SampleResponse>>>();
+        private readonly LoggerMock<IRequest<string>> _logger = Substitute.ForPartsOf<LoggerMock<IRequest<string>>>();
 
-        public SampleRequest Request { get; } = new() {Name = "John Doe", Age = 30};
+        public IRequest<string> Request { get; } = Substitute.For<IRequest<string>>();
 
-        public RequestHandlerDelegate<SampleResponse> Next { get; } =
-            Substitute.For<RequestHandlerDelegate<SampleResponse>>();
+        public RequestHandlerDelegate<string> Next { get; } = Substitute.For<RequestHandlerDelegate<string>>();
 
-        public LoggingBehavior<SampleRequest, SampleResponse> Build() => new(_logger);
+        public LoggingBehavior<IRequest<string>, string> Build() => new(_logger);
 
-        public LoggingBehaviorDriver ShouldHaveLoggedRequestStarted()
+        public Driver ShouldHaveLoggedRequestStarted()
         {
             _logger.Received(1).Log(
                 Arg.Is(LogLevel.Information),
                 Arg.Any<EventId>(),
                 Arg.Is<string>(message =>
-                    message.StartsWith($"API Request started: {typeof(SampleRequest).FullName}")));
+                    message.StartsWith($"API Request started: {typeof(IRequest<string>).FullName}")));
 
             return this;
         }
 
-        public LoggingBehaviorDriver ShouldHaveLoggedRequestEnded()
+        public Driver ShouldHaveLoggedRequestEnded()
         {
             _logger.Received(1).Log(
                 Arg.Is(LogLevel.Information),
                 Arg.Any<EventId>(),
                 Arg.Is<string>(message =>
-                    message.StartsWith($"API Request ended: {typeof(SampleRequest).FullName}")));
+                    message.StartsWith($"API Request ended: {typeof(IRequest<string>).FullName}")));
 
             return this;
         }
-    }
-
-    internal sealed class SampleRequest : IRequest<SampleResponse>
-    {
-        public string Name { get; set; } = null!;
-        public int Age { get; set; }
-    }
-
-    internal sealed class SampleResponse
-    {
     }
 }
