@@ -50,7 +50,6 @@ public class MediatRServiceConfigurationExtensionsTests : IAsyncDisposable
         // assert
         using var scope = new AssertionScope();
         action.Should().ThrowAsync<ValidationException>();
-        _driver.ShouldNotHaveCalledUnitOfWorkBeginWorkAsync();
     }
 
     [Fact]
@@ -147,16 +146,8 @@ public class MediatRServiceConfigurationExtensionsTests : IAsyncDisposable
                 serviceDescriptor.ImplementationType == typeof(LoggingBehavior<,>) &&
                 serviceDescriptor.Lifetime == ServiceLifetime.Transient);
             _serviceCollection.Should().Contain(serviceDescriptor =>
-                serviceDescriptor.ServiceType == typeof(IRequestExceptionHandler<,,>) &&
-                serviceDescriptor.ImplementationType == typeof(UnitOfWorkExceptionHandler<,,>) &&
-                serviceDescriptor.Lifetime == ServiceLifetime.Transient);
-            _serviceCollection.Should().Contain(serviceDescriptor =>
-                serviceDescriptor.ServiceType == typeof(IRequestPostProcessor<,>) &&
-                serviceDescriptor.ImplementationType == typeof(UnitOfWorkPostProcessor<,>) &&
-                serviceDescriptor.Lifetime == ServiceLifetime.Transient);
-            _serviceCollection.Should().Contain(serviceDescriptor =>
-                serviceDescriptor.ServiceType == typeof(IRequestPreProcessor<>) &&
-                serviceDescriptor.ImplementationType == typeof(UnitOfWorkPreProcessor<>) &&
+                serviceDescriptor.ServiceType == typeof(IPipelineBehavior<,>) &&
+                serviceDescriptor.ImplementationType == typeof(UnitOfWorkBehavior<,>) &&
                 serviceDescriptor.Lifetime == ServiceLifetime.Transient);
             _serviceCollection.Should().Contain(serviceDescriptor =>
                 serviceDescriptor.ServiceType == typeof(IRequestPreProcessor<>) &&

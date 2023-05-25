@@ -24,6 +24,7 @@ public static class MediatRServiceConfigurationExtensions
 
         config
             .AddOpenBehavior(typeof(LoggingBehavior<,>))
+            .AddOpenBehavior(typeof(UnitOfWorkBehavior<,>))
             .RegisterServicesFromAssemblies(typeof(ApplicationMediatR).Assembly);
 
         return config;
