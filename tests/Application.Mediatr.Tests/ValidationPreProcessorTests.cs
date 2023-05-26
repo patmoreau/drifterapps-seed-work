@@ -1,5 +1,4 @@
 using FluentValidation;
-using Xunit.Categories;
 
 namespace DrifterApps.Seeds.Application.Mediatr.Tests;
 

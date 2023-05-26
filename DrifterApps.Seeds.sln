@@ -12,18 +12,22 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "src\Domain\Domain
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testing", "src\Testing\Testing.csproj", "{398F5A9A-9DE2-4A61-A267-459174EDD054}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testing.UnitTests", "tests\Testing.UnitTests\Testing.UnitTests.csproj", "{C5BA47AD-8A5A-49B8-93A3-B9B349A4C0AA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testing.Tests", "tests\Testing.Tests\Testing.Tests.csproj", "{C5BA47AD-8A5A-49B8-93A3-B9B349A4C0AA}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".items", ".items", "{FE564027-2CC9-4825-B42E-66F32822E838}"
 	ProjectSection(SolutionItems) = preProject
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application.UnitTests", "tests\Application.UnitTests\Application.UnitTests.csproj", "{870008B4-8E36-41F3-8C96-8172865CD5BD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application.Tests", "tests\Application.Tests\Application.Tests.csproj", "{870008B4-8E36-41F3-8C96-8172865CD5BD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application.Mediatr", "src\Application.Mediatr\Application.Mediatr.csproj", "{B9F5CFDE-A09D-45A2-A1DA-F069D424D29E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application.Mediatr.Tests", "tests\Application.Mediatr.Tests\Application.Mediatr.Tests.csproj", "{66EDF6B5-7CA2-4B5E-9D40-9008ACC95708}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain.Tests", "tests\Domain.Tests\Domain.Tests.csproj", "{0DF256F1-500E-4B20-B139-D96EBE7EA323}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure.Hangfire.Tests", "tests\Infrastructure.Hangfire.Tests\Infrastructure.Hangfire.Tests.csproj", "{FFDDFF18-84B8-42BE-9F91-F27425CD714E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -63,6 +67,14 @@ Global
 		{66EDF6B5-7CA2-4B5E-9D40-9008ACC95708}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{66EDF6B5-7CA2-4B5E-9D40-9008ACC95708}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{66EDF6B5-7CA2-4B5E-9D40-9008ACC95708}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0DF256F1-500E-4B20-B139-D96EBE7EA323}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0DF256F1-500E-4B20-B139-D96EBE7EA323}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0DF256F1-500E-4B20-B139-D96EBE7EA323}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0DF256F1-500E-4B20-B139-D96EBE7EA323}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FFDDFF18-84B8-42BE-9F91-F27425CD714E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FFDDFF18-84B8-42BE-9F91-F27425CD714E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FFDDFF18-84B8-42BE-9F91-F27425CD714E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FFDDFF18-84B8-42BE-9F91-F27425CD714E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{3D910B10-1E84-4F23-B9E3-E5B1AB8E53D3} = {84DB2D72-17E0-441C-A59C-1448AD9F64D0}
@@ -73,5 +85,7 @@ Global
 		{870008B4-8E36-41F3-8C96-8172865CD5BD} = {AB70FC1C-78C0-48B7-96E0-53B9605132D5}
 		{B9F5CFDE-A09D-45A2-A1DA-F069D424D29E} = {84DB2D72-17E0-441C-A59C-1448AD9F64D0}
 		{66EDF6B5-7CA2-4B5E-9D40-9008ACC95708} = {AB70FC1C-78C0-48B7-96E0-53B9605132D5}
+		{0DF256F1-500E-4B20-B139-D96EBE7EA323} = {AB70FC1C-78C0-48B7-96E0-53B9605132D5}
+		{FFDDFF18-84B8-42BE-9F91-F27425CD714E} = {AB70FC1C-78C0-48B7-96E0-53B9605132D5}
 	EndGlobalSection
 EndGlobal

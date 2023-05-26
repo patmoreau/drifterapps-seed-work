@@ -1,11 +1,10 @@
-using DrifterApps.Seeds.Testing;
 using DrifterApps.Seeds.Testing.Drivers;
 using DrifterApps.Seeds.Testing.StepDefinitions;
 using FluentAssertions;
 using NSubstitute;
 using Xunit.Sdk;
 
-namespace Testing.UnitTests.StepDefinitions;
+namespace DrifterApps.Seeds.Testing.Tests.StepDefinitions;
 
 public class RootStepDefinitionTests
 {

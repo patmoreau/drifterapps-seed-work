@@ -7,8 +7,6 @@ using MediatR;
 using MediatR.Pipeline;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NSubstitute;
-using Xunit.Categories;
 
 namespace DrifterApps.Seeds.Application.Mediatr.Tests;
 
@@ -206,11 +204,9 @@ public class MediatRServiceConfigurationExtensionsTests : IAsyncDisposable
 
     internal record Ping(string Message, bool Missed) : IRequest<Pong>, IUnitOfWorkRequest;
 
-#pragma warning disable CA1032, CA1064
     internal class PingException : Exception
     {
     }
-#pragma warning restore CA1032, CA1064
 
     internal class PingValidator : AbstractValidator<Ping>
     {

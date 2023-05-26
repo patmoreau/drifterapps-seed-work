@@ -2,8 +2,6 @@ using DrifterApps.Seeds.Application.Mediatr.Tests.Mocks;
 using DrifterApps.Seeds.Testing;
 using MediatR;
 using Microsoft.Extensions.Logging;
-using NSubstitute;
-using Xunit.Categories;
 
 namespace DrifterApps.Seeds.Application.Mediatr.Tests;
 

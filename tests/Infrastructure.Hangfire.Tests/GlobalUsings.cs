@@ -1,6 +1,6 @@
 // Global using directives
 
-global using Xunit;
 global using FluentAssertions;
-global using NSubstitute;
+global using FluentAssertions.Execution;
+global using Xunit;
 global using Xunit.Categories;
