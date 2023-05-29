@@ -6,10 +6,19 @@
         <Nullable>enable</Nullable>
 
         <IsPackable>false</IsPackable>
+
+        <RootNamespace>DrifterApps.Seeds.Infrastructure.Tests</RootNamespace>
+
+        <AssemblyName>DrifterApps.Seeds.Infrastructure.Tests</AssemblyName>
+
+        <PackageId>DrifterApps.Seeds.Infrastructure.Tests</PackageId>
+
+        <Product>DrifterApps.Seeds.Infrastructure.Tests</Product>
     </PropertyGroup>
 
     <ItemGroup>
         <PackageReference Include="FluentAssertions" Version="6.11.0" />
+        <PackageReference Include="MediatR.Contracts" Version="2.0.1" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.3.2" />
         <PackageReference Include="xunit" Version="2.4.2" />
         <PackageReference Include="xunit.categories" Version="2.0.6" />
@@ -21,6 +30,10 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\src\Infrastructure\Infrastructure.csproj" />
     </ItemGroup>
 
 </Project>
