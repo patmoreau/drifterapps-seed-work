@@ -1,19 +1,15 @@
-using System.Text.Json;
 using MediatR;
-using Xunit.Categories;
+using Newtonsoft.Json;
 
 namespace DrifterApps.Seeds.Infrastructure;
 
-[UnitTest]
 internal class MediatorSerializedObject
 {
     public MediatorSerializedObject(string assemblyQualifiedName, string data, string additionalDescription)
     {
         var type = Type.GetType(assemblyQualifiedName);
-        if (type is null)
-        {
-            throw new ArgumentException("Invalid Type name", assemblyQualifiedName);
-        }
+        if (type is null) throw new ArgumentException("Invalid Type name", assemblyQualifiedName);
+
         AssemblyQualifiedName = assemblyQualifiedName;
         Data = data;
         AdditionalDescription = additionalDescription;
@@ -44,14 +40,24 @@ internal class MediatorSerializedObject
 
         if (type == null) return false;
 
-        var req = JsonSerializer.Deserialize(Data, type);
-        switch (req)
+        try
         {
-            case IBaseRequest baseRequest:
-                request = baseRequest;
-                return true;
-            default:
-                return false;
+            var req = JsonConvert.DeserializeObject(Data, type, new JsonSerializerSettings
+            {
+                MissingMemberHandling = MissingMemberHandling.Error
+            });
+            switch (req)
+            {
+                case IBaseRequest baseRequest:
+                    request = baseRequest;
+                    return true;
+                default:
+                    return false;
+            }
+        }
+        catch (JsonSerializationException)
+        {
+            return false;
         }
     }
 
@@ -59,7 +65,7 @@ internal class MediatorSerializedObject
     {
         var type = mediatorObject.GetType();
         var assemblyName = type.AssemblyQualifiedName!;
-        var data = JsonSerializer.Serialize(mediatorObject);
+        var data = JsonConvert.SerializeObject(mediatorObject);
 
         return new MediatorSerializedObject(assemblyName, data, description);
     }

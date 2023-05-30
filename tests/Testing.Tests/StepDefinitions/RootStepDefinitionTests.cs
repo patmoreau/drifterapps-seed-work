@@ -1,19 +1,16 @@
+using Bogus;
 using DrifterApps.Seeds.Testing.Drivers;
 using DrifterApps.Seeds.Testing.StepDefinitions;
-using FluentAssertions;
-using NSubstitute;
-using Xunit.Sdk;
 
 namespace DrifterApps.Seeds.Testing.Tests.StepDefinitions;
 
+[UnitTest]
 public class RootStepDefinitionTests
 {
     private readonly RootStepDefinitionDriver _driver = new();
 
     [Fact]
-#pragma warning disable CA1707
     public void GivenWithCreatedId_WhenCreatedIdValid_ThenReturnCreatedId()
-#pragma warning restore CA1707
     {
         // Arrange
         var createdId = Guid.NewGuid();
@@ -27,9 +24,7 @@ public class RootStepDefinitionTests
     }
 
     [Fact]
-#pragma warning disable CA1707
     public void GivenWithCreatedId_WhenCreatedIdEmpty_ThenReturnCreatedId()
-#pragma warning restore CA1707
     {
         // Arrange
         var sut = _driver.WithNoCreatedId().Build();
@@ -41,34 +36,53 @@ public class RootStepDefinitionTests
         action.Should().Throw<XunitException>();
     }
 
-    private sealed class RootStepDefinitionDriver : IDriverOf<RootStepDefinition>
+    [Fact]
+    public void GivenWithResultAs_WhenCreatedIdEmpty_ThenReturnCreatedId()
     {
-        private readonly HttpClientDriver _httpClientDriver = Substitute.For<HttpClientDriver>();
+        // Arrange
+        var sut = _driver.WithStringResultData().Build();
 
-        public RootStepDefinition Build() => new MockRootStepDefinition(_httpClientDriver);
+        // Act
+        var result = sut.WithResultAs<string>();
+
+        // Assert
+        result.Should().NotBeEmpty();
+    }
+
+    private sealed class RootStepDefinitionDriver : IDriverOf<MockRootStepDefinition>
+    {
+        private readonly Faker _faker = new();
+        private readonly IHttpClientDriver _httpClientDriver = Substitute.For<IHttpClientDriver>();
+
+        public MockRootStepDefinition Build() => new(_httpClientDriver);
 
         public RootStepDefinitionDriver WithCreatedId(Guid id)
         {
-            _httpClientDriver.DeserializeContent<Created>().Returns(new Created(id));
+            _httpClientDriver.DeserializeContent<RootStepDefinition.Created>()
+                .Returns(new RootStepDefinition.Created(id));
+
+            return this;
+        }
+
+        public RootStepDefinitionDriver WithStringResultData()
+        {
+            _httpClientDriver.DeserializeContent<string>().Returns(_faker.Lorem.Text());
 
             return this;
         }
 
         public RootStepDefinitionDriver WithNoCreatedId()
         {
-            _httpClientDriver.DeserializeContent<Created>().Returns(_ => null);
+            _httpClientDriver.DeserializeContent<RootStepDefinition.Created>().Returns(_ => null);
 
             return this;
         }
     }
-#pragma warning disable CA1034
+
     public class MockRootStepDefinition : RootStepDefinition
-#pragma warning restore CA1034
     {
-        public MockRootStepDefinition(HttpClientDriver httpClientDriver) : base(httpClientDriver)
+        public MockRootStepDefinition(IHttpClientDriver httpClientDriver) : base(httpClientDriver)
         {
         }
     }
-
-    private sealed record Created(Guid Id);
 }

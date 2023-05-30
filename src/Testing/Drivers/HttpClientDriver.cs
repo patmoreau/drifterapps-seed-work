@@ -9,7 +9,7 @@ using Xunit.Abstractions;
 
 namespace DrifterApps.Seeds.Testing.Drivers;
 
-public class HttpClientDriver
+public class HttpClientDriver : IHttpClientDriver
 {
     private readonly HttpClient _httpClient;
     private readonly ITestOutputHelper _testOutputHelper;
@@ -21,53 +21,6 @@ public class HttpClientDriver
     }
 
     public HttpResponseMessage? ResponseMessage { get; private set; }
-
-    private async Task SendRequest(HttpRequestMessage requestMessage)
-    {
-        ResponseMessage = await _httpClient.SendAsync(requestMessage).ConfigureAwait(false);
-
-        LogUnexpectedErrors();
-    }
-
-    internal async Task SendGetRequest(ApiResource apiResources, string? query = null)
-    {
-        Uri baseUri = apiResources.EndpointFromResource();
-        Uri fullUri = baseUri;
-        if (query is not null)
-        {
-            fullUri = new Uri($"{fullUri}?{query}", fullUri.IsAbsoluteUri ? UriKind.Absolute : UriKind.Relative);
-        }
-
-        using HttpRequestMessage request = new(HttpMethod.Get, fullUri);
-        await SendRequest(request).ConfigureAwait(false);
-    }
-
-    internal async Task SendGetRequest(ApiResource apiResources, params object[] parameters)
-    {
-        Uri endpointUri = apiResources.EndpointFromResource(parameters);
-        using HttpRequestMessage request = new(HttpMethod.Get, endpointUri);
-        await SendRequest(request).ConfigureAwait(false);
-    }
-
-    internal async Task SendPostRequest(ApiResource apiResources, string? body = null)
-    {
-        Uri endpointUri = apiResources.EndpointFromResource();
-
-        using HttpRequestMessage request = new(HttpMethod.Post, endpointUri);
-        if (body is not null)
-        {
-            request.Content = new StringContent(body, Encoding.UTF8, "application/json");
-        }
-
-        await SendRequest(request).ConfigureAwait(false);
-    }
-
-    internal async Task SendDeleteRequest(ApiResource apiResources, params object[] parameters)
-    {
-        Uri endpointUri = apiResources.EndpointFromResource(parameters);
-        using HttpRequestMessage request = new(HttpMethod.Delete, endpointUri);
-        await SendRequest(request).ConfigureAwait(false);
-    }
 
     public void ShouldBeUnauthorized() =>
         ResponseMessage.Should().NotBeNull()
@@ -84,10 +37,7 @@ public class HttpClientDriver
 
     public void ShouldHaveResponseWithStatus(Func<HttpStatusCode?, bool> httpStatusPredicate)
     {
-        if (httpStatusPredicate == null)
-        {
-            throw new ArgumentNullException(nameof(httpStatusPredicate));
-        }
+        if (httpStatusPredicate == null) throw new ArgumentNullException(nameof(httpStatusPredicate));
 
         ResponseMessage.Should().NotBeNull();
         httpStatusPredicate(ResponseMessage!.StatusCode).Should().BeTrue();
@@ -101,13 +51,10 @@ public class HttpClientDriver
     public T? DeserializeContent<T>()
     {
         var resultAsString = ResponseMessage?.Content.ReadAsStringAsync().Result;
-        if (resultAsString is null)
-        {
-            return default;
-        }
+        if (resultAsString is null) return default;
 
-        T? content = JsonSerializer.Deserialize<T>(resultAsString,
-            new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        var content = JsonSerializer.Deserialize<T>(resultAsString,
+            new JsonSerializerOptions {PropertyNameCaseInsensitive = true});
         return content;
     }
 
@@ -117,12 +64,51 @@ public class HttpClientDriver
 
     public void UnAuthenticate() => _httpClient.DefaultRequestHeaders.Authorization = null;
 
+    private async Task SendRequest(HttpRequestMessage requestMessage)
+    {
+        ResponseMessage = await _httpClient.SendAsync(requestMessage).ConfigureAwait(false);
+
+        LogUnexpectedErrors();
+    }
+
+    internal async Task SendGetRequest(ApiResource apiResources, string? query = null)
+    {
+        var baseUri = apiResources.EndpointFromResource();
+        var fullUri = baseUri;
+        if (query is not null)
+            fullUri = new Uri($"{fullUri}?{query}", fullUri.IsAbsoluteUri ? UriKind.Absolute : UriKind.Relative);
+
+        using HttpRequestMessage request = new(HttpMethod.Get, fullUri);
+        await SendRequest(request).ConfigureAwait(false);
+    }
+
+    internal async Task SendGetRequest(ApiResource apiResources, params object[] parameters)
+    {
+        var endpointUri = apiResources.EndpointFromResource(parameters);
+        using HttpRequestMessage request = new(HttpMethod.Get, endpointUri);
+        await SendRequest(request).ConfigureAwait(false);
+    }
+
+    internal async Task SendPostRequest(ApiResource apiResources, string? body = null)
+    {
+        var endpointUri = apiResources.EndpointFromResource();
+
+        using HttpRequestMessage request = new(HttpMethod.Post, endpointUri);
+        if (body is not null) request.Content = new StringContent(body, Encoding.UTF8, "application/json");
+
+        await SendRequest(request).ConfigureAwait(false);
+    }
+
+    internal async Task SendDeleteRequest(ApiResource apiResources, params object[] parameters)
+    {
+        var endpointUri = apiResources.EndpointFromResource(parameters);
+        using HttpRequestMessage request = new(HttpMethod.Delete, endpointUri);
+        await SendRequest(request).ConfigureAwait(false);
+    }
+
     private void LogUnexpectedErrors()
     {
-        if (ResponseMessage?.StatusCode != HttpStatusCode.InternalServerError)
-        {
-            return;
-        }
+        if (ResponseMessage?.StatusCode != HttpStatusCode.InternalServerError) return;
 
         var resultAsString = ResponseMessage?.Content.ReadAsStringAsync().Result;
 
@@ -131,10 +117,7 @@ public class HttpClientDriver
 
     private void LogUnexpectedContent(HttpStatusCode expectedStatusCode)
     {
-        if (ResponseMessage?.StatusCode == expectedStatusCode)
-        {
-            return;
-        }
+        if (ResponseMessage?.StatusCode == expectedStatusCode) return;
 
         var resultAsString = ResponseMessage?.Content.ReadAsStringAsync().Result;
 

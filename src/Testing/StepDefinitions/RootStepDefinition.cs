@@ -5,9 +5,8 @@ namespace DrifterApps.Seeds.Testing.StepDefinitions;
 
 public abstract class RootStepDefinition
 {
-    protected HttpClientDriver HttpClientDriver { get; }
-
-    protected RootStepDefinition(HttpClientDriver httpClientDriver) => HttpClientDriver = httpClientDriver;
+    protected RootStepDefinition(IHttpClientDriver httpClientDriver) => HttpClientDriver = httpClientDriver;
+    protected IHttpClientDriver HttpClientDriver { get; }
 
     public Guid WithCreatedId()
     {
@@ -26,5 +25,5 @@ public abstract class RootStepDefinition
         return result!;
     }
 
-    private sealed record Created(Guid Id);
+    internal sealed record Created(Guid Id);
 }
