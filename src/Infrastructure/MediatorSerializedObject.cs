@@ -38,8 +38,6 @@ internal class MediatorSerializedObject
 
         var type = Type.GetType(AssemblyQualifiedName);
 
-        if (type == null) return false;
-
         try
         {
             var req = JsonConvert.DeserializeObject(Data, type, new JsonSerializerSettings
@@ -61,7 +59,7 @@ internal class MediatorSerializedObject
         }
     }
 
-    internal static MediatorSerializedObject SerializeObject(object mediatorObject, string description)
+    internal static MediatorSerializedObject SerializeObject(IBaseRequest mediatorObject, string description)
     {
         var type = mediatorObject.GetType();
         var assemblyName = type.AssemblyQualifiedName!;
