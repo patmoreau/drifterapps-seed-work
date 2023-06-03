@@ -1,0 +1,8 @@
+mode: Mainline
+assembly-versioning-scheme: MajorMinorPatch
+branches:
+  pull-request:
+    tag: beta
+ignore:
+  sha: []
+  commits-before: 2021-03-01T00:00:00

@@ -1,0 +1,92 @@
+name: Build and Publish NuGet Package
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  PROJECT_NAME: DrifterApps Seeds
+  PACKAGE_VERSION: 1.0.0
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+jobs:
+
+  set-version:
+    name: Set version
+    runs-on: ubuntu-latest
+
+    outputs:
+      version: ${{ steps.gitversion.outputs.majorMinorPatch }}
+      assembly-version: ${{ steps.gitversion.outputs.semVer }}
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Disable workflow commands
+        run: |
+          echo "::stop-commands::`echo -n ${{ github.token }} | sha256sum | head -c 64`"
+
+      - name: Ensure .NET Installed
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 7.0.x
+
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v0.9.10
+        with:
+          versionSpec: "5.x"
+
+      - name: Determine Version
+        id: gitversion
+        uses: gittools/actions/gitversion/execute@v0.9.10
+        with:
+          useConfigFile: true
+          configFilePath: GitVersion.yml
+
+      - name: Display GitVersion outputs
+        run: |
+          echo "MajorMinorPatch: ${{ steps.gitversion.outputs.majorMinorPatch }}"
+          echo "SemVer: ${{ steps.gitversion.outputs.semVer }}"
+
+      - name: Enable workflow commands
+        run: |
+          echo "::`echo -n ${{ github.token }} | sha256sum | head -c 64`::"
+
+  build-and-publish:
+    needs: set-version
+    runs-on: ubuntu-latest
+
+    env:
+      VERSION: ${{ needs.set-version.outputs.version }}
+      ASSEMBLY_VERSION: ${{ needs.set-version.outputs.assembly-version }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '5.0.x'
+
+      - name: Restore packages
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build
+
+      - name: Tests
+        run: dotnet test
+
+      - name: Build package
+        run: dotnet pack /property:Version=${VERSION} -c Release -o ./nuget-packages
+
+      - name: Publish package
+        uses: nuget/setup-nuget@v1
+        with:
+          nuget-api-key: ${{ env.GITHUB_TOKEN }}
+          nuget-source: https://nuget.pkg.github.com/patmoreau/index.json
+        run: nuget push ./nuget-packages/*.nupkg
