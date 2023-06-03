@@ -29,6 +29,10 @@
         <NoWarn>$(NoWarn);1591</NoWarn>
     </PropertyGroup>
 
+    <PropertyGroup>
+        <PublishWithAspNetCoreTargetManifest>false</PublishWithAspNetCoreTargetManifest>
+    </PropertyGroup>
+
     <!-- Set the NuGet repository URL for all projects -->
     <PropertyGroup>
         <PackageId>$(projectName)</PackageId>
