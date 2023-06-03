@@ -89,4 +89,4 @@ jobs:
         with:
           nuget-api-key: ${{ env.GITHUB_TOKEN }}
           nuget-source: https://nuget.pkg.github.com/patmoreau/index.json
-        run: nuget push ./nuget-packages/*.nupkg
+      - run: nuget push ./nuget-packages/*.nupkg
