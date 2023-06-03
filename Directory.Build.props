@@ -31,6 +31,7 @@
 
     <PropertyGroup>
         <PublishWithAspNetCoreTargetManifest>false</PublishWithAspNetCoreTargetManifest>
+        <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     </PropertyGroup>
 
     <!-- Set the NuGet repository URL for all projects -->
