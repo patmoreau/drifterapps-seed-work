@@ -12,6 +12,14 @@ env:
 
 jobs:
 
+  debug:
+    name: Debug
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Debug Action
+        uses: hmarr/debug-action@v2.1.0
+
   set-version:
     name: Set version
     runs-on: ubuntu-latest
