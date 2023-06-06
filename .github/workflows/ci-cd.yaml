@@ -94,7 +94,7 @@ jobs:
         run: dotnet build --no-restore --configuration Release /property:Version=${VERSION}
 
       - name: Tests
-        run: dotnet test --no-restore --no-build
+        run: dotnet test --no-restore --no-build --configuration Release
 
       - name: Build package
         run: dotnet pack /property:Version=${VERSION} --no-restore --no-build --configuration Release -o ./nuget-packages
