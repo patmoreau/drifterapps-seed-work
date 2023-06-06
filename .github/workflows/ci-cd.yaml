@@ -100,7 +100,7 @@ jobs:
         run: dotnet pack /property:Version=${VERSION} --no-restore --no-build --configuration Release -o ./nuget-packages
 
       - name: Publish Package
-        run: dotnet nuget push path/to/your.nupkg --source "https://nuget.pkg.github.com/patmoreau/index.json" --api-key ${{ secrets.GITHUB_TOKEN }}
+        run: dotnet nuget push ./nuget-packages/*.nupkg --source "https://nuget.pkg.github.com/patmoreau/index.json" --api-key ${{ secrets.GITHUB_TOKEN }}
 
       - name: Tag version
         uses: actions/github-script@v3
