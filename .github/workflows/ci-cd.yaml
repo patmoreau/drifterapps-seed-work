@@ -81,8 +81,8 @@ jobs:
         with:
           global-json-file: global.json
           source-url: https://nuget.pkg.github.com/patmoreau/index.json
-          cache: true
-          cache-dependency-path: packages/packages.lock.json
+          # cache: true
+          # cache-dependency-path: packages/packages.lock.json
         env:
           NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
       - run: echo '${{ steps.stepid.outputs.dotnet-version }}'
