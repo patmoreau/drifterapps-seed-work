@@ -1,11 +1,27 @@
 <Project>
     <Import Project="$([MsBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MsBuildThisFileDirectory)../'))"/>
     <PropertyGroup>
-        <DocumentationFile>bin/$(Configuration)/net7.0/tests.xml</DocumentationFile>
         <NoWarn>$(NoWarn);S3925</NoWarn>
+        <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+        <EnablePackageManagement>true</EnablePackageManagement>
     </PropertyGroup>
     <ItemGroup>
         <None Remove="README.md" Link="README.md"/>
         <None Remove="../../icon.png" Link="icon.png"/>
     </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="coverlet.collector"/>
+        <PackageReference Include="coverlet.msbuild"/>
+        <PackageReference Include="FluentAssertions" />
+        <PackageReference Include="FluentAssertions.Analyzers"/>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" />
+        <PackageReference Include="NSubstitute" />
+        <PackageReference Include="NSubstitute.Analyzers.CSharp"/>
+        <PackageReference Include="xunit" />
+        <PackageReference Include="xunit.analyzers" />
+        <PackageReference Include="xunit.categories" />
+        <PackageReference Include="xunit.runner.visualstudio"/>
+    </ItemGroup>
+
 </Project>

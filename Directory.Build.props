@@ -7,6 +7,10 @@
         <AnalysisLevel>latest</AnalysisLevel>
     </PropertyGroup>
 
+    <ItemGroup>
+        <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    </ItemGroup>
+
     <!-- Add the icon file and READNME.md to the NuGet package -->
     <ItemGroup>
         <None Include="$(ReadmeFile)">
@@ -29,10 +33,10 @@
         <NoWarn>$(NoWarn);1591</NoWarn>
     </PropertyGroup>
 
-    <PropertyGroup>
+    <!-- <PropertyGroup>
         <PublishWithAspNetCoreTargetManifest>false</PublishWithAspNetCoreTargetManifest>
         <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-    </PropertyGroup>
+    </PropertyGroup> -->
 
     <!-- Set the NuGet repository URL for all projects -->
     <PropertyGroup>
@@ -56,13 +60,13 @@
         <!-- Set the README file for all projects -->
     </PropertyGroup>
 
-    <!-- Add Sonar analyzer -->
+    <!-- Add Sonar analyzer
     <ItemGroup Condition="'$(Configuration)' == 'Release'">
         <PackageReference Include="SonarAnalyzer.CSharp" Version="9.1.0.70676">
             <PrivateAssets>All</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-    </ItemGroup>
+    </ItemGroup> -->
 
     <ItemGroup>
         <AssemblyAttribute Include="System.CLSCompliantAttribute">
