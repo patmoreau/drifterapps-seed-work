@@ -84,7 +84,7 @@ jobs:
           # cache: true
           # cache-dependency-path: packages/packages.lock.json
         env:
-          NUGET_AUTH_TOKEN: ${{secrets.PERSONAL_TOKEN}}
+          NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
       - run: echo '${{ steps.stepid.outputs.dotnet-version }}'
 
       - name: Restore packages
@@ -101,6 +101,8 @@ jobs:
 
       - name: Publish Package
         run: dotnet nuget push ./nuget-packages/*.nupkg --source "https://nuget.pkg.github.com/patmoreau/index.json" --api-key ${{ secrets.GITHUB_TOKEN }}
+        env:
+          NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
       - name: Tag version
         uses: actions/github-script@v3
