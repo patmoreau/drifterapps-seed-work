@@ -53,7 +53,7 @@
     <!-- Allow dotnet pack to create NuGet packages -->
     <PropertyGroup>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <IncludeSymbols>true</IncludeSymbols>
+        <IncludeSymbols>false</IncludeSymbols>
     </PropertyGroup>
 
     <PropertyGroup>
