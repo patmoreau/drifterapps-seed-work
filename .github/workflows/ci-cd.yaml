@@ -84,7 +84,7 @@ jobs:
           # cache: true
           # cache-dependency-path: packages/packages.lock.json
         env:
-          NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          NUGET_AUTH_TOKEN: ${{secrets.PERSONAL_TOKEN}}
       - run: echo '${{ steps.stepid.outputs.dotnet-version }}'
 
       - name: Restore packages
@@ -101,3 +101,24 @@ jobs:
 
       - name: Publish package
         run: dotnet nuget push ./nuget-packages/*.nupkg
+
+      - name: Tag version
+        uses: actions/github-script@v3
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            try {
+              await github.git.deleteRef({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                ref: "tags/${{ env.VERSION }}"
+              })
+            } catch (e) {
+              console.log("The ${{ env.VERSION }} tag doesn't exist yet: " + e)
+            }
+            await github.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: "refs/tags/${{ env.VERSION }}",
+              sha: context.sha
+            })
