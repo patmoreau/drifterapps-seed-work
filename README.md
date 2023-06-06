@@ -2,6 +2,8 @@
 
 <img alt='paper plane icons' src='./icon.svg' height='10%' width='10%'>
 
+[![Build and Publish NuGet Package](https://github.com/patmoreau/drifterapps-seed-work/actions/workflows/ci-cd.yaml/badge.svg)](https://github.com/patmoreau/drifterapps-seed-work/actions/workflows/ci-cd.yaml) [![CodeQL](https://github.com/patmoreau/drifterapps-seed-work/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/patmoreau/drifterapps-seed-work/actions/workflows/codeql-analysis.yml)
+
 This library is a collections of utility classes, mostly abstract, that I use with various clients for which as a
 TechLead I help their teams build robust software.
 
