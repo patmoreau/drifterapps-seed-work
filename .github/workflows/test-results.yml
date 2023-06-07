@@ -83,6 +83,6 @@ jobs:
         uses: exuanbo/actions-deploy-gist@v1
         with:
           token: ${{ secrets.GIST_TOKEN }}
-          gist_id: 230a77d0ee69381bbe869c0fc62f9cc6
+          gist_id: 51a2fc9fd8b7ed500ed3b6aabe0fc2d6
           file_path: seeds-tests-badge.svg
           file_type: text
