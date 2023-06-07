@@ -45,9 +45,9 @@
         <Copyright>Drifter Apps Inc.</Copyright>
         <PackageProjectUrl>https://github.com/patmoreau/drifterapps-seed-work</PackageProjectUrl>
         <PackageLicense>https://github.com/patmoreau/drifterapps-seed-work/blob/main/LICENSE</PackageLicense>
-        <!--        <PackageIcon>icons/icon.png</PackageIcon>-->
+        <PackageIcon>icon.png</PackageIcon>
         <RepositoryUrl>https://github.com/patmoreau/drifterapps-seed-work</RepositoryUrl>
-        <!--        <PackageReadmeFile>README.md</PackageReadmeFile>-->
+        <PackageReadmeFile>README.md</PackageReadmeFile>
     </PropertyGroup>
 
     <!-- Allow dotnet pack to create NuGet packages -->
@@ -59,14 +59,6 @@
     <PropertyGroup>
         <!-- Set the README file for all projects -->
     </PropertyGroup>
-
-    <!-- Add Sonar analyzer
-    <ItemGroup Condition="'$(Configuration)' == 'Release'">
-        <PackageReference Include="SonarAnalyzer.CSharp" Version="9.1.0.70676">
-            <PrivateAssets>All</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
-    </ItemGroup> -->
 
     <ItemGroup>
         <AssemblyAttribute Include="System.CLSCompliantAttribute">
