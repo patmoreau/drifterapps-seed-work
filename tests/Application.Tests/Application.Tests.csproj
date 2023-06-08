@@ -12,4 +12,9 @@
         <AssemblyName>DrifterApps.Seeds.Application.Tests</AssemblyName>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\..\src\Application\Application.csproj" />
+      <ProjectReference Include="..\..\src\Testing\Testing.csproj" />
+    </ItemGroup>
+
 </Project>

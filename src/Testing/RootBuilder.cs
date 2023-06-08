@@ -5,15 +5,16 @@ using Bogus;
 
 namespace DrifterApps.Seeds.Testing;
 
-internal abstract class RootBuilder<T> where T : class
+public abstract class RootBuilder<T> where T : class
 {
-    protected virtual Faker<T> Faker { get; } = new Faker<T>();
+    protected virtual Faker<T> Faker { get; } = new();
 
     public virtual T Build()
     {
         Faker.AssertConfigurationIsValid();
         return Faker.Generate();
     }
+
     public virtual IReadOnlyCollection<T> BuildCollection(int? count = null)
     {
         Faker.AssertConfigurationIsValid();
