@@ -64,16 +64,11 @@ public class HttpClientDriver : IHttpClientDriver
 
     public void UnAuthenticate() => _httpClient.DefaultRequestHeaders.Authorization = null;
 
-    private async Task SendRequest(HttpRequestMessage requestMessage)
+    public async Task SendGetRequest(ApiResource apiResource, string? query = null)
     {
-        ResponseMessage = await _httpClient.SendAsync(requestMessage).ConfigureAwait(false);
+        ArgumentNullException.ThrowIfNull(apiResource);
 
-        LogUnexpectedErrors();
-    }
-
-    internal async Task SendGetRequest(ApiResource apiResources, string? query = null)
-    {
-        var baseUri = apiResources.EndpointFromResource();
+        var baseUri = apiResource.EndpointFromResource();
         var fullUri = baseUri;
         if (query is not null)
             fullUri = new Uri($"{fullUri}?{query}", fullUri.IsAbsoluteUri ? UriKind.Absolute : UriKind.Relative);
@@ -82,16 +77,20 @@ public class HttpClientDriver : IHttpClientDriver
         await SendRequest(request).ConfigureAwait(false);
     }
 
-    internal async Task SendGetRequest(ApiResource apiResources, params object[] parameters)
+    public async Task SendGetRequest(ApiResource apiResource, params object[] parameters)
     {
-        var endpointUri = apiResources.EndpointFromResource(parameters);
+        ArgumentNullException.ThrowIfNull(apiResource);
+
+        var endpointUri = apiResource.EndpointFromResource(parameters);
         using HttpRequestMessage request = new(HttpMethod.Get, endpointUri);
         await SendRequest(request).ConfigureAwait(false);
     }
 
-    internal async Task SendPostRequest(ApiResource apiResources, string? body = null)
+    public async Task SendPostRequest(ApiResource apiResource, string? body = null)
     {
-        var endpointUri = apiResources.EndpointFromResource();
+        ArgumentNullException.ThrowIfNull(apiResource);
+
+        var endpointUri = apiResource.EndpointFromResource();
 
         using HttpRequestMessage request = new(HttpMethod.Post, endpointUri);
         if (body is not null) request.Content = new StringContent(body, Encoding.UTF8, "application/json");
@@ -99,11 +98,20 @@ public class HttpClientDriver : IHttpClientDriver
         await SendRequest(request).ConfigureAwait(false);
     }
 
-    internal async Task SendDeleteRequest(ApiResource apiResources, params object[] parameters)
+    public async Task SendDeleteRequest(ApiResource apiResource, params object[] parameters)
     {
-        var endpointUri = apiResources.EndpointFromResource(parameters);
+        ArgumentNullException.ThrowIfNull(apiResource);
+
+        var endpointUri = apiResource.EndpointFromResource(parameters);
         using HttpRequestMessage request = new(HttpMethod.Delete, endpointUri);
         await SendRequest(request).ConfigureAwait(false);
+    }
+
+    private async Task SendRequest(HttpRequestMessage requestMessage)
+    {
+        ResponseMessage = await _httpClient.SendAsync(requestMessage).ConfigureAwait(false);
+
+        LogUnexpectedErrors();
     }
 
     private void LogUnexpectedErrors()

@@ -1,4 +1,5 @@
 using System.Net;
+using DrifterApps.Seeds.Testing.Infrastructure;
 
 namespace DrifterApps.Seeds.Testing.Drivers;
 
@@ -12,4 +13,8 @@ public interface IHttpClientDriver
     T? DeserializeContent<T>();
     void AuthenticateUser(Guid userId);
     void UnAuthenticate();
+    public Task SendGetRequest(ApiResource apiResource, string? query = null);
+    public Task SendGetRequest(ApiResource apiResource, params object[] parameters);
+    public Task SendPostRequest(ApiResource apiResource, string? body = null);
+    public Task SendDeleteRequest(ApiResource apiResource, params object[] parameters);
 }

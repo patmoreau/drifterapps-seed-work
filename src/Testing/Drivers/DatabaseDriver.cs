@@ -14,8 +14,5 @@ public abstract partial class DatabaseDriver<TDbContext> : IAsyncLifetime where 
         await InitialiseRespawnAsync().ConfigureAwait(false);
     }
 
-    public virtual async Task DisposeAsync()
-    {
-        await DatabaseServer.DisposeAsync().ConfigureAwait(false);
-    }
+    public virtual async Task DisposeAsync() => await DatabaseServer.DisposeAsync().ConfigureAwait(false);
 }

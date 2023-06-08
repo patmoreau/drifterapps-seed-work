@@ -2,7 +2,6 @@
 // The.NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace DrifterApps.Seeds.Testing.Drivers;
 
@@ -11,10 +10,6 @@ public abstract partial class DatabaseDriver<TDbContext> : ISaveBuilder where TD
     public abstract TDbContext DbContext { get; protected set; }
 
     public string ConnectionString => DatabaseServer.ConnectionString;
-
-    public abstract DbContextOptions<TDbContext> GetDbContextOptions();
-
-    protected abstract Task InitializeDatabaseAsync();
 
     public async Task SaveAsync<T>(T entity) where T : class
     {
@@ -28,12 +23,13 @@ public abstract partial class DatabaseDriver<TDbContext> : ISaveBuilder where TD
         return await DbContext.FindAsync<T>(id).ConfigureAwait(false);
     }
 
+    public abstract DbContextOptions<TDbContext> GetDbContextOptions();
+
+    protected abstract Task InitializeDatabaseAsync();
+
     private void RefreshAll()
     {
-        List<EntityEntry> entitiesList = DbContext.ChangeTracker.Entries().ToList();
-        foreach (EntityEntry entity in entitiesList)
-        {
-            entity.Reload();
-        }
+        var entitiesList = DbContext.ChangeTracker.Entries().ToList();
+        foreach (var entity in entitiesList) entity.Reload();
     }
 }
