@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 
 namespace DrifterApps.Seeds.Application.Extensions;
 
-internal static partial class SqlBuilderExtensions
+public static partial class SqlBuilderExtensions
 {
     private static readonly IDictionary<string, string> Operators =
         new Dictionary<string, string>
@@ -20,6 +20,8 @@ internal static partial class SqlBuilderExtensions
 
     public static IQueryable<T> Filter<T>(this IQueryable<T> query, IReadOnlyCollection<string> filter)
     {
+        ArgumentNullException.ThrowIfNull(filter);
+
         if (!filter.Any()) return query;
 
         foreach (var f in filter)
@@ -55,7 +57,7 @@ internal static partial class SqlBuilderExtensions
         return query.OrderBy(sortString);
     }
 
-    public static Expression<Func<T, bool>> BuildPredicate<T>(string propertyName, string comparison, string value)
+    private static Expression<Func<T, bool>> BuildPredicate<T>(string propertyName, string comparison, string value)
     {
         var parameter = Expression.Parameter(typeof(T), "x");
         var left = propertyName.Split('.').Aggregate((Expression) parameter, Expression.Property);
