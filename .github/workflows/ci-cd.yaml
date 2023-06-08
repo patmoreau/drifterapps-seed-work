@@ -121,10 +121,10 @@ jobs:
             ./tests-results/**/*.trx
 
       - name: Build package
-        run: dotnet pack /property:Version=${VERSION} --no-restore --no-build --configuration Release -o ./nuget-packages
+        run: dotnet pack /property:Version=${VERSION} --no-restore --no-build --include-symbols --configuration Release -o ./nuget-packages
 
       - name: Publish Package
-        run: dotnet nuget push ./nuget-packages/*.nupkg --source "https://nuget.pkg.github.com/patmoreau/index.json" --api-key ${{ secrets.PERSONAL_TOKEN }} --skip-duplicate
+        run: dotnet nuget push ./nuget-packages/*.nupkg --source "https://api.nuget.org/v3/index.json" --api-key ${{ secrets.NUGET_API_KEY }} --skip-duplicate
 
       - name: Tag version
         uses: actions/github-script@v3
