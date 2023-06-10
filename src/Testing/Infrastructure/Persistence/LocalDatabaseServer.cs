@@ -4,35 +4,38 @@ namespace DrifterApps.Seeds.Testing.Infrastructure.Persistence;
 
 public class LocalDatabaseServer : IDatabaseServer
 {
-    private readonly Func<string, DbConnection> _connectionFactory;
+    public delegate DbConnection ConnectionFactory(string connectionString);
 
-    public LocalDatabaseServer(string connectionString, Func<string, DbConnection> connectionFactory)
+    private readonly ConnectionFactory _connectionFactory;
+
+    private LocalDatabaseServer(string connectionString, ConnectionFactory connectionFactory)
     {
         _connectionFactory = connectionFactory;
         ConnectionString = connectionString;
     }
 
+    /// <inheritdoc />
     public string ConnectionString { get; }
 
+    /// <inheritdoc />
     public Task StartAsync() => Task.CompletedTask;
 
-    public Task GetConnectionAsync(Func<DbConnection, Task> action)
+    /// <inheritdoc />
+    public async Task<DbConnection> GetConnectionAsync()
     {
-        ArgumentNullException.ThrowIfNull(action);
-
-        return GetConnectionInternalAsync(action);
-    }
-
-    private async Task GetConnectionInternalAsync(Func<DbConnection, Task> action)
-    {
-        using var connection = _connectionFactory(ConnectionString);
+        var connection = _connectionFactory(ConnectionString);
         await connection.OpenAsync().ConfigureAwait(false);
-        await action(connection).ConfigureAwait(false);
+
+        return connection;
     }
 
+    /// <inheritdoc />
     public ValueTask DisposeAsync()
     {
         GC.SuppressFinalize(this);
         return ValueTask.CompletedTask;
     }
+
+    public static LocalDatabaseServer CreateServer(string connectionString, ConnectionFactory connectionFactory) =>
+        new(connectionString, connectionFactory);
 }

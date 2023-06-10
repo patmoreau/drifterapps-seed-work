@@ -11,5 +11,5 @@ public interface IDatabaseServer : IAsyncDisposable
 
     Task StartAsync();
 
-    Task GetConnectionAsync(Func<DbConnection, Task> action);
+    Task<DbConnection> GetConnectionAsync();
 }

@@ -8,6 +8,7 @@ namespace DrifterApps.Seeds.Testing.Drivers;
 public abstract partial class DatabaseDriver<TDbContext> : IRespawnable
 {
     private Respawner? _respawner;
+
     protected abstract RespawnerOptions Options { get; }
 
     public async Task ResetCheckpointAsync()
@@ -17,14 +18,15 @@ public abstract partial class DatabaseDriver<TDbContext> : IRespawnable
             return;
         }
 
-        await DatabaseServer.GetConnectionAsync(async connection => await _respawner.ResetAsync(connection).ConfigureAwait(false)).ConfigureAwait(false);
+        using var connection = await DatabaseServer.GetConnectionAsync().ConfigureAwait(false);
+
+        await _respawner.ResetAsync(connection).ConfigureAwait(false);
     }
 
     private async Task InitialiseRespawnAsync()
     {
-        await DatabaseServer.GetConnectionAsync(async connection =>
-        {
-            _respawner = await Respawner.CreateAsync(connection, Options).ConfigureAwait(false);
-        }).ConfigureAwait(false);
+        using var connection = await DatabaseServer.GetConnectionAsync().ConfigureAwait(false);
+
+        _respawner = await Respawner.CreateAsync(connection, Options).ConfigureAwait(false);
     }
 }

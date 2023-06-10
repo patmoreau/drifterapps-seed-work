@@ -7,7 +7,9 @@ namespace DrifterApps.Seeds.Testing.Drivers;
 
 public interface IApplicationDriver
 {
+    IServiceProvider Services { get; }
+
     HttpClientDriver CreateHttpClientDriver(ITestOutputHelper testOutputHelper);
 
-    Task OnScenarioReset();
+    Task ResetStateAsync();
 }

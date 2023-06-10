@@ -2,11 +2,13 @@ using System.Globalization;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
+using DrifterApps.Seeds.Testing.Attributes;
 using DrifterApps.Seeds.Testing.Drivers;
 using DrifterApps.Seeds.Testing.Infrastructure;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 using Nito.AsyncEx;
 using Xunit;
 using Xunit.Abstractions;
@@ -20,7 +22,9 @@ namespace DrifterApps.Seeds.Testing.Scenarios;
 /// </summary>
 public abstract partial class RootScenario : IAsyncLifetime
 {
-    private static readonly AsyncLock s_mutex = new();
+    protected const string CreatedResourceLocation = $"{nameof(RootScenario)}-created-resource-location";
+
+    private static readonly AsyncLock Mutex = new();
 
     private readonly IApplicationDriver _applicationDriver;
     private readonly ITestOutputHelper _testOutputHelper;
@@ -28,25 +32,34 @@ public abstract partial class RootScenario : IAsyncLifetime
     protected RootScenario(IApplicationDriver applicationDriver, ITestOutputHelper testOutputHelper)
     {
         ArgumentNullException.ThrowIfNull(applicationDriver);
+        ArgumentNullException.ThrowIfNull(testOutputHelper);
 
         _applicationDriver = applicationDriver;
         _testOutputHelper = testOutputHelper;
 
+        Scope = applicationDriver.Services.CreateScope();
+
         HttpClientDriver = applicationDriver.CreateHttpClientDriver(testOutputHelper);
     }
+
+    private IServiceScope Scope { get; }
 
     protected HttpClientDriver HttpClientDriver { get; }
 
     public virtual async Task InitializeAsync()
     {
         // Version for reset every test
-        using (await s_mutex.LockAsync())
+        using (await Mutex.LockAsync())
         {
-            await _applicationDriver.OnScenarioReset().ConfigureAwait(false);
+            await _applicationDriver.ResetStateAsync().ConfigureAwait(false);
         }
     }
 
-    public virtual Task DisposeAsync() => Task.CompletedTask;
+    public virtual Task DisposeAsync()
+    {
+        Scope.Dispose();
+        return Task.CompletedTask;
+    }
 
     internal Task WhenUserTriesToQuery(ApiResource apiResources, int? offset = null, int? limit = null,
         string? sorts = null, string? filters = null)
@@ -125,16 +138,22 @@ public abstract partial class RootScenario : IAsyncLifetime
             .Be(errorMessage);
     }
 
-    protected Guid ThenShouldGetTheRouteOfTheNewResourceInTheHeader()
+    [AssertionMethod]
+    protected void ThenShouldGetTheRouteOfTheNewResourceInTheHeader(IStepRunner runner)
     {
-        var headers = HttpClientDriver.ResponseMessage!.Headers;
+        ArgumentNullException.ThrowIfNull(runner);
 
-        headers.Should().ContainKey("Location");
+        runner.Execute("assert the route of the new resource is in the Location header", () =>
+        {
+            var headers = HttpClientDriver.ResponseMessage!.Headers;
 
-        var responseString = headers.GetValues("Location").Single();
-        var match = MyRegex().Match(responseString);
+            headers.Should().ContainKey("Location");
 
-        return match.Success ? Guid.Parse(match.Value) : Guid.Empty;
+            var responseString = headers.GetValues("Location").Single();
+            Uri.TryCreate(responseString, UriKind.RelativeOrAbsolute, out var uri).Should().BeTrue();
+
+            runner.SetContextData(CreatedResourceLocation, uri ?? new Uri("/"));
+        });
     }
 
 #pragma warning disable CA1822
@@ -179,7 +198,6 @@ public abstract partial class RootScenario : IAsyncLifetime
 
         await runner.PlayAsync().ConfigureAwait(false);
     }
-
     [GeneratedRegex("[{(]?[0-9A-Fa-f]{8}[-]?([0-9A-Fa-f]{4}[-]?){3}[0-9A-Fa-f]{12}[)}]?")]
     private static partial Regex MyRegex();
 }
