@@ -2,17 +2,32 @@ using System.Collections.Immutable;
 
 namespace DrifterApps.Seeds.Application;
 
+/// <summary>
+/// Class for supporting query params to be handled in requests
+/// </summary>
 public class QueryParams
 {
     public const string FilterPattern = @"(?<property>\w+)(?<operator>:(eq|ne|lt|le|gt|ge):)(?<value>.*)";
     public const string SortPattern = @"(?<desc>-{0,1})(?<field>\w+)";
 
+    /// <summary>
+    /// Default offset value
+    /// </summary>
     public const int DefaultOffset = 0;
+    /// <summary>
+    /// Default limit value
+    /// </summary>
     public const int DefaultLimit = int.MaxValue;
+    /// <summary>
+    /// Default empty sort
+    /// </summary>
     public static readonly IReadOnlyCollection<string> DefaultSort = ImmutableArray.Create<string>();
+    /// <summary>
+    /// Default empty filter
+    /// </summary>
     public static readonly IReadOnlyCollection<string> DefaultFilter = ImmutableArray.Create<string>();
 
-    public QueryParams(int offset, int limit, IEnumerable<string> sort, IEnumerable<string> filter)
+    private QueryParams(int offset, int limit, IEnumerable<string> sort, IEnumerable<string> filter)
     {
         if (offset < 0)
         {

@@ -19,6 +19,9 @@ public interface IRequestQuery
     /// <summary>
     ///     Sort values; use the name of field to sort on. use '-' in front of the field name for descending order.
     /// </summary>
+    /// <example>
+    ///     -field_name
+    /// </example>
     string[] Sort { get; }
 
     /// <summary>

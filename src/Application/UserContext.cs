@@ -3,13 +3,15 @@ using Microsoft.AspNetCore.Http;
 
 namespace DrifterApps.Seeds.Application;
 
+/// <inheritdoc />
 internal sealed class UserContext : IUserContext
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
 
     public UserContext(IHttpContextAccessor httpContextAccessor) => _httpContextAccessor = httpContextAccessor;
 
-    public Guid UserId => GetUserId();
+    /// <inheritdoc />
+    public Guid Id => GetUserId();
 
     private Guid GetUserId()
     {
