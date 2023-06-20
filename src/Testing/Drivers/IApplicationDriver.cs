@@ -9,7 +9,7 @@ public interface IApplicationDriver
 {
     IServiceProvider Services { get; }
 
-    HttpClientDriver CreateHttpClientDriver(ITestOutputHelper testOutputHelper);
+    IHttpClientDriver CreateHttpClientDriver(ITestOutputHelper testOutputHelper);
 
     Task ResetStateAsync();
 }

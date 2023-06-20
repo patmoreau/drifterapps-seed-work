@@ -12,6 +12,12 @@
         <Compile Update="**/*.Validator.cs">
             <DependentUpon>$([System.String]::Copy(%(FileName)).Replace('.Validator', '.cs'))</DependentUpon>
         </Compile>
+        <Compile Update="**/*.When.cs">
+            <DependentUpon>$([System.String]::Copy(%(FileName)).Replace('.When', '.cs'))</DependentUpon>
+        </Compile>
+        <Compile Update="**/*.Then.cs">
+            <DependentUpon>$([System.String]::Copy(%(FileName)).Replace('.Then', '.cs'))</DependentUpon>
+        </Compile>
     </ItemGroup>
 </Project>
 

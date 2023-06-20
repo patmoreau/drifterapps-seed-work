@@ -82,8 +82,6 @@ public class MediatorSerializedObjectTests
 
     private class Driver : IDriverOf<MediatorSerializedObject>
     {
-        private readonly Faker _faker = new();
-
         private string _assemblyQualifiedName = typeof(SampleRequest).AssemblyQualifiedName!;
 
         private string _data;
@@ -93,7 +91,7 @@ public class MediatorSerializedObjectTests
             OriginalRequest = new Faker<SampleRequest>()
                 .RuleFor(x => x.Property1, faker => faker.Random.Word())
                 .RuleFor(x => x.Property2, faker => faker.Random.Int());
-            Description = _faker.Lorem.Text();
+            Description = Fakerizer.Lorem.Text();
             _data = JsonSerializer.Serialize(OriginalRequest);
         }
 
@@ -105,7 +103,7 @@ public class MediatorSerializedObjectTests
 
         public Driver GivenInvalidAssemblyQualifiedName()
         {
-            _assemblyQualifiedName = _faker.Lorem.Word();
+            _assemblyQualifiedName = Fakerizer.Lorem.Word();
 
             return this;
         }

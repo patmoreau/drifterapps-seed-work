@@ -10,17 +10,24 @@ namespace DrifterApps.Seeds.Testing.Infrastructure.Persistence;
 
 public class MariaDatabaseServer : IDatabaseServer
 {
+    private const string RootUser = "root";
+    private const string RootPassword = "root_password";
     private readonly MariaDbContainer _container;
 
-    public string ConnectionString => _container.GetConnectionString();
-
-    private MariaDatabaseServer(string databaseName) =>
-        _container = new MariaDbBuilder()
+    private MariaDatabaseServer(string databaseName, int? port = null)
+    {
+        var builder = new MariaDbBuilder()
             .WithDatabase(databaseName)
-            .WithUsername("root")
-            .WithPassword("root")
-            .WithWaitStrategy(Wait.ForUnixContainer())
-            .Build();
+            .WithUsername(RootUser)
+            .WithPassword(RootPassword)
+            .WithWaitStrategy(Wait.ForUnixContainer());
+
+        if (port is not null) builder.WithPortBinding(port.Value);
+
+        _container = builder.Build();
+    }
+
+    public string ConnectionString => _container.GetConnectionString();
 
     public async Task<DbConnection> GetConnectionAsync()
     {
@@ -39,4 +46,5 @@ public class MariaDatabaseServer : IDatabaseServer
     }
 
     public static MariaDatabaseServer CreateServer(string databaseName) => new(databaseName);
+    public static MariaDatabaseServer CreateServer(string databaseName, int port) => new(databaseName, port);
 }

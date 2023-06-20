@@ -2,9 +2,17 @@ using Bogus;
 
 namespace DrifterApps.Seeds.Testing;
 
-internal static class Globals
+public static class Globals
 {
-    private static readonly Faker s_faker = new();
+#pragma warning disable CA1810
+    static Globals()
+#pragma warning restore CA1810
+    {
+        Faker.DefaultStrictMode = true;
+        Fakerizer = new Faker();
+    }
 
-    public static int RandomCollectionCount() => s_faker.Random.Int(1, 10);
+    public static Faker Fakerizer { get; }
+
+    public static int RandomCollectionCount() => Fakerizer.Random.Int(1, 10);
 }

@@ -4,49 +4,22 @@ using System.Text;
 using System.Text.Json;
 using DrifterApps.Seeds.Testing.Infrastructure;
 using DrifterApps.Seeds.Testing.Infrastructure.Authentication;
-using FluentAssertions;
 using Xunit.Abstractions;
 
 namespace DrifterApps.Seeds.Testing.Drivers;
 
-public class HttpClientDriver : IHttpClientDriver
+public sealed class HttpClientDriver : IHttpClientDriver
 {
     private readonly HttpClient _httpClient;
     private readonly ITestOutputHelper _testOutputHelper;
 
-    public HttpClientDriver(HttpClient httpClient, ITestOutputHelper testOutputHelper)
+    private HttpClientDriver(HttpClient httpClient, ITestOutputHelper testOutputHelper)
     {
         _httpClient = httpClient;
         _testOutputHelper = testOutputHelper;
     }
 
     public HttpResponseMessage? ResponseMessage { get; private set; }
-
-    public void ShouldBeUnauthorized() =>
-        ResponseMessage.Should().NotBeNull()
-            .And.HaveStatusCode(HttpStatusCode.Unauthorized);
-
-    public void ShouldHaveResponseWithStatus(HttpStatusCode httpStatus)
-    {
-        LogUnexpectedContent(httpStatus);
-
-        ResponseMessage.Should()
-            .NotBeNull()
-            .And.Subject.StatusCode.Should().Be(httpStatus);
-    }
-
-    public void ShouldHaveResponseWithStatus(Func<HttpStatusCode?, bool> httpStatusPredicate)
-    {
-        if (httpStatusPredicate == null) throw new ArgumentNullException(nameof(httpStatusPredicate));
-
-        ResponseMessage.Should().NotBeNull();
-        httpStatusPredicate(ResponseMessage!.StatusCode).Should().BeTrue();
-    }
-
-    public void ShouldNotHaveResponseWithOneOfStatuses(params HttpStatusCode[] httpStatuses) =>
-        ResponseMessage.Should()
-            .NotBeNull()
-            .And.Subject.StatusCode.Should().BeOneOf(httpStatuses);
 
     public T? DeserializeContent<T>()
     {
@@ -58,13 +31,13 @@ public class HttpClientDriver : IHttpClientDriver
         return content;
     }
 
-    public void AuthenticateUser(Guid userId) =>
+    public void AuthenticateUser(string userId) =>
         _httpClient.DefaultRequestHeaders.Authorization =
-            new AuthenticationHeaderValue(MockAuthenticationHandler.AuthenticationScheme, userId.ToString());
+            new AuthenticationHeaderValue(MockAuthenticationHandler.AuthenticationScheme, userId);
 
     public void UnAuthenticate() => _httpClient.DefaultRequestHeaders.Authorization = null;
 
-    public async Task SendGetRequest(ApiResource apiResource, string? query = null)
+    public async Task SendGetRequestAsync(ApiResource apiResource, string? query = null)
     {
         ArgumentNullException.ThrowIfNull(apiResource);
 
@@ -77,7 +50,7 @@ public class HttpClientDriver : IHttpClientDriver
         await SendRequest(request).ConfigureAwait(false);
     }
 
-    public async Task SendGetRequest(ApiResource apiResource, params object[] parameters)
+    public async Task SendGetRequestAsync(ApiResource apiResource, params object[] parameters)
     {
         ArgumentNullException.ThrowIfNull(apiResource);
 
@@ -86,7 +59,7 @@ public class HttpClientDriver : IHttpClientDriver
         await SendRequest(request).ConfigureAwait(false);
     }
 
-    public async Task SendPostRequest(ApiResource apiResource, string? body = null)
+    public async Task SendPostRequestAsync(ApiResource apiResource, string? body = null)
     {
         ArgumentNullException.ThrowIfNull(apiResource);
 
@@ -98,7 +71,7 @@ public class HttpClientDriver : IHttpClientDriver
         await SendRequest(request).ConfigureAwait(false);
     }
 
-    public async Task SendDeleteRequest(ApiResource apiResource, params object[] parameters)
+    public async Task SendDeleteRequestAsync(ApiResource apiResource, params object[] parameters)
     {
         ArgumentNullException.ThrowIfNull(apiResource);
 
@@ -111,25 +84,34 @@ public class HttpClientDriver : IHttpClientDriver
     {
         ResponseMessage = await _httpClient.SendAsync(requestMessage).ConfigureAwait(false);
 
-        LogUnexpectedErrors();
+        LogUnexpectedErrors(ResponseMessage, _testOutputHelper);
     }
 
-    private void LogUnexpectedErrors()
+    public static IHttpClientDriver CreateDriver(HttpClient httpClient, ITestOutputHelper testOutputHelper) =>
+        new HttpClientDriver(httpClient, testOutputHelper);
+
+    internal static void LogUnexpectedErrors(HttpResponseMessage? responseMessage, ITestOutputHelper testOutputHelper)
     {
-        if (ResponseMessage?.StatusCode != HttpStatusCode.InternalServerError) return;
+        if (responseMessage is null) return;
 
-        var resultAsString = ResponseMessage?.Content.ReadAsStringAsync().Result;
+        if (responseMessage.StatusCode != HttpStatusCode.InternalServerError) return;
 
-        _testOutputHelper.WriteLine($"HTTP 500 Response: {resultAsString ?? "<unknown>"}");
+        var resultAsString = responseMessage.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+
+        var content = string.IsNullOrWhiteSpace(resultAsString) ? "<empty response>" : resultAsString;
+        testOutputHelper.WriteLine($"HTTP 500 Response: {content}");
     }
 
-    private void LogUnexpectedContent(HttpStatusCode expectedStatusCode)
+    internal static void LogUnexpectedContent(HttpResponseMessage? responseMessage, HttpStatusCode expectedStatusCode,
+        ITestOutputHelper testOutputHelper)
     {
-        if (ResponseMessage?.StatusCode == expectedStatusCode) return;
+        if (responseMessage is null) return;
 
-        var resultAsString = ResponseMessage?.Content.ReadAsStringAsync().Result;
+        if (responseMessage.StatusCode == expectedStatusCode) return;
 
-        _testOutputHelper.WriteLine(
-            $"Unexpected HTTP {ResponseMessage?.StatusCode} Code with Response: {resultAsString ?? "<unknown>"}");
+        var resultAsString = responseMessage.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+
+        var content = string.IsNullOrWhiteSpace(resultAsString) ? "<empty response>" : resultAsString;
+        testOutputHelper.WriteLine($"Unexpected HTTP {responseMessage.StatusCode} Code with Response: {content}");
     }
 }

@@ -6,7 +6,7 @@ using DrifterApps.Seeds.Testing.Drivers;
 
 namespace DrifterApps.Seeds.Testing;
 
-public abstract class RootBuilder<T> where T : class
+public abstract class FakerBuilder<T> where T : class
 {
     /// <inheritdoc cref="Faker{T}" />
     protected abstract Faker<T> Faker { get; }

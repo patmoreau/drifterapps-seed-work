@@ -1,4 +1,3 @@
-using Bogus;
 using DrifterApps.Seeds.Testing.Drivers;
 using DrifterApps.Seeds.Testing.StepDefinitions;
 
@@ -49,39 +48,38 @@ public class RootStepDefinitionTests
         result.Should().NotBeEmpty();
     }
 
-    private sealed class RootStepDefinitionDriver : IDriverOf<MockRootStepDefinition>
+    private sealed class RootStepDefinitionDriver : IDriverOf<MockStepDefinition>
     {
-        private readonly Faker _faker = new();
         private readonly IHttpClientDriver _httpClientDriver = Substitute.For<IHttpClientDriver>();
 
-        public MockRootStepDefinition Build() => new(_httpClientDriver);
+        public MockStepDefinition Build() => new(_httpClientDriver);
 
         public RootStepDefinitionDriver WithCreatedId(Guid id)
         {
-            _httpClientDriver.DeserializeContent<RootStepDefinition.Created>()
-                .Returns(new RootStepDefinition.Created(id));
+            _httpClientDriver.DeserializeContent<StepDefinition.Created>()
+                .Returns(new StepDefinition.Created(id));
 
             return this;
         }
 
         public RootStepDefinitionDriver WithStringResultData()
         {
-            _httpClientDriver.DeserializeContent<string>().Returns(_faker.Lorem.Text());
+            _httpClientDriver.DeserializeContent<string>().Returns(Fakerizer.Lorem.Text());
 
             return this;
         }
 
         public RootStepDefinitionDriver WithNoCreatedId()
         {
-            _httpClientDriver.DeserializeContent<RootStepDefinition.Created>().Returns(_ => null);
+            _httpClientDriver.DeserializeContent<StepDefinition.Created>().Returns(_ => null);
 
             return this;
         }
     }
 
-    public class MockRootStepDefinition : RootStepDefinition
+    public class MockStepDefinition : StepDefinition
     {
-        public MockRootStepDefinition(IHttpClientDriver httpClientDriver) : base(httpClientDriver)
+        public MockStepDefinition(IHttpClientDriver httpClientDriver) : base(httpClientDriver)
         {
         }
     }

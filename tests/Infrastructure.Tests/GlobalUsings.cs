@@ -2,6 +2,6 @@
 
 global using Bogus;
 global using FluentAssertions;
-global using FluentAssertions.Execution;
 global using Xunit;
 global using Xunit.Categories;
+global using static DrifterApps.Seeds.Testing.Globals;

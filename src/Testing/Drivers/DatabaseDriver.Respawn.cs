@@ -13,10 +13,7 @@ public abstract partial class DatabaseDriver<TDbContext> : IRespawnable
 
     public async Task ResetCheckpointAsync()
     {
-        if (_respawner is null)
-        {
-            return;
-        }
+        if (_respawner is null) throw new InvalidOperationException("The database has not been initialized.");
 
         using var connection = await DatabaseServer.GetConnectionAsync().ConfigureAwait(false);
 

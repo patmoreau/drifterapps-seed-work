@@ -1,5 +1,4 @@
 using System.Security.Claims;
-using Bogus;
 using DrifterApps.Seeds.Testing;
 using Microsoft.AspNetCore.Http;
 using NSubstitute;
@@ -18,7 +17,7 @@ public class UserContextTests
         var sut = _driver.WhenUserHasNameIdentifierClaim(out var idNameIdentifier).Build();
 
         // act
-        var result = sut.UserId;
+        var result = sut.Id;
 
         // assert
         result.Should().Be(idNameIdentifier);
@@ -31,7 +30,7 @@ public class UserContextTests
         var sut = _driver.WhenUserHasSubClaim(out var idSub).Build();
 
         // act
-        var result = sut.UserId;
+        var result = sut.Id;
 
         // assert
         result.Should().Be(idSub);
@@ -44,7 +43,7 @@ public class UserContextTests
         var sut = _driver.WhenUserHasNameIdentifierAndSubClaim(out var idNameIdentifier).Build();
 
         // act
-        var result = sut.UserId;
+        var result = sut.Id;
 
         // assert
         result.Should().Be(idNameIdentifier);
@@ -57,7 +56,7 @@ public class UserContextTests
         var sut = _driver.WhenHttpContextIsNull().Build();
 
         // act
-        var result = sut.UserId;
+        var result = sut.Id;
 
         // assert
         result.Should().Be(Guid.Empty);
@@ -70,7 +69,7 @@ public class UserContextTests
         var sut = _driver.WhenUserHasNoClaims().Build();
 
         // act
-        var result = sut.UserId;
+        var result = sut.Id;
 
         // assert
         result.Should().Be(Guid.Empty);
@@ -78,7 +77,6 @@ public class UserContextTests
 
     private class UserContextDriver : IDriverOf<UserContext>
     {
-        private readonly Faker _faker = new();
         private readonly IHttpContextAccessor _httpContextAccessor = Substitute.For<IHttpContextAccessor>();
 
         private readonly Guid _idNameIdentifier;
@@ -86,8 +84,8 @@ public class UserContextTests
 
         public UserContextDriver()
         {
-            _idNameIdentifier = _faker.Random.Guid();
-            _idSub = _faker.Random.Guid();
+            _idNameIdentifier = Fakerizer.Random.Guid();
+            _idSub = Fakerizer.Random.Guid();
         }
 
         public UserContext Build() => new(_httpContextAccessor);

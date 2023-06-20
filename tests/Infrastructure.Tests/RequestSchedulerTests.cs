@@ -12,7 +12,6 @@ namespace DrifterApps.Seeds.Infrastructure.Tests;
 public class RequestSchedulerTests
 {
     private readonly Driver _driver = new();
-    private readonly Faker _faker = new();
 
     [Fact]
     public void GivenConstructor_WhenRequestExecutorIsNull_ThenThrowArgumentNullException()
@@ -34,7 +33,7 @@ public class RequestSchedulerTests
         var sut = _driver.Build();
 
         // act
-        sut.SendNow(new MockRequest(), _faker.Lorem.Sentence());
+        sut.SendNow(new MockRequest(), Fakerizer.Lorem.Sentence());
 
         // assert
         _driver.ShouldHaveJobEnqueued();
@@ -47,7 +46,7 @@ public class RequestSchedulerTests
         var sut = _driver.Build();
 
         // act
-        sut.Schedule(new MockRequest(), _faker.Date.FutureOffset(), _faker.Lorem.Sentence());
+        sut.Schedule(new MockRequest(), Fakerizer.Date.FutureOffset(), Fakerizer.Lorem.Sentence());
 
         // assert
         _driver.ShouldHaveJobScheduled();
@@ -60,7 +59,7 @@ public class RequestSchedulerTests
         var sut = _driver.Build();
 
         // act
-        sut.Schedule(new MockRequest(), _faker.Date.Timespan(), _faker.Lorem.Sentence());
+        sut.Schedule(new MockRequest(), Fakerizer.Date.Timespan(), Fakerizer.Lorem.Sentence());
 
         // assert
         _driver.ShouldHaveJobScheduled();
@@ -73,7 +72,8 @@ public class RequestSchedulerTests
         var sut = _driver.Build();
 
         // act
-        sut.ScheduleRecurring(new MockRequest(), _faker.Lorem.Word(), _faker.Random.Word(), _faker.Lorem.Sentence());
+        sut.ScheduleRecurring(new MockRequest(), Fakerizer.Lorem.Word(), Fakerizer.Random.Word(),
+            Fakerizer.Lorem.Sentence());
 
         // assert
         _driver.ShouldHaveRecurringJobScheduled();

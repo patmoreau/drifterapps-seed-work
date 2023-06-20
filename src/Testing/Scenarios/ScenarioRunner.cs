@@ -14,9 +14,8 @@ internal sealed class ScenarioRunner : IScenarioRunner, IStepRunner
     private ScenarioRunner(string description, ITestOutputHelper testOutputHelper)
     {
         if (string.IsNullOrWhiteSpace(description))
-        {
-            throw new ArgumentNullException(nameof(description), "Please explain your intent by documenting your scenario.");
-        }
+            throw new ArgumentNullException(nameof(description),
+                "Please explain your intent by documenting your scenario.");
 
         ArgumentNullException.ThrowIfNull(testOutputHelper);
 
@@ -24,9 +23,6 @@ internal sealed class ScenarioRunner : IScenarioRunner, IStepRunner
 
         _testOutputHelper = testOutputHelper;
     }
-
-    public static ScenarioRunner Create(string description, ITestOutputHelper testOutputHelper)
-        => new(description, testOutputHelper);
 
     public IScenarioRunner Given(string message, Action action)
     {
@@ -127,10 +123,7 @@ internal sealed class ScenarioRunner : IScenarioRunner, IStepRunner
     {
         var previousCommand = _tasks.LastOrDefault();
 
-        if (string.IsNullOrWhiteSpace(previousCommand.Command))
-        {
-            return Given(message, action);
-        }
+        if (string.IsNullOrWhiteSpace(previousCommand.Command)) return Given(message, action);
 
         return previousCommand.Command switch
         {
@@ -156,21 +149,9 @@ internal sealed class ScenarioRunner : IScenarioRunner, IStepRunner
         };
     }
 
-    public async Task PlayAsync()
-    {
-        foreach (var task in _tasks)
-        {
-            _testOutputHelper.WriteLine(task.Description);
-            await task.Task().ConfigureAwait(false);
-        }
-    }
-
     public void SetContextData(string contextKey, object data)
     {
-        if (_context.ContainsKey(contextKey))
-        {
-            _context.Remove(contextKey);
-        }
+        if (_context.ContainsKey(contextKey)) _context.Remove(contextKey);
 
         _context.Add(contextKey, data);
     }
@@ -178,22 +159,7 @@ internal sealed class ScenarioRunner : IScenarioRunner, IStepRunner
     public T GetContextData<T>(string contextKey)
     {
         _context.Should().ContainKey(contextKey);
-        return (T)_context[contextKey];
-    }
-
-    private void AddTask(string command, string message, Action action) => AddTask(command, message, () => Task.Run(action));
-
-    private void AddTask(string command, string message, Func<Task> action)
-    {
-        if (string.IsNullOrWhiteSpace(message))
-        {
-            throw new ArgumentNullException(nameof(message), "Please explain your intent by documenting your test.");
-        }
-
-        var previousCommand = _tasks.LastOrDefault();
-        var textCommand = command.Equals(previousCommand.Command, StringComparison.OrdinalIgnoreCase) ? "and" : command.ToUpperInvariant();
-        var text = $"{textCommand} {message}";
-        _tasks.Add((command, $"{text}", () => Task.Run(action)));
+        return (T) _context[contextKey];
     }
 
     public IStepRunner Execute(string message, Action action)
@@ -220,5 +186,39 @@ internal sealed class ScenarioRunner : IScenarioRunner, IStepRunner
         };
 
         return this;
+    }
+
+    public static ScenarioRunner Create(string description, ITestOutputHelper testOutputHelper)
+        => new(description, testOutputHelper);
+
+    public async Task PlayAsync()
+    {
+        foreach (var task in _tasks)
+            try
+            {
+                await task.Task().ConfigureAwait(false);
+                _testOutputHelper.WriteLine($"\u2713 {task.Description}");
+            }
+            catch (Exception)
+            {
+                _testOutputHelper.WriteLine($"\u2717 {task.Description}");
+                throw;
+            }
+    }
+
+    private void AddTask(string command, string message, Action action) =>
+        AddTask(command, message, () => Task.Run(action));
+
+    private void AddTask(string command, string message, Func<Task> action)
+    {
+        if (string.IsNullOrWhiteSpace(message))
+            throw new ArgumentNullException(nameof(message), "Please explain your intent by documenting your test.");
+
+        var previousCommand = _tasks.LastOrDefault();
+        var textCommand = command.Equals(previousCommand.Command, StringComparison.OrdinalIgnoreCase)
+            ? "and"
+            : command.ToUpperInvariant();
+        var text = $"{textCommand} {message}";
+        _tasks.Add((command, $"{text}", () => Task.Run(action)));
     }
 }

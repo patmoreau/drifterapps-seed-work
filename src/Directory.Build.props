@@ -2,5 +2,6 @@
     <Import Project="$([MsBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MsBuildThisFileDirectory)../'))"/>
     <PropertyGroup>
         <DocumentationFile>bin/$(Configuration)/net7.0/tests.xml</DocumentationFile>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     </PropertyGroup>
 </Project>
