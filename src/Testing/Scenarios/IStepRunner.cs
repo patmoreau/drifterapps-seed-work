@@ -5,6 +5,6 @@ namespace DrifterApps.Seeds.Testing.Scenarios;
 
 public interface IStepRunner : IRunnerContext
 {
-    IStepRunner Execute(string message, Action action);
-    IStepRunner Execute(string message, Func<Task> action);
+    IStepRunner Execute(string description, Action stepExecution);
+    IStepRunner Execute(string description, Func<Task> stepExecution);
 }

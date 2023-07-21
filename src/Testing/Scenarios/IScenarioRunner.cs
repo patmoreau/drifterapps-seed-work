@@ -6,16 +6,16 @@ namespace DrifterApps.Seeds.Testing.Scenarios;
 #pragma warning disable CA1716
 public interface IScenarioRunner : IRunnerContext
 {
-    IScenarioRunner Given(string message, Action action);
-    IScenarioRunner Given(string message, Func<Task> action);
-    IScenarioRunner Given(Action<IStepRunner> action);
-    IScenarioRunner When(string message, Action action);
-    IScenarioRunner When(string message, Func<Task> action);
-    IScenarioRunner When(Action<IStepRunner> action);
-    IScenarioRunner Then(string message, Action action);
-    IScenarioRunner Then(string message, Func<Task> action);
-    IScenarioRunner Then(Action<IStepRunner> action);
-    IScenarioRunner And(string message, Action action);
-    IScenarioRunner And(string message, Func<Task> action);
-    IScenarioRunner And(Action<IStepRunner> action);
+    IScenarioRunner Given(string description, Action step);
+    IScenarioRunner Given(string description, Func<Task> step);
+    IScenarioRunner Given(Action<IStepRunner> step);
+    IScenarioRunner When(string description, Action step);
+    IScenarioRunner When(string description, Func<Task> step);
+    IScenarioRunner When(Action<IStepRunner> step);
+    IScenarioRunner Then(string description, Action step);
+    IScenarioRunner Then(string description, Func<Task> step);
+    IScenarioRunner Then(Action<IStepRunner> step);
+    IScenarioRunner And(string description, Action step);
+    IScenarioRunner And(string description, Func<Task> step);
+    IScenarioRunner And(Action<IStepRunner> step);
 }

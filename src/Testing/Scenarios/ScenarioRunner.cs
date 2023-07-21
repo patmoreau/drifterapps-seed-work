@@ -1,3 +1,4 @@
+using DrifterApps.Seeds.Testing.Attributes;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using Xunit.Abstractions;
@@ -7,7 +8,7 @@ namespace DrifterApps.Seeds.Testing.Scenarios;
 internal sealed class ScenarioRunner : IScenarioRunner, IStepRunner
 {
     private readonly IDictionary<string, object> _context = new Dictionary<string, object>();
-    private readonly List<(string Command, string Description, Func<Task> Task)> _tasks = new();
+    private readonly List<(string Command, string Description, Func<Task> Step)> _steps = new();
     private readonly ITestOutputHelper _testOutputHelper;
     private string _stepCommand = string.Empty;
 
@@ -19,133 +20,133 @@ internal sealed class ScenarioRunner : IScenarioRunner, IStepRunner
 
         ArgumentNullException.ThrowIfNull(testOutputHelper);
 
-        _tasks.Add((Command: "Scenario", $"SCENARIO for {description}", () => Task.CompletedTask));
+        _steps.Add((Command: "Scenario", $"SCENARIO for {description}", () => Task.CompletedTask));
 
         _testOutputHelper = testOutputHelper;
     }
 
-    public IScenarioRunner Given(string message, Action action)
+    public IScenarioRunner Given(string description, Action step)
     {
-        AddTask(nameof(Given), message, action);
+        AddStep(nameof(Given), description, step);
         return this;
     }
 
-    public IScenarioRunner Given(string message, Func<Task> action)
+    public IScenarioRunner Given(string description, Func<Task> step)
     {
-        AddTask(nameof(Given), message, action);
+        AddStep(nameof(Given), description, step);
 
         return this;
     }
 
-    public IScenarioRunner Given(Action<IStepRunner> action)
+    public IScenarioRunner Given(Action<IStepRunner> step)
     {
-        ArgumentNullException.ThrowIfNull(action);
+        ArgumentNullException.ThrowIfNull(step);
 
         _stepCommand = nameof(Given);
 
-        action.Invoke(this);
+        step.Invoke(this);
 
         return this;
     }
 
-    public IScenarioRunner When(string message, Action action)
+    public IScenarioRunner When(string description, Action step)
     {
-        AddTask(nameof(When), message, action);
+        AddStep(nameof(When), description, step);
 
         return this;
     }
 
-    public IScenarioRunner When(string message, Func<Task> action)
+    public IScenarioRunner When(string description, Func<Task> step)
     {
-        AddTask(nameof(When), message, action);
+        AddStep(nameof(When), description, step);
 
         return this;
     }
 
-    public IScenarioRunner When(Action<IStepRunner> action)
+    public IScenarioRunner When(Action<IStepRunner> step)
     {
-        ArgumentNullException.ThrowIfNull(action);
+        ArgumentNullException.ThrowIfNull(step);
 
         _stepCommand = nameof(When);
 
-        action.Invoke(this);
+        step.Invoke(this);
 
         return this;
     }
 
-    public IScenarioRunner Then(string message, Action action)
+    public IScenarioRunner Then(string description, Action step)
     {
-        AddTask(nameof(Then), message, async () =>
+        AddStep(nameof(Then), description, async () =>
         {
             using AssertionScope scope = new();
-            await Task.Run(action).ConfigureAwait(false);
+            await Task.Run(step).ConfigureAwait(false);
         });
 
         return this;
     }
 
-    public IScenarioRunner Then(string message, Func<Task> action)
+    public IScenarioRunner Then(string description, Func<Task> step)
     {
-        AddTask(nameof(Then), message, async () =>
+        AddStep(nameof(Then), description, async () =>
         {
             using AssertionScope scope = new();
-            await action().ConfigureAwait(false);
+            await step().ConfigureAwait(false);
         });
 
         return this;
     }
 
-    public IScenarioRunner Then(Action<IStepRunner> action)
+    public IScenarioRunner Then(Action<IStepRunner> step)
     {
-        ArgumentNullException.ThrowIfNull(action);
+        ArgumentNullException.ThrowIfNull(step);
 
         _stepCommand = nameof(Then);
 
-        action.Invoke(this);
+        step.Invoke(this);
 
         return this;
     }
 
-    public IScenarioRunner And(string message, Func<Task> action)
+    public IScenarioRunner And(string description, Func<Task> step)
     {
-        var previousCommand = _tasks.LastOrDefault();
+        var previousCommand = _steps.LastOrDefault();
 
         return previousCommand.Command switch
         {
-            nameof(Given) => Given(message, action),
-            nameof(When) => When(message, action),
-            nameof(Then) => Then(message, action),
-            _ => Given(message, action)
+            nameof(Given) => Given(description, step),
+            nameof(When) => When(description, step),
+            nameof(Then) => Then(description, step),
+            _ => Given(description, step)
         };
     }
 
-    public IScenarioRunner And(string message, Action action)
+    public IScenarioRunner And(string description, Action step)
     {
-        var previousCommand = _tasks.LastOrDefault();
+        var previousCommand = _steps.LastOrDefault();
 
-        if (string.IsNullOrWhiteSpace(previousCommand.Command)) return Given(message, action);
+        if (string.IsNullOrWhiteSpace(previousCommand.Command)) return Given(description, step);
 
         return previousCommand.Command switch
         {
-            nameof(Given) => Given(message, action),
-            nameof(When) => When(message, action),
-            nameof(Then) => Then(message, action),
-            _ => Given(message, action)
+            nameof(Given) => Given(description, step),
+            nameof(When) => When(description, step),
+            nameof(Then) => Then(description, step),
+            _ => Given(description, step)
         };
     }
 
-    public IScenarioRunner And(Action<IStepRunner> action)
+    public IScenarioRunner And(Action<IStepRunner> step)
     {
-        ArgumentNullException.ThrowIfNull(action);
+        ArgumentNullException.ThrowIfNull(step);
 
-        var previousCommand = _tasks.LastOrDefault();
+        var previousCommand = _steps.LastOrDefault();
 
         return previousCommand.Command switch
         {
-            nameof(Given) => Given(action),
-            nameof(When) => When(action),
-            nameof(Then) => Then(action),
-            _ => Given(action)
+            nameof(Given) => Given(step),
+            nameof(When) => When(step),
+            nameof(Then) => Then(step),
+            _ => Given(step)
         };
     }
 
@@ -156,33 +157,34 @@ internal sealed class ScenarioRunner : IScenarioRunner, IStepRunner
         _context.Add(contextKey, data);
     }
 
+    [AssertionMethod]
     public T GetContextData<T>(string contextKey)
     {
         _context.Should().ContainKey(contextKey);
         return (T) _context[contextKey];
     }
 
-    public IStepRunner Execute(string message, Action action)
+    public IStepRunner Execute(string description, Action stepExecution)
     {
         _ = _stepCommand switch
         {
-            nameof(Given) => Given(message, action),
-            nameof(When) => When(message, action),
-            nameof(Then) => Then(message, action),
-            _ => Given(message, action)
+            nameof(Given) => Given(description, stepExecution),
+            nameof(When) => When(description, stepExecution),
+            nameof(Then) => Then(description, stepExecution),
+            _ => Given(description, stepExecution)
         };
 
         return this;
     }
 
-    public IStepRunner Execute(string message, Func<Task> action)
+    public IStepRunner Execute(string description, Func<Task> stepExecution)
     {
         _ = _stepCommand switch
         {
-            nameof(Given) => Given(message, action),
-            nameof(When) => When(message, action),
-            nameof(Then) => Then(message, action),
-            _ => Given(message, action)
+            nameof(Given) => Given(description, stepExecution),
+            nameof(When) => When(description, stepExecution),
+            nameof(Then) => Then(description, stepExecution),
+            _ => Given(description, stepExecution)
         };
 
         return this;
@@ -193,32 +195,36 @@ internal sealed class ScenarioRunner : IScenarioRunner, IStepRunner
 
     public async Task PlayAsync()
     {
-        foreach (var task in _tasks)
+        var steps = _steps.ToList();
+        _steps.Clear();
+
+        foreach (var step in steps)
             try
             {
-                await task.Task().ConfigureAwait(false);
-                _testOutputHelper.WriteLine($"\u2713 {task.Description}");
+                await step.Step().ConfigureAwait(false);
+                _testOutputHelper.WriteLine($"\u2713 {step.Description}");
             }
             catch (Exception)
             {
-                _testOutputHelper.WriteLine($"\u2717 {task.Description}");
+                _testOutputHelper.WriteLine($"\u2717 {step.Description}");
                 throw;
             }
     }
 
-    private void AddTask(string command, string message, Action action) =>
-        AddTask(command, message, () => Task.Run(action));
+    private void AddStep(string command, string description, Action step) =>
+        AddStep(command, description, async () => await Task.Run(step).ConfigureAwait(false));
 
-    private void AddTask(string command, string message, Func<Task> action)
+    private void AddStep(string command, string description, Func<Task> step)
     {
-        if (string.IsNullOrWhiteSpace(message))
-            throw new ArgumentNullException(nameof(message), "Please explain your intent by documenting your test.");
+        if (string.IsNullOrWhiteSpace(description))
+            throw new ArgumentNullException(nameof(description),
+                "Please explain your intent by documenting your test.");
 
-        var previousCommand = _tasks.LastOrDefault();
+        var previousCommand = _steps.LastOrDefault();
         var textCommand = command.Equals(previousCommand.Command, StringComparison.OrdinalIgnoreCase)
             ? "and"
             : command.ToUpperInvariant();
-        var text = $"{textCommand} {message}";
-        _tasks.Add((command, $"{text}", () => Task.Run(action)));
+        var text = $"{textCommand} {description}";
+        _steps.Add((command, $"{text}", async () => await step().ConfigureAwait(false)));
     }
 }

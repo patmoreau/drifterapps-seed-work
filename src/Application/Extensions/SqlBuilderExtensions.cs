@@ -5,6 +5,9 @@ using System.Text.RegularExpressions;
 
 namespace DrifterApps.Seeds.Application.Extensions;
 
+/// <summary>
+/// IQueryable extensions method for filtering and sorting from the IRequestQuery parameters.
+/// </summary>
 public static partial class SqlBuilderExtensions
 {
     private static readonly IDictionary<string, string> Operators =
@@ -18,6 +21,13 @@ public static partial class SqlBuilderExtensions
             {":le:", "<="}
         };
 
+    /// <summary>
+    /// Filter a query from a collection of
+    /// </summary>
+    /// <param name="query"></param>
+    /// <param name="filter"></param>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
     public static IQueryable<T> Filter<T>(this IQueryable<T> query, IReadOnlyCollection<string> filter)
     {
         ArgumentNullException.ThrowIfNull(filter);

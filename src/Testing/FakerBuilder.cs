@@ -9,18 +9,18 @@ namespace DrifterApps.Seeds.Testing;
 public abstract class FakerBuilder<T> where T : class
 {
     /// <inheritdoc cref="Faker{T}" />
-    protected abstract Faker<T> Faker { get; }
+    protected abstract Faker<T> FakerRules { get; }
 
     public virtual T Build()
     {
-        Faker.AssertConfigurationIsValid();
-        return Faker.Generate();
+        FakerRules.AssertConfigurationIsValid();
+        return FakerRules.Generate();
     }
 
     public virtual IReadOnlyCollection<T> BuildCollection(int? count = null)
     {
-        Faker.AssertConfigurationIsValid();
-        return Faker.Generate(count ?? Globals.RandomCollectionCount());
+        FakerRules.AssertConfigurationIsValid();
+        return FakerRules.Generate(count ?? Globals.RandomCollectionCount());
     }
 
     public Task<T> SavedInDbAsync(ISaveBuilder databaseDriver)

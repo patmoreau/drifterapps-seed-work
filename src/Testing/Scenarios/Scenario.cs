@@ -1,4 +1,5 @@
 using DrifterApps.Seeds.Testing.Drivers;
+using Microsoft.Extensions.DependencyInjection;
 using Nito.AsyncEx;
 using Xunit;
 using Xunit.Abstractions;
@@ -22,6 +23,8 @@ public abstract partial class Scenario : IAsyncLifetime
         ApplicationDriver = applicationDriver;
         TestOutputHelper = testOutputHelper;
 
+        Scope = applicationDriver.Services.CreateScope();
+
         HttpClientDriver = applicationDriver.CreateHttpClientDriver(testOutputHelper);
     }
 
@@ -33,6 +36,8 @@ public abstract partial class Scenario : IAsyncLifetime
 
     /// <inheritdoc cref="IHttpClientDriver" />
     protected IHttpClientDriver HttpClientDriver { get; }
+
+    protected IServiceScope Scope { get; }
 
     /// <inheritdoc />
     public virtual async Task InitializeAsync()
