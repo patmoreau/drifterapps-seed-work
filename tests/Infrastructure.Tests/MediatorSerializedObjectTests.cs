@@ -111,6 +111,7 @@ public class MediatorSerializedObjectTests
         public Driver GivenInvalidData()
         {
             _data = "{\"Property1\":\"Value1\",\"InvalidProperty\":42}";
+            _assemblyQualifiedName = typeof(string).AssemblyQualifiedName!;
 
             return this;
         }

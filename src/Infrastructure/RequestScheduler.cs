@@ -20,7 +20,7 @@ internal sealed class RequestScheduler : IRequestScheduler
         _recurringJobManagerFactoryV2 = recurringJobManagerFactoryV2;
     }
 
-    public string SendNow(IBaseRequest request, string description)
+    public string SendNow<TBaseRequest>(TBaseRequest request, string description) where TBaseRequest : IBaseRequest
     {
         var mediatorSerializedObject = MediatorSerializedObject.SerializeObject(request, description);
 
@@ -28,7 +28,8 @@ internal sealed class RequestScheduler : IRequestScheduler
         return job.Enqueue(() => _requestExecutor.ExecuteCommandAsync(mediatorSerializedObject));
     }
 
-    public void Schedule(IBaseRequest request, DateTimeOffset scheduleAt, string description)
+    public void Schedule<TBaseRequest>(TBaseRequest request, DateTimeOffset scheduleAt, string description)
+        where TBaseRequest : IBaseRequest
     {
         var mediatorSerializedObject = MediatorSerializedObject.SerializeObject(request, description);
 
@@ -36,7 +37,8 @@ internal sealed class RequestScheduler : IRequestScheduler
         job.Schedule(() => _requestExecutor.ExecuteCommandAsync(mediatorSerializedObject), scheduleAt);
     }
 
-    public void Schedule(IBaseRequest request, TimeSpan delay, string description)
+    public void Schedule<TBaseRequest>(TBaseRequest request, TimeSpan delay, string description)
+        where TBaseRequest : IBaseRequest
     {
         var mediatorSerializedObject = MediatorSerializedObject.SerializeObject(request, description);
 
@@ -45,7 +47,8 @@ internal sealed class RequestScheduler : IRequestScheduler
         job.Schedule(() => _requestExecutor.ExecuteCommandAsync(mediatorSerializedObject), newTime);
     }
 
-    public void ScheduleRecurring(IBaseRequest request, string name, string cronExpression, string description)
+    public void ScheduleRecurring<TBaseRequest>(TBaseRequest request, string name, string cronExpression,
+        string description) where TBaseRequest : IBaseRequest
     {
         var mediatorSerializedObject = MediatorSerializedObject.SerializeObject(request, description);
 

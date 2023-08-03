@@ -1,5 +1,6 @@
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using MediatR;
-using Newtonsoft.Json;
 
 namespace DrifterApps.Seeds.Infrastructure;
 
@@ -40,9 +41,9 @@ internal class MediatorSerializedObject
 
         try
         {
-            var req = JsonConvert.DeserializeObject(Data, type, new JsonSerializerSettings
+            var req = JsonSerializer.Deserialize(Data, type!, new JsonSerializerOptions
             {
-                MissingMemberHandling = MissingMemberHandling.Error
+                DefaultIgnoreCondition = JsonIgnoreCondition.Never
             });
             switch (req)
             {
@@ -53,17 +54,19 @@ internal class MediatorSerializedObject
                     return false;
             }
         }
-        catch (JsonSerializationException)
+        catch (JsonException)
         {
             return false;
         }
     }
 
-    internal static MediatorSerializedObject SerializeObject(IBaseRequest mediatorObject, string description)
+    internal static MediatorSerializedObject SerializeObject<TBaseRequest>(TBaseRequest mediatorObject,
+        string description) where TBaseRequest : IBaseRequest
     {
         var type = mediatorObject.GetType();
         var assemblyName = type.AssemblyQualifiedName!;
-        var data = JsonConvert.SerializeObject(mediatorObject);
+        var data = JsonSerializer.Serialize(mediatorObject,
+            new JsonSerializerOptions {DefaultIgnoreCondition = JsonIgnoreCondition.Never});
 
         return new MediatorSerializedObject(assemblyName, data, description);
     }

@@ -12,7 +12,7 @@ internal sealed class RequestExecutor : IRequestExecutor
     [DisplayName("Processing request {0}")]
     public async Task ExecuteCommandAsync(MediatorSerializedObject mediatorSerializedObject)
     {
-        if (mediatorSerializedObject.TryDeserializeObject(out var request))
+        if (mediatorSerializedObject.TryDeserializeObject(out var request) && request is not null)
             await _mediator.Send(request!).ConfigureAwait(false);
     }
 }

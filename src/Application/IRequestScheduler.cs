@@ -15,7 +15,7 @@ public interface IRequestScheduler
     /// </param>
     /// <param name="description">task description</param>
     /// <returns></returns>
-    string SendNow(IBaseRequest request, string description);
+    string SendNow<TBaseRequest>(TBaseRequest request, string description) where TBaseRequest : IBaseRequest;
 
     /// <summary>
     ///     Schedule the request.
@@ -25,7 +25,7 @@ public interface IRequestScheduler
     /// </param>
     /// <param name="scheduleAt"><see cref="DateTimeOffset" /> to be scheduled at</param>
     /// <param name="description">task description</param>
-    void Schedule(IBaseRequest request, DateTimeOffset scheduleAt, string description);
+    void Schedule<TBaseRequest>(TBaseRequest request, DateTimeOffset scheduleAt, string description) where TBaseRequest : IBaseRequest;
 
     /// <summary>
     ///     Delay the request.
@@ -35,7 +35,7 @@ public interface IRequestScheduler
     /// </param>
     /// <param name="delay"><see cref="TimeSpan" /> delay before starting the request</param>
     /// <param name="description">task description</param>
-    void Schedule(IBaseRequest request, TimeSpan delay, string description);
+    void Schedule<TBaseRequest>(TBaseRequest request, TimeSpan delay, string description) where TBaseRequest : IBaseRequest;
 
     /// <summary>
     ///     Schedule a recurring request.
@@ -46,5 +46,5 @@ public interface IRequestScheduler
     /// <param name="name">name of the request</param>
     /// <param name="cronExpression">cron expression</param>
     /// <param name="description">task description</param>
-    void ScheduleRecurring(IBaseRequest request, string name, string cronExpression, string description);
+    void ScheduleRecurring<TBaseRequest>(TBaseRequest request, string name, string cronExpression, string description) where TBaseRequest : IBaseRequest;
 }
