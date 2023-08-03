@@ -45,12 +45,14 @@ public abstract partial class Scenario : IAsyncLifetime
         // Version for reset every test
         using (await Mutex.LockAsync())
         {
-            await ApplicationDriver.ResetStateAsync().ConfigureAwait(false);
+            await ResetStateAsync(CancellationToken.None).ConfigureAwait(false);
         }
     }
 
     /// <inheritdoc />
     public virtual Task DisposeAsync() => Task.CompletedTask;
+
+    protected abstract Task ResetStateAsync(CancellationToken cancellationToken);
 
     protected async Task ScenarioFor(string description, Action<IScenarioRunner> scenario)
     {

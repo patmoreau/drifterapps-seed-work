@@ -3,6 +3,7 @@
 
 using Bogus;
 using DrifterApps.Seeds.Testing.Drivers;
+using Microsoft.EntityFrameworkCore;
 
 namespace DrifterApps.Seeds.Testing;
 
@@ -23,33 +24,44 @@ public abstract class FakerBuilder<T> where T : class
         return FakerRules.Generate(count ?? Globals.RandomCollectionCount());
     }
 
-    public Task<T> SavedInDbAsync(ISaveBuilder databaseDriver)
+    public Task<T> SavedInDbAsync<TDbContext>(DatabaseDriver<TDbContext> databaseDriver) where TDbContext : DbContext
     {
         ArgumentNullException.ThrowIfNull(databaseDriver);
 
         return SavedInDbInternalAsync(databaseDriver);
     }
 
-    private async Task<T> SavedInDbInternalAsync(ISaveBuilder databaseDriver)
+    private async Task<T> SavedInDbInternalAsync<TDbContext>(DatabaseDriver<TDbContext> databaseDriver)
+        where TDbContext : DbContext
     {
-        var entity = Build();
-        await databaseDriver.SaveAsync(entity).ConfigureAwait(false);
-        return entity;
+        var dbContext = databaseDriver.CreateDbContext();
+        await using (dbContext.ConfigureAwait(false))
+        {
+            var entity = Build();
+            await dbContext.SaveAsync(entity).ConfigureAwait(false);
+            return entity;
+        }
     }
 
-    public Task<IReadOnlyCollection<T>> CollectionSavedInDbAsync(ISaveBuilder databaseDriver, int? count = null)
+    public Task<IReadOnlyCollection<T>> CollectionSavedInDbAsync<TDbContext>(DatabaseDriver<TDbContext> databaseDriver,
+        int? count = null) where TDbContext : DbContext
     {
         ArgumentNullException.ThrowIfNull(databaseDriver);
 
         return CollectionSavedInDbInternalAsync(databaseDriver, count);
     }
 
-    private async Task<IReadOnlyCollection<T>> CollectionSavedInDbInternalAsync(ISaveBuilder databaseDriver,
-        int? count = null)
+    private async Task<IReadOnlyCollection<T>> CollectionSavedInDbInternalAsync<TDbContext>(
+        DatabaseDriver<TDbContext> databaseDriver,
+        int? count = null) where TDbContext : DbContext
     {
-        var entities = BuildCollection(count);
-        foreach (var entity in entities) await databaseDriver.SaveAsync(entity).ConfigureAwait(false);
+        var dbContext = databaseDriver.CreateDbContext();
+        await using (dbContext.ConfigureAwait(false))
+        {
+            var entities = BuildCollection(count);
+            foreach (var entity in entities) await dbContext.SaveAsync(entity).ConfigureAwait(false);
 
-        return entities;
+            return entities;
+        }
     }
 }

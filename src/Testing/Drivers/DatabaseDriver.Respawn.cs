@@ -15,15 +15,19 @@ public abstract partial class DatabaseDriver<TDbContext> : IRespawnable
     {
         if (_respawner is null) throw new InvalidOperationException("The database has not been initialized.");
 
-        using var connection = await DatabaseServer.GetConnectionAsync().ConfigureAwait(false);
-
-        await _respawner.ResetAsync(connection).ConfigureAwait(false);
+        var connection = await DatabaseServer.GetConnectionAsync().ConfigureAwait(false);
+        await using (connection)
+        {
+            await _respawner.ResetAsync(connection).ConfigureAwait(false);
+        }
     }
 
     private async Task InitialiseRespawnAsync()
     {
-        using var connection = await DatabaseServer.GetConnectionAsync().ConfigureAwait(false);
-
-        _respawner = await Respawner.CreateAsync(connection, Options).ConfigureAwait(false);
+        var connection = await DatabaseServer.GetConnectionAsync().ConfigureAwait(false);
+        await using (connection)
+        {
+            _respawner = await Respawner.CreateAsync(connection, Options).ConfigureAwait(false);
+        }
     }
 }

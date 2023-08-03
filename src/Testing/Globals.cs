@@ -9,10 +9,14 @@ public static class Globals
 #pragma warning restore CA1810
     {
         Faker.DefaultStrictMode = true;
-        Fakerizer = new Faker();
+        // Fakerizer = new Faker();
     }
 
-    public static Faker Fakerizer { get; }
+    public static Faker Fakerizer => new Faker();
 
-    public static int RandomCollectionCount() => Fakerizer.Random.Int(1, 10);
+    public static int RandomCollectionCount()
+    {
+        var faker = new Faker();
+        return faker.Random.Int(1, 10);
+    }
 }

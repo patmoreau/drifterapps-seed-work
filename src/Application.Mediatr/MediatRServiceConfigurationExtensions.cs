@@ -25,6 +25,7 @@ public static class MediatRServiceConfigurationExtensions
         config
             .AddOpenBehavior(typeof(LoggingBehavior<,>))
             .AddOpenBehavior(typeof(UnitOfWorkBehavior<,>))
+            .AddOpenRequestPreProcessor(typeof(ValidationPreProcessor<>))
             .RegisterServicesFromAssemblies(typeof(ApplicationMediatR).Assembly);
 
         return config;
