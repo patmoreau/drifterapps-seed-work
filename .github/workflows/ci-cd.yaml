@@ -79,14 +79,9 @@ jobs:
         run: |
           echo "::`echo -n ${{ github.token }} | sha256sum | head -c 64`::"
 
-  build-and-publish:
-    needs: set-version
+  build:
     runs-on: ubuntu-latest
-
-    env:
-      VERSION: ${{ needs.set-version.outputs.version }}
-      ASSEMBLY_VERSION: ${{ needs.set-version.outputs.assembly-version }}
-      NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
+    needs: set-version
 
     steps:
       - name: Checkout code
@@ -96,18 +91,16 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           global-json-file: global.json
-          # source-url: https://nuget.pkg.github.com/patmoreau/index.json
-          # cache: true
-          # cache-dependency-path: packages/packages.lock.json
         env:
           NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
       - run: echo '${{ steps.stepid.outputs.dotnet-version }}'
 
       - name: Restore packages
         run: dotnet restore
 
       - name: Build
-        run: dotnet build --no-restore --configuration Release /property:Version=${VERSION}
+        run: dotnet build --no-restore --configuration Release /property:Version=${{ needs.set-version.outputs.version }}
 
       - name: Tests
         run: dotnet test --no-restore --no-build --configuration Release --logger 'trx;verbosity=normal' --results-directory ./tests-results --collect 'XPlat Code Coverage'
@@ -120,8 +113,27 @@ jobs:
           path: |
             ./tests-results/**/*.trx
 
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.event.action != 'closed' # Add this condition to prevent running on closed pull requests
+
+    env:
+      VERSION: ${{ needs.set-version.outputs.version }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          global-json-file: global.json
+        env:
+          NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
       - name: Build package
-        run: dotnet pack /property:Version=${VERSION} --no-restore --no-build --include-symbols --configuration Release -o ./nuget-packages
+        run: dotnet pack /property:Version=${{ needs.set-version.outputs.version }} --no-restore --no-build --include-symbols --configuration Release -o ./nuget-packages
 
       - name: Publish Package
         run: dotnet nuget push ./nuget-packages/*.nupkg --source "https://api.nuget.org/v3/index.json" --api-key ${{ secrets.NUGET_API_KEY }} --skip-duplicate
