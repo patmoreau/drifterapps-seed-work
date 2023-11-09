@@ -118,13 +118,14 @@ jobs:
         run: dotnet pack /property:Version=${{ needs.set-version.outputs.version }} --no-restore --no-build --include-symbols --configuration Release -o ./nuget-packages
 
       - name: Publish NuGet packages
+        if: github.event_name == 'push'
         uses: actions/upload-artifact@v3
         with:
           name: NuGet Packages
           path: ./nuget-packages
 
   publish:
-    needs: build
+    needs: [set-version, build]
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.event.action != 'closed'
 
