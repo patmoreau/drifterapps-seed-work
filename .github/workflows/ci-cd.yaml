@@ -56,9 +56,7 @@ jobs:
 
       - name: GitVersion
         id: gitversion
-        uses: actions/setup-gitversion@v1
-        with:
-          gitversion-version: 5.1.1
+        uses: gitversion/setup-gitversion@v1
 
       - name: Display GitVersion outputs
         run: |
