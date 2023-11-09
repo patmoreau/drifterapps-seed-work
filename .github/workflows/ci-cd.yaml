@@ -113,10 +113,20 @@ jobs:
           path: |
             ./tests-results/**/*.trx
 
+      - name: Pack NuGet packages
+        if: github.event_name == 'push'
+        run: dotnet pack /property:Version=${{ needs.set-version.outputs.version }} --no-restore --no-build --include-symbols --configuration Release -o ./nuget-packages
+
+      - name: Publish NuGet packages
+        uses: actions/upload-artifact@v3
+        with:
+          name: NuGet Packages
+          path: ./nuget-packages
+
   publish:
     needs: build
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.event.action != 'closed' # Add this condition to prevent running on closed pull requests
+    if: github.event_name == 'push' && github.event.action != 'closed'
 
     env:
       VERSION: ${{ needs.set-version.outputs.version }}
@@ -132,8 +142,10 @@ jobs:
         env:
           NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
-      - name: Build package
-        run: dotnet pack /property:Version=${{ needs.set-version.outputs.version }} --no-restore --no-build --include-symbols --configuration Release -o ./nuget-packages
+      - name: Download NuGet packages
+        uses: actions/download-artifact@v3
+        with:
+          name: NuGet Packages
 
       - name: Publish Package
         run: dotnet nuget push ./nuget-packages/*.nupkg --source "https://api.nuget.org/v3/index.json" --api-key ${{ secrets.NUGET_API_KEY }} --skip-duplicate
