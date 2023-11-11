@@ -96,6 +96,9 @@ jobs:
 
       - run: echo '${{ steps.stepid.outputs.dotnet-version }}'
 
+      - name: Install Stryker.NET global tool
+        run: dotnet tool install --global dotnet-stryker
+
       - name: Restore packages
         run: dotnet restore
 
@@ -105,6 +108,9 @@ jobs:
       - name: Tests
         run: dotnet test --no-restore --no-build --configuration Release --logger 'trx;verbosity=normal' --results-directory ./tests-results --collect 'XPlat Code Coverage'
 
+      - name: Run Mutation tests
+        run: dotnet stryker
+
       - name: Upload Test Results
         if: always()
         uses: actions/upload-artifact@v3
@@ -112,6 +118,7 @@ jobs:
           name: Test Results
           path: |
             ./tests-results/**/*.trx
+            ./StrykerOutput/**/*.html
 
       - name: Pack NuGet packages
         if: github.event_name == 'push'
