@@ -96,6 +96,9 @@ jobs:
 
       - run: echo '${{ steps.stepid.outputs.dotnet-version }}'
 
+      - name: Install Stryker.NET global tool
+        run: dotnet tool install --global dotnet-stryker
+
       - name: Restore packages
         run: dotnet restore
 
@@ -104,6 +107,9 @@ jobs:
 
       - name: Tests
         run: dotnet test --no-restore --no-build --configuration Release --logger 'trx;verbosity=normal' --results-directory ./tests-results --collect 'XPlat Code Coverage'
+
+      - name: Run Mutation tests
+        run: dotnet stryker --with-baseline:${{ github.event.pull_request.base.ref }} --dashboard-api-key ${{ secrets.STRYKER_DASHBOARD_APIKEY }} --version ${{ github.event.pull_request.head.ref }}
 
       - name: Upload Test Results
         if: always()
