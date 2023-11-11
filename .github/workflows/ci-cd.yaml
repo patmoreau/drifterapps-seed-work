@@ -110,7 +110,7 @@ jobs:
 
       - name: Run Mutation tests
         if: github.event_name == 'pull_request'
-        run: dotnet stryker --with-baseline:${{ github.event.pull_request.base.ref_name }} --dashboard-api-key ${{ secrets.STRYKER_DASHBOARD_API_KEY }} --version ${{ github.event.pull_request.head.ref_name }}
+        run: dotnet stryker --with-baseline:${{ github.event.pull_request.base.ref }} --dashboard-api-key ${{ secrets.STRYKER_DASHBOARD_API_KEY }} --version ${{ github.event.pull_request.head.ref }}
 
       - name: Run Mutation tests
         if: github.event_name == 'push' && github.ref_name == 'main'
