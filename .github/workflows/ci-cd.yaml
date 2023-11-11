@@ -109,7 +109,8 @@ jobs:
         run: dotnet test --no-restore --no-build --configuration Release --logger 'trx;verbosity=normal' --results-directory ./tests-results --collect 'XPlat Code Coverage'
 
       - name: Run Mutation tests
-        run: dotnet stryker --with-baseline:${{ github.event.workflow_run.base.ref }} --dashboard-api-key ${{ secrets.STRYKER_DASHBOARD_APIKEY }} --version ${{ github.event.workflow_run.head.ref }}
+        if: github.event_name == 'pull_request'
+        run: dotnet stryker --with-baseline:${{ github.event.pull_request.base.ref }} --dashboard-api-key ${{ secrets.STRYKER_DASHBOARD_APIKEY }} --version ${{ github.event.pull_request.head.ref }}
 
       - name: Upload Test Results
         if: always()
