@@ -7,7 +7,10 @@ on:
       [
         "docs/**",
         ".vscode/**",
+        "**/*.md",
         "**/codeql-analysis.yml",
+        "**/linter.yml",
+        "**/mutation-tests.yml",
         "**/test-results.yml",
       ]
 
@@ -16,7 +19,10 @@ on:
       [
         "docs/**",
         ".vscode/**",
+        "**/*.md",
         "**/codeql-analysis.yml",
+        "**/linter.yml",
+        "**/mutation-tests.yml",
         "**/test-results.yml",
       ]
 
@@ -107,14 +113,6 @@ jobs:
 
       - name: Tests
         run: dotnet test --no-restore --no-build --configuration Release --logger 'trx;verbosity=normal' --results-directory ./tests-results --collect 'XPlat Code Coverage'
-
-      - name: Run Mutation tests
-        if: github.event_name == 'pull_request'
-        run: dotnet stryker --with-baseline:${{ github.event.pull_request.base.ref }} --dashboard-api-key ${{ secrets.STRYKER_DASHBOARD_API_KEY }} --version ${{ github.event.pull_request.head.ref }}
-
-      - name: Run Mutation tests
-        if: github.event_name == 'push' && github.ref_name == 'main'
-        run: dotnet stryker --dashboard-api-key ${{ secrets.STRYKER_DASHBOARD_API_KEY }} --version ${{ github.ref_name }}
 
       - name: Upload Test Results
         if: always()

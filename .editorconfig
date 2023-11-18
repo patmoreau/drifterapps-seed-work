@@ -31,8 +31,5 @@ dotnet_diagnostic.CA1848.severity = none
 dotnet_diagnostic.CA1040.severity = none
 dotnet_diagnostic.S3459.severity = none
 
-[*.xaml]
-indent_size = 2
-
-[*.{yml,yaml}]
+[*.{yml,yaml,xaml,json}]
 indent_size = 2
