@@ -6,6 +6,11 @@ namespace DrifterApps.Seeds.Infrastructure;
 
 internal class MediatorSerializedObject
 {
+    private static readonly JsonSerializerOptions _options = new()
+    {
+                DefaultIgnoreCondition = JsonIgnoreCondition.Never
+            };
+
     public MediatorSerializedObject(string assemblyQualifiedName, string data, string additionalDescription)
     {
         var type = Type.GetType(assemblyQualifiedName);
@@ -41,10 +46,7 @@ internal class MediatorSerializedObject
 
         try
         {
-            var req = JsonSerializer.Deserialize(Data, type!, new JsonSerializerOptions
-            {
-                DefaultIgnoreCondition = JsonIgnoreCondition.Never
-            });
+            var req = JsonSerializer.Deserialize(Data, type!, _options);
             switch (req)
             {
                 case IBaseRequest baseRequest:
@@ -65,8 +67,7 @@ internal class MediatorSerializedObject
     {
         var type = mediatorObject.GetType();
         var assemblyName = type.AssemblyQualifiedName!;
-        var data = JsonSerializer.Serialize(mediatorObject,
-            new JsonSerializerOptions {DefaultIgnoreCondition = JsonIgnoreCondition.Never});
+        var data = JsonSerializer.Serialize(mediatorObject, _options);
 
         return new MediatorSerializedObject(assemblyName, data, description);
     }

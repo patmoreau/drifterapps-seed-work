@@ -7,41 +7,31 @@ using Microsoft.Extensions.Options;
 
 namespace DrifterApps.Seeds.Testing.Infrastructure.Authentication;
 
-public sealed class MockAuthenticationHandler : AuthenticationHandler<MockAuthenticationSchemeOptions>
+public sealed class MockAuthenticationHandler(
+    IOptionsMonitor<MockAuthenticationSchemeOptions> options,
+    ILoggerFactory logger,
+    UrlEncoder encoder)
+    : AuthenticationHandler<MockAuthenticationSchemeOptions>(options, logger, encoder)
 {
     public const string AuthenticationScheme = "Test";
 
-    public MockAuthenticationHandler(IOptionsMonitor<MockAuthenticationSchemeOptions> options, ILoggerFactory logger,
-        UrlEncoder encoder, ISystemClock clock) : base(options, logger, encoder, clock)
-    {
-    }
-
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
-        if (!Context.Request.Headers.ContainsKey("Authorization"))
-        {
+        if (!Context.Request.Headers.TryGetValue("Authorization", out var value))
             return Task.FromResult(AuthenticateResult.NoResult());
-        }
 
-        if (!AuthenticationHeaderValue.TryParse(Context.Request.Headers["Authorization"],
-                out AuthenticationHeaderValue? headerValue))
-        {
+        if (!AuthenticationHeaderValue.TryParse(value,
+                out var headerValue))
             return Task.FromResult(AuthenticateResult.NoResult());
-        }
 
         if (!AuthenticationScheme.Equals(headerValue.Scheme, StringComparison.OrdinalIgnoreCase))
-        {
             return Task.FromResult(AuthenticateResult.NoResult());
-        }
 
-        if (headerValue.Parameter is null)
-        {
-            return Task.FromResult(AuthenticateResult.NoResult());
-        }
+        if (headerValue.Parameter is null) return Task.FromResult(AuthenticateResult.NoResult());
 
-        string userId = headerValue.Parameter;
+        var userId = headerValue.Parameter;
 
-        List<Claim> claims = new() { new(ClaimTypes.Name, userId), new(ClaimTypes.NameIdentifier, userId) };
+        List<Claim> claims = [new Claim(ClaimTypes.Name, userId), new Claim(ClaimTypes.NameIdentifier, userId)];
 
         claims.AddRange(Options.ConfigureUserClaims(userId));
 

@@ -402,3 +402,4 @@ FodyWeavers.xsd
 tests-results/
 
 version.txt
+.env

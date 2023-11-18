@@ -71,16 +71,13 @@ public class RootStepDefinitionTests
 
         public RootStepDefinitionDriver WithNoCreatedId()
         {
-            _httpClientDriver.DeserializeContent<StepDefinition.Created>().Returns(_ => null);
+            _httpClientDriver
+                .DeserializeContent<StepDefinition.Created>()
+                .Returns(_ => null);
 
             return this;
         }
     }
 
-    public class MockStepDefinition : StepDefinition
-    {
-        public MockStepDefinition(IHttpClientDriver httpClientDriver) : base(httpClientDriver)
-        {
-        }
-    }
+    private class MockStepDefinition(IHttpClientDriver httpClientDriver) : StepDefinition(httpClientDriver);
 }
