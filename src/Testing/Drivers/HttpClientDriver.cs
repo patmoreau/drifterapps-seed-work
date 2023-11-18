@@ -10,6 +10,8 @@ namespace DrifterApps.Seeds.Testing.Drivers;
 
 public sealed class HttpClientDriver : IHttpClientDriver
 {
+    private static readonly JsonSerializerOptions JsonSerializerOptions = new() {PropertyNameCaseInsensitive = true};
+
     private readonly HttpClient _httpClient;
     private readonly ITestOutputHelper _testOutputHelper;
 
@@ -26,8 +28,7 @@ public sealed class HttpClientDriver : IHttpClientDriver
         var resultAsString = ResponseMessage?.Content.ReadAsStringAsync().Result;
         if (resultAsString is null) return default;
 
-        var content = JsonSerializer.Deserialize<T>(resultAsString,
-            new JsonSerializerOptions {PropertyNameCaseInsensitive = true});
+        var content = JsonSerializer.Deserialize<T>(resultAsString, JsonSerializerOptions);
         return content;
     }
 

@@ -7,7 +7,7 @@ namespace DrifterApps.Seeds.Testing.Scenarios;
 
 internal sealed class ScenarioRunner : IScenarioRunner, IStepRunner
 {
-    private readonly IDictionary<string, object> _context = new Dictionary<string, object>();
+    private readonly Dictionary<string, object> _context = [];
     private readonly List<(string Command, string Description, Func<Task> Step)> _steps = new();
     private readonly ITestOutputHelper _testOutputHelper;
     private string _stepCommand = string.Empty;
@@ -152,7 +152,7 @@ internal sealed class ScenarioRunner : IScenarioRunner, IStepRunner
 
     public void SetContextData(string contextKey, object data)
     {
-        if (_context.ContainsKey(contextKey)) _context.Remove(contextKey);
+        _context.Remove(contextKey);
 
         _context.Add(contextKey, data);
     }

@@ -15,7 +15,8 @@ public abstract partial class Scenario
 
     [AssertionMethod]
     protected void ShouldBeAuthorizedToAccessEndpoint() =>
-        HttpClientDriver.ResponseMessage.Should().NotBeNull().And.NotHaveStatusCode(HttpStatusCode.Forbidden).And.NotHaveStatusCode(HttpStatusCode.Unauthorized);
+        HttpClientDriver.ResponseMessage.Should().NotBeNull().And.NotHaveStatusCode(HttpStatusCode.Forbidden).And
+            .NotHaveStatusCode(HttpStatusCode.Unauthorized);
 
     [AssertionMethod]
     protected void ShouldBeForbiddenToAccessEndpoint() =>
@@ -85,7 +86,7 @@ public abstract partial class Scenario
 
     private void ShouldHaveResponseWithStatus(Func<HttpStatusCode?, bool> httpStatusPredicate)
     {
-        if (httpStatusPredicate == null) throw new ArgumentNullException(nameof(httpStatusPredicate));
+        ArgumentNullException.ThrowIfNull(httpStatusPredicate);
 
         HttpClientDriver.ResponseMessage.Should().NotBeNull();
         httpStatusPredicate(HttpClientDriver.ResponseMessage!.StatusCode).Should().BeTrue();

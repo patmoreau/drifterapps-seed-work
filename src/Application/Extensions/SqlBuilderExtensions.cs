@@ -32,7 +32,7 @@ public static partial class SqlBuilderExtensions
     {
         ArgumentNullException.ThrowIfNull(filter);
 
-        if (!filter.Any()) return query;
+        if (filter.Count == 0) return query;
 
         foreach (var f in filter)
         {
@@ -49,7 +49,9 @@ public static partial class SqlBuilderExtensions
 
     public static IQueryable<T> Sort<T>(this IQueryable<T> query, IReadOnlyCollection<string> sort)
     {
-        if (!sort.Any()) return query;
+        ArgumentNullException.ThrowIfNull(sort);
+
+        if (sort.Count == 0) return query;
 
         var sorts = new List<string>();
 
@@ -105,7 +107,7 @@ public static partial class SqlBuilderExtensions
         ? source
         : Expression.Call(source, "ToString", Type.EmptyTypes);
 
-    private static Expression MakeBinary(ExpressionType type, Expression left, string value)
+    private static BinaryExpression MakeBinary(ExpressionType type, Expression left, string value)
     {
         object? typedValue = value;
         if (left.Type != typeof(string))

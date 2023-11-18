@@ -39,15 +39,9 @@ public class QueryParams
             throw new ArgumentOutOfRangeException(nameof(limit), @"limit must be positive");
         }
 
-        if (sort is null)
-        {
-            throw new ArgumentNullException(nameof(sort));
-        }
+        ArgumentNullException.ThrowIfNull(sort);
 
-        if (filter is null)
-        {
-            throw new ArgumentNullException(nameof(filter));
-        }
+        ArgumentNullException.ThrowIfNull(filter);
 
         Offset = offset;
         Limit = limit;
@@ -64,10 +58,7 @@ public class QueryParams
 
     public static QueryParams Create(IRequestQuery requestQuery)
     {
-        if (requestQuery == null)
-        {
-            throw new ArgumentNullException(nameof(requestQuery));
-        }
+        ArgumentNullException.ThrowIfNull(requestQuery);
 
         return new QueryParams(requestQuery.Offset, requestQuery.Limit, requestQuery.Sort, requestQuery.Filter);
     }
