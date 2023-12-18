@@ -28,6 +28,10 @@ on:
 
   workflow_dispatch:
 
+concurrency:
+  group: ci-cd-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   PROJECT_NAME: DrifterApps Seeds
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
