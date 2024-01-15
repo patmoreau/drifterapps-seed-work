@@ -17,7 +17,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Bogus" Version="35.3.0"/>
+        <PackageReference Include="Bogus" Version="35.4.0"/>
         <PackageReference Include="MediatR.Contracts" Version="2.0.1"/>
         <PackageReference Update="FluentAssertions.Analyzers" Version="0.26.0">
             <PrivateAssets>all</PrivateAssets>
