@@ -19,7 +19,7 @@
         <PackageReference Include="Microsoft.FeatureManagement.AspNetCore" Version="3.1.1" />
         <PackageReference Include="Nito.AsyncEx" Version="5.1.2"/>
         <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="7.0.0"/>
-        <PackageReference Include="Respawn" Version="6.2.0"/>
+        <PackageReference Include="Respawn" Version="6.2.1"/>
         <PackageReference Include="System.Linq.Async" Version="6.0.1"/>
         <PackageReference Include="Testcontainers" Version="3.7.0" />
         <PackageReference Include="Testcontainers.MariaDb" Version="3.7.0" />
