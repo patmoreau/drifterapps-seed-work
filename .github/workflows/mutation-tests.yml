@@ -13,6 +13,8 @@ on:
         "**/linter.yml",
         "**/test-results.yml",
         "kubernetes/**",
+        "**/renovate.yml",
+        "**/renovate.json",
       ]
 
   pull_request:
@@ -26,6 +28,8 @@ on:
         "**/linter.yml",
         "**/test-results.yml",
         "kubernetes/**",
+        "**/renovate.yml",
+        "**/renovate.json",
       ]
 
   workflow_dispatch:

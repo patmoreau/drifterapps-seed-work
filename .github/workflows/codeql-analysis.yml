@@ -23,6 +23,8 @@ on:
         "**/linter.yml",
         "**/mutation-tests.yml",
         "**/test-results.yml",
+        "**/renovate.yml",
+        "**/renovate.json",
       ]
 
   pull_request:
@@ -37,6 +39,8 @@ on:
         "**/linter.yml",
         "**/mutation-tests.yml",
         "**/test-results.yml",
+        "**/renovate.yml",
+        "**/renovate.json",
       ]
 
   schedule:
