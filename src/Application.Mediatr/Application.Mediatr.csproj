@@ -1,20 +1,16 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
-        <AssemblyName>DrifterApps.Seeds.Application.Mediatr</AssemblyName>
         <RootNamespace>DrifterApps.Seeds.Application.Mediatr</RootNamespace>
+        <AssemblyName>DrifterApps.Seeds.Application.Mediatr</AssemblyName>
         <PackageId>DrifterApps.Seeds.Application.Mediatr</PackageId>
-        <Product>DrifterApps.Seeds.Application.Mediatr</Product>
-    </PropertyGroup>
+   </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="FluentValidation" Version="11.9.0"/>
-        <PackageReference Include="MediatR" Version="12.2.0"/>
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.0"/>
-        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.0"/>
+        <PackageReference Include="FluentValidation" />
+        <PackageReference Include="MediatR" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
     </ItemGroup>
 
     <ItemGroup>

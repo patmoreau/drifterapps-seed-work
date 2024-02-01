@@ -1,3 +1,4 @@
+using DrifterApps.Seeds.Infrastructure;
 using DrifterApps.Seeds.Testing;
 using DrifterApps.Seeds.Testing.Attributes;
 using Hangfire;
@@ -6,7 +7,7 @@ using Hangfire.States;
 using MediatR;
 using NSubstitute;
 
-namespace DrifterApps.Seeds.Infrastructure.Tests;
+namespace Infrastructure.Tests;
 
 [UnitTest]
 public class RequestSchedulerTests

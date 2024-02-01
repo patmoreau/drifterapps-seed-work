@@ -1,7 +1,8 @@
 using DrifterApps.Seeds.Application;
+using DrifterApps.Seeds.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace DrifterApps.Seeds.Infrastructure.Tests;
+namespace Infrastructure.Tests;
 
 [UnitTest]
 public class ServiceCollectionExtensionsTests

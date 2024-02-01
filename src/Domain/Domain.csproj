@@ -1,17 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
-        <AssemblyName>DrifterApps.Seeds.Domain</AssemblyName>
         <RootNamespace>DrifterApps.Seeds.Domain</RootNamespace>
+        <AssemblyName>DrifterApps.Seeds.Domain</AssemblyName>
         <PackageId>DrifterApps.Seeds.Domain</PackageId>
-        <Authors>DrifterApps.Seeds.Domain</Authors>
-    </PropertyGroup>
+   </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="MediatR.Contracts" Version="2.0.1" />
+      <PackageReference Include="MediatR.Contracts" />
     </ItemGroup>
 
 </Project>

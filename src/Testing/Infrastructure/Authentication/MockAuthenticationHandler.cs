@@ -7,11 +7,20 @@ using Microsoft.Extensions.Options;
 
 namespace DrifterApps.Seeds.Testing.Infrastructure.Authentication;
 
+#if NET7_0
+public sealed class MockAuthenticationHandler(
+    IOptionsMonitor<MockAuthenticationSchemeOptions> options,
+    ILoggerFactory logger,
+    UrlEncoder encoder,
+    ISystemClock clock)
+    : AuthenticationHandler<MockAuthenticationSchemeOptions>(options, logger, encoder, clock)
+#elif NET8_0
 public sealed class MockAuthenticationHandler(
     IOptionsMonitor<MockAuthenticationSchemeOptions> options,
     ILoggerFactory logger,
     UrlEncoder encoder)
     : AuthenticationHandler<MockAuthenticationSchemeOptions>(options, logger, encoder)
+#endif
 {
     public const string AuthenticationScheme = "Test";
 
