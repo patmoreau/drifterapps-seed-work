@@ -12,6 +12,8 @@ on:
         "**/codeql-analysis.yml",
         "**/mutation-tests.yml",
         "**/test-results.yml",
+        "**/renovate.yml",
+        "**/renovate.json",
       ]
 
   pull_request:
@@ -24,6 +26,8 @@ on:
         "**/codeql-analysis.yml",
         "**/mutation-tests.yml",
         "**/test-results.yml",
+        "**/renovate.yml",
+        "**/renovate.json",
       ]
 
   workflow_dispatch:
