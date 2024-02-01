@@ -1,8 +1,9 @@
+using DrifterApps.Seeds.Infrastructure;
 using DrifterApps.Seeds.Testing;
 using MediatR;
 using NSubstitute;
 
-namespace DrifterApps.Seeds.Infrastructure.Tests;
+namespace Infrastructure.Tests;
 
 [UnitTest]
 public class RequestExecutorTests

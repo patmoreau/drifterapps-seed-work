@@ -1,29 +1,23 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
-        <AssemblyName>DrifterApps.Seeds.Testing</AssemblyName>
         <RootNamespace>DrifterApps.Seeds.Testing</RootNamespace>
+        <AssemblyName>DrifterApps.Seeds.Testing</AssemblyName>
         <PackageId>DrifterApps.Seeds.Testing</PackageId>
-        <Authors>DrifterApps</Authors>
-        <Company>DrifterApps.Seeds.Testing</Company>
-        <Product>DrifterApps.Seeds.Testing</Product>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Bogus" Version="35.4.0"/>
-        <PackageReference Include="FluentAssertions" Version="6.12.0" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.1" />
-        <PackageReference Include="Microsoft.FeatureManagement.AspNetCore" Version="3.1.1" />
-        <PackageReference Include="Nito.AsyncEx" Version="5.1.2"/>
-        <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="7.0.0"/>
-        <PackageReference Include="Respawn" Version="6.2.1"/>
-        <PackageReference Include="System.Linq.Async" Version="6.0.1"/>
-        <PackageReference Include="Testcontainers" Version="3.7.0" />
-        <PackageReference Include="Testcontainers.MariaDb" Version="3.7.0" />
-        <PackageReference Include="xunit.categories" Version="2.0.8" />
+        <PackageReference Include="Bogus" />
+        <PackageReference Include="FluentAssertions" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" />
+        <PackageReference Include="Microsoft.FeatureManagement.AspNetCore" />
+        <PackageReference Include="Nito.AsyncEx" />
+        <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" />
+        <PackageReference Include="Respawn" />
+        <PackageReference Include="System.Linq.Async" />
+        <PackageReference Include="Testcontainers" />
+        <PackageReference Include="Testcontainers.MariaDb" />
+        <PackageReference Include="xunit.categories" />
     </ItemGroup>
 
 </Project>

@@ -1,23 +1,17 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
-        <AssemblyName>DrifterApps.Seeds.Infrastructure</AssemblyName>
         <RootNamespace>DrifterApps.Seeds.Infrastructure</RootNamespace>
+        <AssemblyName>DrifterApps.Seeds.Infrastructure</AssemblyName>
         <PackageId>DrifterApps.Seeds.Infrastructure</PackageId>
-        <Authors>DrifterApps</Authors>
-        <Company>DrifterApps.Seeds.Infrastructure</Company>
-        <Product>DrifterApps.Seeds.Infrastructure</Product>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Hangfire" Version="1.8.9"/>
-        <PackageReference Include="Hangfire.MemoryStorage" Version="1.8.0"/>
-        <PackageReference Include="MediatR" Version="12.2.0"/>
-        <PackageReference Include="MediatR.Contracts" Version="2.0.1"/>
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.0"/>
+        <PackageReference Include="Hangfire" />
+        <PackageReference Include="Hangfire.MemoryStorage" />
+        <PackageReference Include="MediatR" />
+        <PackageReference Include="MediatR.Contracts" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
     </ItemGroup>
 
     <ItemGroup>

@@ -1,8 +1,9 @@
 using System.Text.Json;
+using DrifterApps.Seeds.Infrastructure;
 using DrifterApps.Seeds.Testing;
 using MediatR;
 
-namespace DrifterApps.Seeds.Infrastructure.Tests;
+namespace Infrastructure.Tests;
 
 [UnitTest]
 public class MediatorSerializedObjectTests

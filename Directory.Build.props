@@ -1,10 +1,17 @@
 <Project>
     <PropertyGroup>
+        <TargetFrameworks>net7.0;net8.0</TargetFrameworks>
+        <LangVersion>latest</LangVersion>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <CodeAnalysisTreatWarningsAsErrors>true</CodeAnalysisTreatWarningsAsErrors>
         <AnalysisMode>All</AnalysisMode>
         <EnableNETAnalyzers>true</EnableNETAnalyzers>
         <AnalysisLevel>latest</AnalysisLevel>
+        <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+        <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+        <EnablePackageManagement>true</EnablePackageManagement>
     </PropertyGroup>
 
     <ItemGroup>
@@ -40,7 +47,7 @@
 
     <!-- Set the NuGet repository URL for all projects -->
     <PropertyGroup>
-        <PackageId>$(projectName)</PackageId>
+        <Product>DrifterApps.Seeds</Product>
         <Authors>Patrick Moreau</Authors>
         <Copyright>Drifter Apps Inc.</Copyright>
         <PackageProjectUrl>https://github.com/patmoreau/drifterapps-seed-work</PackageProjectUrl>
@@ -53,7 +60,7 @@
     <!-- Allow dotnet pack to create NuGet packages -->
     <PropertyGroup>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <IncludeSymbols>false</IncludeSymbols>
+        <IncludeSymbols>true</IncludeSymbols>
     </PropertyGroup>
 
     <PropertyGroup>
