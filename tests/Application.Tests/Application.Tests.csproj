@@ -18,7 +18,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Update="FluentAssertions.Analyzers" Version="0.29.1">
+        <PackageReference Update="FluentAssertions.Analyzers" Version="0.30.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
