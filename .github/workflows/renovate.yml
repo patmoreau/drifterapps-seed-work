@@ -14,11 +14,11 @@ on:
         default: "false"
         type: string
   schedule:
-    - cron: '0 4,5 * * Sat'
+    - cron: '0 4,5 * * *'
 
 jobs:
   call-workflow:
-    uses: patmoreau/renovate-config/.github/workflows/renovate.yml@main
+    uses: patmoreau/renovate-config/.github/workflows/renovate.yml@configure-renovate
     with:
       logLevel: ${{ inputs.logLevel || 'info' }}
       overrideSchedule: ${{ github.event.inputs.overrideSchedule == 'true' && '{''schedule'':null}' || '' }}

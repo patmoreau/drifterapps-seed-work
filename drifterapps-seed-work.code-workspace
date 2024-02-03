@@ -1,0 +1,10 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"WhiteSource Advise.Diff.BaseBranch": "main"
+	}
+}
