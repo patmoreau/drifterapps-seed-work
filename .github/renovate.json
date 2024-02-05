@@ -3,7 +3,8 @@
   "packageRules": [
     {
       "matchUpdateTypes": ["major"],
-      "matchPackagePatterns": ["^Microsoft.EntityFrameworkCore"],
+      "matchPackagePatterns": ["^major-dotnet-monorepo$"],
+      "matchPackageNames": ["Microsoft.EntityFrameworkCore"],
       "matchCurrentVersion": "^7",
       "enabled": false
     }
