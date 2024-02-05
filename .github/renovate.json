@@ -1,3 +1,12 @@
 {
-  "extends": ["github>patmoreau/renovate-config"]
+  "extends": ["github>patmoreau/renovate-config#main"],
+  "packageRules": [
+    {
+      "matchUpdateTypes": ["major"],
+      "matchPackagePatterns": ["^major-dotnet-monorepo$"],
+      "matchPackageNames": ["Microsoft.EntityFrameworkCore"],
+      "matchCurrentVersion": "^7",
+      "enabled": false
+    }
+  ]
 }

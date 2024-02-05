@@ -14,7 +14,7 @@ on:
         default: "false"
         type: string
   schedule:
-    - cron: '0 4,5 * * Sat'
+    - cron: '0 4,5 * * *'
 
 jobs:
   call-workflow:
