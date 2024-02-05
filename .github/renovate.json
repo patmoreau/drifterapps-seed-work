@@ -1,5 +1,5 @@
 {
-  "extends": ["github>patmoreau/renovate-config#configure-renovate"],
+  "extends": ["github>patmoreau/renovate-config#main"],
   "packageRules": [
     {
       "matchUpdateTypes": ["major"],
