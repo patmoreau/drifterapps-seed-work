@@ -4,7 +4,5 @@ namespace DrifterApps.Seeds.Application.Mediatr;
 /// <summary>
 ///     Marker interface to represent a request with a response which will be executed within a unit of work.
 /// </summary>
-public interface IUnitOfWorkRequest
-{
-}
+public interface IUnitOfWorkRequest;
 #pragma warning restore CA1040

@@ -12,6 +12,4 @@ namespace DrifterApps.Seeds.Testing.Attributes;
 ///     annotations
 /// </seealso>
 [AttributeUsage(AttributeTargets.Method)]
-public sealed class AssertionMethodAttribute : Attribute
-{
-}
+public sealed class AssertionMethodAttribute : Attribute;

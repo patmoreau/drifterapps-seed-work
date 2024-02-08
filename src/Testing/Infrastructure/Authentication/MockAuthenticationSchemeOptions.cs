@@ -8,11 +8,11 @@ namespace DrifterApps.Seeds.Testing.Infrastructure.Authentication;
 
 public sealed class MockAuthenticationSchemeOptions : AuthenticationSchemeOptions
 {
+    public IDictionary<string, ICollection<Claim>> AdditionalUserClaims { get; } =
+        new Dictionary<string, ICollection<Claim>>();
+
     public IEnumerable<Claim> ConfigureUserClaims(string userId) =>
         AdditionalUserClaims.TryGetValue(userId, out var additionalClaims)
             ? additionalClaims
             : Array.Empty<Claim>();
-
-    public IDictionary<string, ICollection<Claim>> AdditionalUserClaims { get; } =
-        new Dictionary<string, ICollection<Claim>>();
 }

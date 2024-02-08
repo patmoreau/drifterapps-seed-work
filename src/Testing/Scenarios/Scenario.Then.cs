@@ -72,7 +72,7 @@ public abstract partial class Scenario
         var locations = headers.GetValues("Location").ToList();
         locations.Should().HaveCount(1);
 
-        Uri.TryCreate(locations.First(), UriKind.RelativeOrAbsolute, out var uri).Should().BeTrue();
+        Uri.TryCreate(locations[0], UriKind.RelativeOrAbsolute, out var uri).Should().BeTrue();
 
         return uri!;
     }

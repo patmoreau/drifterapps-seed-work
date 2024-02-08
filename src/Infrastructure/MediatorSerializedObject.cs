@@ -6,26 +6,25 @@ namespace DrifterApps.Seeds.Infrastructure;
 
 internal class MediatorSerializedObject
 {
-    private static readonly JsonSerializerOptions _options = new()
+    private static readonly JsonSerializerOptions Options = new()
     {
-                DefaultIgnoreCondition = JsonIgnoreCondition.Never
-            };
+        DefaultIgnoreCondition = JsonIgnoreCondition.Never
+    };
 
     public MediatorSerializedObject(string assemblyQualifiedName, string data, string additionalDescription)
     {
-        var type = Type.GetType(assemblyQualifiedName);
-        if (type is null) throw new ArgumentException("Invalid Type name", assemblyQualifiedName);
-
+        _ = Type.GetType(assemblyQualifiedName) ??
+            throw new ArgumentException("Invalid Type name", assemblyQualifiedName);
         AssemblyQualifiedName = assemblyQualifiedName;
         Data = data;
         AdditionalDescription = additionalDescription;
     }
 
-    public string AssemblyQualifiedName { get; }
+    private string AssemblyQualifiedName { get; }
 
-    public string Data { get; }
+    private string Data { get; }
 
-    public string AdditionalDescription { get; }
+    private string AdditionalDescription { get; }
 
     /// <summary>
     ///     Override for Hangfire dashboard display.
@@ -46,7 +45,7 @@ internal class MediatorSerializedObject
 
         try
         {
-            var req = JsonSerializer.Deserialize(Data, type!, _options);
+            var req = JsonSerializer.Deserialize(Data, type!, Options);
             switch (req)
             {
                 case IBaseRequest baseRequest:
@@ -67,7 +66,7 @@ internal class MediatorSerializedObject
     {
         var type = mediatorObject.GetType();
         var assemblyName = type.AssemblyQualifiedName!;
-        var data = JsonSerializer.Serialize(mediatorObject, _options);
+        var data = JsonSerializer.Serialize(mediatorObject, Options);
 
         return new MediatorSerializedObject(assemblyName, data, description);
     }

@@ -4,10 +4,10 @@
         <RootNamespace>DrifterApps.Seeds.Domain</RootNamespace>
         <AssemblyName>DrifterApps.Seeds.Domain</AssemblyName>
         <PackageId>DrifterApps.Seeds.Domain</PackageId>
-   </PropertyGroup>
+    </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="MediatR.Contracts" />
+        <PackageReference Include="MediatR.Contracts"/>
     </ItemGroup>
 
 </Project>

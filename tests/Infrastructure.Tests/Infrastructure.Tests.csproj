@@ -3,7 +3,7 @@
     <PropertyGroup>
         <AssemblyName>DrifterApps.Seeds.Infrastructure.Tests</AssemblyName>
         <PackageId>DrifterApps.Seeds.Infrastructure.Tests</PackageId>
-   </PropertyGroup>
+    </PropertyGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\..\src\Infrastructure\Infrastructure.csproj"/>

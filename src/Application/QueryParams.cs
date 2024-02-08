@@ -3,7 +3,7 @@ using System.Collections.Immutable;
 namespace DrifterApps.Seeds.Application;
 
 /// <summary>
-/// Class for supporting query params to be handled in requests
+///     Class for supporting query params to be handled in requests
 /// </summary>
 public class QueryParams
 {
@@ -11,33 +11,30 @@ public class QueryParams
     public const string SortPattern = @"(?<desc>-{0,1})(?<field>\w+)";
 
     /// <summary>
-    /// Default offset value
+    ///     Default offset value
     /// </summary>
     public const int DefaultOffset = 0;
+
     /// <summary>
-    /// Default limit value
+    ///     Default limit value
     /// </summary>
     public const int DefaultLimit = int.MaxValue;
+
     /// <summary>
-    /// Default empty sort
+    ///     Default empty sort
     /// </summary>
     public static readonly IReadOnlyCollection<string> DefaultSort = ImmutableArray.Create<string>();
+
     /// <summary>
-    /// Default empty filter
+    ///     Default empty filter
     /// </summary>
     public static readonly IReadOnlyCollection<string> DefaultFilter = ImmutableArray.Create<string>();
 
     private QueryParams(int offset, int limit, IEnumerable<string> sort, IEnumerable<string> filter)
     {
-        if (offset < 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(offset), @"offset cannot be negative");
-        }
+        if (offset < 0) throw new ArgumentOutOfRangeException(nameof(offset), @"offset cannot be negative");
 
-        if (limit <= 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(limit), @"limit must be positive");
-        }
+        if (limit <= 0) throw new ArgumentOutOfRangeException(nameof(limit), @"limit must be positive");
 
         ArgumentNullException.ThrowIfNull(sort);
 
