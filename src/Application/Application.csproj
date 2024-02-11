@@ -5,12 +5,12 @@
         <AssemblyName>DrifterApps.Seeds.Application</AssemblyName>
         <PackageId>DrifterApps.Seeds.Application</PackageId>
         <Product>DrifterApps.Seeds.Application</Product>
-   </PropertyGroup>
+    </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="FluentValidation" />
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
-        <PackageReference Include="System.Linq.Dynamic.Core" />
+        <PackageReference Include="FluentValidation"/>
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions"/>
+        <PackageReference Include="System.Linq.Dynamic.Core"/>
     </ItemGroup>
 
     <ItemGroup>

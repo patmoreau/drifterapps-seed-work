@@ -15,7 +15,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <FrameworkReference Include="Microsoft.AspNetCore.App" />
+        <FrameworkReference Include="Microsoft.AspNetCore.App"/>
     </ItemGroup>
 
     <!-- Add the icon file and READNME.md to the NuGet package -->
@@ -40,11 +40,6 @@
         <NoWarn>$(NoWarn);1591</NoWarn>
     </PropertyGroup>
 
-    <!-- <PropertyGroup>
-        <PublishWithAspNetCoreTargetManifest>false</PublishWithAspNetCoreTargetManifest>
-        <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-    </PropertyGroup> -->
-
     <!-- Set the NuGet repository URL for all projects -->
     <PropertyGroup>
         <Product>DrifterApps.Seeds</Product>
@@ -63,9 +58,9 @@
         <IncludeSymbols>true</IncludeSymbols>
     </PropertyGroup>
 
-    <PropertyGroup>
-        <!-- Set the README file for all projects -->
-    </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="SonarAnalyzer.CSharp"/>
+    </ItemGroup>
 
     <ItemGroup>
         <AssemblyAttribute Include="System.CLSCompliantAttribute">

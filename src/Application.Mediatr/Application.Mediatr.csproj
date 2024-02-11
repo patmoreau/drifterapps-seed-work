@@ -4,13 +4,13 @@
         <RootNamespace>DrifterApps.Seeds.Application.Mediatr</RootNamespace>
         <AssemblyName>DrifterApps.Seeds.Application.Mediatr</AssemblyName>
         <PackageId>DrifterApps.Seeds.Application.Mediatr</PackageId>
-   </PropertyGroup>
+    </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="FluentValidation" />
-        <PackageReference Include="MediatR" />
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
-        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+        <PackageReference Include="FluentValidation"/>
+        <PackageReference Include="MediatR"/>
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions"/>
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions"/>
     </ItemGroup>
 
     <ItemGroup>

@@ -19,13 +19,13 @@ public sealed class MockSchemeProvider : AuthenticationSchemeProvider
         switch (name)
         {
             case MockAuthenticationHandler.AuthenticationScheme:
-                {
-                    AuthenticationScheme scheme = new(
-                        MockAuthenticationHandler.AuthenticationScheme,
-                        MockAuthenticationHandler.AuthenticationScheme,
-                        typeof(MockAuthenticationHandler));
-                    return Task.FromResult<AuthenticationScheme?>(scheme);
-                }
+            {
+                AuthenticationScheme scheme = new(
+                    MockAuthenticationHandler.AuthenticationScheme,
+                    MockAuthenticationHandler.AuthenticationScheme,
+                    typeof(MockAuthenticationHandler));
+                return Task.FromResult<AuthenticationScheme?>(scheme);
+            }
             default:
                 return base.GetSchemeAsync(name);
         }

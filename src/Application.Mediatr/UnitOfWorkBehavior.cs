@@ -1,4 +1,4 @@
-﻿using DrifterApps.Seeds.Domain;
+using DrifterApps.Seeds.Domain;
 using MediatR;
 
 namespace DrifterApps.Seeds.Application.Mediatr;
@@ -10,13 +10,10 @@ namespace DrifterApps.Seeds.Application.Mediatr;
 ///     Request of type <see cref="IUnitOfWorkRequest" /> and <see cref="IBaseRequest" />
 /// </typeparam>
 /// <typeparam name="TResponse">Response type</typeparam>
-public sealed class UnitOfWorkBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
+public sealed class UnitOfWorkBehavior<TRequest, TResponse>(IUnitOfWork unitOfWork)
+    : IPipelineBehavior<TRequest, TResponse>
     where TRequest : IUnitOfWorkRequest, IBaseRequest
 {
-    private readonly IUnitOfWork _unitOfWork;
-
-    public UnitOfWorkBehavior(IUnitOfWork unitOfWork) => _unitOfWork = unitOfWork;
-
     public Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next,
         CancellationToken cancellationToken)
     {
@@ -28,19 +25,19 @@ public sealed class UnitOfWorkBehavior<TRequest, TResponse> : IPipelineBehavior<
     private async Task<TResponse> HandleInternal(RequestHandlerDelegate<TResponse> next,
         CancellationToken cancellationToken)
     {
-        await _unitOfWork.BeginWorkAsync(cancellationToken).ConfigureAwait(false);
+        await unitOfWork.BeginWorkAsync(cancellationToken).ConfigureAwait(false);
 
         try
         {
             var response = await next().ConfigureAwait(false);
 
-            await _unitOfWork.CommitWorkAsync(cancellationToken).ConfigureAwait(false);
+            await unitOfWork.CommitWorkAsync(cancellationToken).ConfigureAwait(false);
 
             return response;
         }
         catch (Exception)
         {
-            await _unitOfWork.RollbackWorkAsync(cancellationToken).ConfigureAwait(false);
+            await unitOfWork.RollbackWorkAsync(cancellationToken).ConfigureAwait(false);
             throw;
         }
     }

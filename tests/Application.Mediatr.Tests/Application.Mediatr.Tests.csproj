@@ -3,7 +3,7 @@
     <PropertyGroup>
         <RootNamespace>DrifterApps.Seeds.Application.Mediatr.Tests</RootNamespace>
         <AssemblyName>DrifterApps.Seeds.Application.Mediatr.Tests</AssemblyName>
-   </PropertyGroup>
+    </PropertyGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\..\src\Application.Mediatr\Application.Mediatr.csproj"/>

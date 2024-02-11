@@ -3,7 +3,7 @@
     <PropertyGroup>
         <RootNamespace>DrifterApps.Seeds.Domain.Tests</RootNamespace>
         <AssemblyName>DrifterApps.Seeds.Domain.Tests</AssemblyName>
-   </PropertyGroup>
+    </PropertyGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\..\src\Domain\Domain.csproj"/>

@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 using System.Linq.Dynamic.Core;
 using System.Linq.Expressions;
 using System.Text.RegularExpressions;
@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 namespace DrifterApps.Seeds.Application.Extensions;
 
 /// <summary>
-/// IQueryable extensions method for filtering and sorting from the IRequestQuery parameters.
+///     IQueryable extensions method for filtering and sorting from the IRequestQuery parameters.
 /// </summary>
 public static partial class SqlBuilderExtensions
 {
@@ -22,7 +22,7 @@ public static partial class SqlBuilderExtensions
         };
 
     /// <summary>
-    /// Filter a query from a collection of
+    ///     Filter a query from a collection of
     /// </summary>
     /// <param name="query"></param>
     /// <param name="filter"></param>
@@ -36,7 +36,7 @@ public static partial class SqlBuilderExtensions
 
         foreach (var f in filter)
         {
-            var match = MyRegex().Match(f);
+            var match = FilterRegex().Match(f);
             var property = match.Groups["property"].Value;
             var op = match.Groups["operator"].Value;
             var value = match.Groups["value"].Value;
@@ -53,17 +53,12 @@ public static partial class SqlBuilderExtensions
 
         if (sort.Count == 0) return query;
 
-        var sorts = new List<string>();
+        var sorts = (from match in SortRegex().Matches(string.Join(";", sort))
+            let asc = string.IsNullOrWhiteSpace(match.Groups["desc"].Value) ? "ASC" : "DESC"
+            let field = match.Groups["field"].Value
+            select $"{field} {asc}").ToList();
 
 #pragma warning disable S3267
-        foreach (Match match in MyRegex1().Matches(string.Join(";", sort)))
-#pragma warning restore S3267
-        {
-            var asc = string.IsNullOrWhiteSpace(match.Groups["desc"].Value) ? "ASC" : "DESC";
-            var field = match.Groups["field"].Value;
-
-            sorts.Add($"{field} {asc}");
-        }
 
         var sortString = string.Join(", ", sorts);
         return query.OrderBy(sortString);
@@ -135,8 +130,8 @@ public static partial class SqlBuilderExtensions
     }
 
     [GeneratedRegex("(?<property>\\w+)(?<operator>:(eq|ne|lt|le|gt|ge):)(?<value>.*)")]
-    private static partial Regex MyRegex();
+    private static partial Regex FilterRegex();
 
     [GeneratedRegex("(?<desc>-{0,1})(?<field>\\w+)")]
-    private static partial Regex MyRegex1();
+    private static partial Regex SortRegex();
 }
