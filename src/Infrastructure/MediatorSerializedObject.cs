@@ -70,4 +70,17 @@ internal class MediatorSerializedObject
 
         return new MediatorSerializedObject(assemblyName, data, description);
     }
+
+    private bool Equals(MediatorSerializedObject other) => AssemblyQualifiedName == other.AssemblyQualifiedName &&
+                                                           Data == other.Data &&
+                                                           AdditionalDescription == other.AdditionalDescription;
+
+    public override bool Equals(object? obj)
+    {
+        if (obj is null) return false;
+        if (ReferenceEquals(this, obj)) return true;
+        return obj.GetType() == GetType() && Equals((MediatorSerializedObject) obj);
+    }
+
+    public override int GetHashCode() => HashCode.Combine(AssemblyQualifiedName, Data, AdditionalDescription);
 }
