@@ -2,6 +2,11 @@
 
 <img alt='paper plane icons' src='./icon.svg' height='10%' width='10%'>
 
+## Badges
+
+| Badger | Description | System |
+|---|---|---|
+|
 [![Build and Publish NuGet Package](https://github.com/patmoreau/drifterapps-seed-work/actions/workflows/ci-cd.yaml/badge.svg)](https://github.com/patmoreau/drifterapps-seed-work/actions/workflows/ci-cd.yaml)
 [![CodeQL](https://github.com/patmoreau/drifterapps-seed-work/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/patmoreau/drifterapps-seed-work/actions/workflows/codeql-analysis.yml)
 ![Tests results](https://gist.githubusercontent.com/patmoreau/51a2fc9fd8b7ed500ed3b6aabe0fc2d6/raw/c8d878826cdd9e3c3b7a242c0eb8d9a3b71dd654/seeds-tests-badge.svg)
