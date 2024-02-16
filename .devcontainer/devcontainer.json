@@ -4,12 +4,11 @@
     "name": "C# (.NET) and MariaDB",
     "dockerComposeFile": "docker-compose.yml",
     "service": "app",
-    "workspaceFolder": "/workspaces",
+    "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
 
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	// "features": {},
 
-	// Configure tool-specific properties.
 	// Configure tool-specific properties.
 	"customizations": {
 		// Configure properties specific to VS Code.
