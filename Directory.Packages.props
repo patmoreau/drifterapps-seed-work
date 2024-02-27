@@ -20,7 +20,7 @@
   <!-- Third parties packages -->
   <ItemGroup>
     <PackageVersion Include="FluentValidation" Version="11.9.0" />
-    <PackageVersion Include="Hangfire" Version="1.8.10" />
+    <PackageVersion Include="Hangfire" Version="1.8.11" />
     <PackageVersion Include="Hangfire.MemoryStorage" Version="1.8.0" />
     <PackageVersion Include="MediatR" Version="12.2.0" />
     <PackageVersion Include="MediatR.Contracts" Version="2.0.1" />
