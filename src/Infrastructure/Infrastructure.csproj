@@ -8,7 +8,6 @@
 
     <ItemGroup>
         <PackageReference Include="Hangfire"/>
-        <PackageReference Include="Hangfire.MemoryStorage"/>
         <PackageReference Include="MediatR"/>
         <PackageReference Include="MediatR.Contracts"/>
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions"/>
