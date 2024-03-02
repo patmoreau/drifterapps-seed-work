@@ -35,8 +35,12 @@ public static class ServiceCollectionExtensions
             { } dbContextDescriptor)
             services.Remove(dbContextDescriptor);
 
-        services.AddScoped<DbContextOptions<TDbContext>>(_ => databaseDriver.GetDbContextOptions());
+
+        services.AddSingleton<DbContextOptions<TDbContext>>(_ => databaseDriver.GetDbContextOptions());
+        services.AddSingleton<DbContextOptions>(_ => databaseDriver.GetDbContextOptions());
+
         services.AddDbContext<TDbContext>();
+        services.AddDbContextFactory<TDbContext>();
 
         return services;
     }
