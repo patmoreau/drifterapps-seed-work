@@ -5,6 +5,7 @@ using Hangfire;
 using Hangfire.Common;
 using Hangfire.States;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using NSubstitute;
 
 namespace Infrastructure.Tests;
@@ -84,6 +85,7 @@ public class RequestSchedulerTests
     {
         private readonly IBackgroundJobClientV2 _backgroundJobClient;
         private readonly IBackgroundJobClientFactoryV2 _backgroundJobFactory;
+        private readonly ILogger<RequestScheduler> _logger;
         private readonly IRecurringJobManagerFactoryV2 _recurringJobFactory;
         private readonly IRecurringJobManagerV2 _recurringJobManager;
         private IRequestExecutor _requestExecutor;
@@ -98,9 +100,10 @@ public class RequestSchedulerTests
             _recurringJobManager = Substitute.For<IRecurringJobManagerV2>();
             _recurringJobFactory.GetManagerV2(Arg.Any<JobStorage>()).Returns(_recurringJobManager);
             JobStorage.Current = Substitute.ForPartsOf<JobStorage>();
+            _logger = Substitute.For<ILogger<RequestScheduler>>();
         }
 
-        public RequestScheduler Build() => new(_requestExecutor, _backgroundJobFactory, _recurringJobFactory);
+        public RequestScheduler Build() => new(_requestExecutor, _backgroundJobFactory, _recurringJobFactory, _logger);
 
         public Driver WhenRequestExecutorIsNull()
         {

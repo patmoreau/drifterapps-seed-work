@@ -24,6 +24,20 @@ public class MediatorSerializedObjectTests
     }
 
     [Fact]
+    public void GivenConstructor_WhenFullTypeNameIsNull_ThenShouldThrowArgumentException()
+    {
+        // Arrange
+        _driver.GivenNullAssemblyQualifiedName();
+
+        // Act
+        Action action = () => _ = _driver.Build();
+
+        // Assert
+        action.Should().Throw<ArgumentException>()
+            .WithMessage($"Missing assembly name for '{_driver.Description}' (Parameter 'assemblyQualifiedName')");
+    }
+
+    [Fact]
     public void ToString_ShouldReturnFormattedString()
     {
         // Arrange
@@ -92,7 +106,7 @@ public class MediatorSerializedObjectTests
             OriginalRequest = new Faker<SampleRequest>()
                 .RuleFor(x => x.Property1, faker => faker.Random.Word())
                 .RuleFor(x => x.Property2, faker => faker.Random.Int());
-            Description = Fakerizer.Lorem.Text();
+            Description = Fakerizer.Lorem.Sentence();
             _data = JsonSerializer.Serialize(OriginalRequest);
         }
 
@@ -105,6 +119,13 @@ public class MediatorSerializedObjectTests
         public Driver GivenInvalidAssemblyQualifiedName()
         {
             _assemblyQualifiedName = Fakerizer.Lorem.Word();
+
+            return this;
+        }
+
+        public Driver GivenNullAssemblyQualifiedName()
+        {
+            _assemblyQualifiedName = null!;
 
             return this;
         }

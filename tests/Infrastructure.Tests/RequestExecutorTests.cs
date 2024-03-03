@@ -1,6 +1,7 @@
 using DrifterApps.Seeds.Infrastructure;
 using DrifterApps.Seeds.Testing;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using NSubstitute;
 
 namespace Infrastructure.Tests;
@@ -38,12 +39,13 @@ public class RequestExecutorTests
 
     private class Driver : IDriverOf<RequestExecutor>
     {
+        private readonly ILogger<RequestExecutor> _logger = Substitute.For<ILogger<RequestExecutor>>();
         private readonly IMediator _mediator = Substitute.For<IMediator>();
 
         public MediatorSerializedObject SerializedObject { get; private set; } =
             MediatorSerializedObject.SerializeObject(new SampleRequest(), nameof(SampleRequest));
 
-        public RequestExecutor Build() => new(_mediator);
+        public RequestExecutor Build() => new(_mediator, _logger);
 
         public Driver GivenSerializedObjectNotOfTypeIBaseRequest()
         {
