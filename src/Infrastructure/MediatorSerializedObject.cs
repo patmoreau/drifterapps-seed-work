@@ -4,7 +4,7 @@ using MediatR;
 
 namespace DrifterApps.Seeds.Infrastructure;
 
-internal class MediatorSerializedObject
+public class MediatorSerializedObject
 {
     private static readonly JsonSerializerOptions Options = new()
     {
@@ -13,18 +13,22 @@ internal class MediatorSerializedObject
 
     public MediatorSerializedObject(string assemblyQualifiedName, string data, string additionalDescription)
     {
-        _ = Type.GetType(assemblyQualifiedName) ??
+        if (string.IsNullOrWhiteSpace(assemblyQualifiedName))
+            throw new ArgumentNullException(nameof(assemblyQualifiedName),
+                $"Missing assembly name for '{additionalDescription}'");
+
+        _ = Type.GetType(assemblyQualifiedName, false) ??
             throw new ArgumentException("Invalid Type name", assemblyQualifiedName);
         AssemblyQualifiedName = assemblyQualifiedName;
         Data = data;
         AdditionalDescription = additionalDescription;
     }
 
-    private string AssemblyQualifiedName { get; }
+    public string AssemblyQualifiedName { get; }
 
-    private string Data { get; }
+    public string Data { get; }
 
-    private string AdditionalDescription { get; }
+    public string AdditionalDescription { get; }
 
     /// <summary>
     ///     Override for Hangfire dashboard display.
