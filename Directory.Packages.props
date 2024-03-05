@@ -7,7 +7,7 @@
     <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="8.0.2" />
   </ItemGroup>
   <ItemGroup>
-    <PackageVersion Include="SonarAnalyzer.CSharp" Version="9.20.0.85982">
+    <PackageVersion Include="SonarAnalyzer.CSharp" Version="9.21.0.86780">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageVersion>
