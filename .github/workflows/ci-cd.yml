@@ -179,8 +179,14 @@ jobs:
         env:
           NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
+      - name: Restore packages
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --no-restore --configuration Release /property:Version=${{ env.ASSEMBLY_VERSION }}
+
       - name: Pack NuGet packages
-        run: dotnet pack /property:Version=${{ env.ASSEMBLY_VERSION }} --include-symbols --configuration Release -o ./nuget-packages
+        run: dotnet pack /property:Version=${{ env.NUGET_VERSION }} --no-build --include-symbols --configuration Release -o ./nuget-packages
 
       - name: Publish Package
         run: dotnet nuget push ./nuget-packages/*.nupkg --source "https://api.nuget.org/v3/index.json" --api-key ${{ secrets.NUGET_API_KEY }} --skip-duplicate
