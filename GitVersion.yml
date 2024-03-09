@@ -1,8 +1,13 @@
-mode: Mainline
+mode: ContinuousDelivery
 assembly-versioning-scheme: MajorMinorPatch
+major-version-bump-message: '\+semver:\s?(breaking|major)'
+minor-version-bump-message: '\+semver:\s?(feature|minor)'
+patch-version-bump-message: '\+semver:\s?(fix|patch)'
+commit-message-incrementing: Enabled
+next-version: 1.0.0
 branches:
   pull-request:
     tag: beta
 ignore:
   sha: []
-  commits-before: 2021-03-01T00:00:00
+  commits-before: 2021-03-01T00:00:00Z
