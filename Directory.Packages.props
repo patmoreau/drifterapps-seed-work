@@ -34,7 +34,7 @@
   </ItemGroup>
   <!-- Testing packages -->
   <ItemGroup>
-    <PackageVersion Include="Bogus" Version="35.4.1" />
+    <PackageVersion Include="Bogus" Version="35.5.0" />
     <PackageVersion Include="coverlet.collector" Version="6.0.1">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
