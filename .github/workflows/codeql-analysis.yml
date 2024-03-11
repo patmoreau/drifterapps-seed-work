@@ -22,7 +22,6 @@ on:
         "**/ci-cd.yml",
         "**/linter.yml",
         "**/mutation-tests.yml",
-        "**/test-results.yml",
         "**/renovate.yml",
         "**/renovate.json",
       ]
@@ -38,7 +37,6 @@ on:
         "**/ci-cd.yml",
         "**/linter.yml",
         "**/mutation-tests.yml",
-        "**/test-results.yml",
         "**/renovate.yml",
         "**/renovate.json",
       ]
