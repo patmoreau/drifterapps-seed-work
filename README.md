@@ -4,7 +4,7 @@
 
 [![Build and Publish NuGet Package](https://github.com/patmoreau/drifterapps-seed-work/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/patmoreau/drifterapps-seed-work/actions/workflows/ci-cd.yml)
 [![CodeQL](https://github.com/patmoreau/drifterapps-seed-work/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/patmoreau/drifterapps-seed-work/actions/workflows/codeql-analysis.yml)
-![Tests results](https://gist.githubusercontent.com/patmoreau/51a2fc9fd8b7ed500ed3b6aabe0fc2d6/raw/c8d878826cdd9e3c3b7a242c0eb8d9a3b71dd654/seeds-tests-badge.svg)
+![Tests results](https://gist.githubusercontent.com/patmoreau/51a2fc9fd8b7ed500ed3b6aabe0fc2d6/raw/seeds-tests-badge.svg)
 [![Mutation testing badge](https://img.shields.io/endpoint?style=flat&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2Fpatmoreau%2Fdrifterapps-seed-work%2Fmain)](https://dashboard.stryker-mutator.io/reports/github.com/patmoreau/drifterapps-seed-work/main)
 
 This library is a collections of utility classes, mostly abstract, that I use with various clients for which as a
