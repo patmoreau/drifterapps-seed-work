@@ -11,7 +11,6 @@ on:
         "**/codeql-analysis.yml",
         "**/linter.yml",
         "**/mutation-tests.yml",
-        "**/test-results.yml",
         "**/renovate.yml",
         "**/renovate.json",
       ]
@@ -25,7 +24,6 @@ on:
         "**/codeql-analysis.yml",
         "**/linter.yml",
         "**/mutation-tests.yml",
-        "**/test-results.yml",
         "**/renovate.yml",
         "**/renovate.json",
       ]
@@ -128,13 +126,53 @@ jobs:
       - name: Tests
         run: dotnet test --no-restore --no-build --configuration Release --logger 'trx;verbosity=normal' --results-directory ./tests-results --collect 'XPlat Code Coverage'
 
-      - name: Upload Test Results
+      - name: Test Report
+        uses: dorny/test-reporter@v1
+        id: test-results
+        if: always()
+        with:
+          name: .Net Tests
+          path: ./tests-results/**/*.trx
+          reporter: dotnet-trx
+
+      - name: Set badge color
+        shell: bash
+        run: |
+          case ${{ steps.test-results.outputs.conclusion }} in
+            success)
+              echo "BADGE_COLOR=31c653" >> $GITHUB_ENV
+              ;;
+            failure)
+              echo "BADGE_COLOR=800000" >> $GITHUB_ENV
+              ;;
+          esac
+
+      - name: Create badge
+        uses: emibcn/badge-action@v2.0.2
+        with:
+          label: Tests
+          status: "${{ steps.test-results.outputs.passed }} passed, ${{ steps.test-results.outputs.failed }} failed, ${{ steps.test-results.outputs.skipped }} skipped: ${{ steps.test-results.outputs.conclusion }}"
+          color: ${{ env.BADGE_COLOR }}
+          path: seeds-tests-badge.svg
+
+      - name: Upload badge to artifacts
         if: always()
         uses: actions/upload-artifact@v3
         with:
-          name: Test Results
+          name: Test Results Badge
           path: |
-            ./tests-results/**/*.trx
+            seeds-tests-badge.svg
+
+      - name: Upload badge to Gist
+        if: >
+          github.event_name == 'workflow_run' && github.event.workflow_run.head_branch == 'main' ||
+          github.event_name != 'workflow_run' && github.ref == 'refs/heads/main'
+        uses: exuanbo/actions-deploy-gist@v1
+        with:
+          token: ${{ secrets.GIST_TOKEN }}
+          gist_id: 51a2fc9fd8b7ed500ed3b6aabe0fc2d6
+          file_path: seeds-tests-badge.svg
+          file_type: text
 
       - name: Tag version
         if:   github.event_name == 'push' && github.event.action != 'closed'
@@ -190,13 +228,3 @@ jobs:
 
       - name: Publish Package
         run: dotnet nuget push ./nuget-packages/*.nupkg --source "https://api.nuget.org/v3/index.json" --api-key ${{ secrets.NUGET_API_KEY }} --skip-duplicate
-
-  event_file:
-    name: "Event File"
-    runs-on: ubuntu-latest
-    steps:
-      - name: Upload
-        uses: actions/upload-artifact@v3
-        with:
-          name: Event File
-          path: ${{ github.event_path }}
