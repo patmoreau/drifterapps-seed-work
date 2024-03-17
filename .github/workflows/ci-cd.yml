@@ -29,13 +29,13 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Check for changes
-        id: check_changes
+        id: diff_changes
         run: echo "::set-output name=changed::$(git diff --name-only ${{ github.base_ref }} ${{ github.head_ref }})"
 
       - name: Check for code changes
         id: check_changes
         run: |
-          CODE_CHANGES=$(echo "${{ steps.check_changes.outputs.changed }}" | grep -E '^src/|^tests/')
+          CODE_CHANGES=$(echo "${{ steps.diff_changes.outputs.changed }}" | grep -E '^src/|^tests/')
           if [ -z "$CODE_CHANGES" ]; then
             echo "::set-output name=code_was_changed::false"
           else
