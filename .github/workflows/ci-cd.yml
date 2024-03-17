@@ -33,7 +33,7 @@ jobs:
 
       - name: Check for changes
         id: diff_changes
-        run: echo "changed=$(git diff --name-only ${{ github.base_ref }}..${{ github.head_ref }})" >> $GITHUB_OUTPUT
+        run: echo "changed=$(git diff --name-only refs/heads/${{ github.base_ref }}..${{ github.sha }})" >> $GITHUB_OUTPUT
 
       - name: Check for code changes
         id: check_changes
