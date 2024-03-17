@@ -28,6 +28,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Fetch default branch
+        run: git fetch origin ${{ github.base_ref }}:${{ github.base_ref }}
+
       - name: Check for changes
         id: diff_changes
         run: echo "::set-output name=changed::$(git diff --name-only ${{ github.base_ref }} ${{ github.head_ref }})"
