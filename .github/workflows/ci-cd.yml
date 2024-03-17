@@ -27,14 +27,15 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-        with:
-          fetch-depth: 2
+
+      - name: Check for changes
+        id: check_changes
+        run: echo "::set-output name=changed::$(git diff --name-only ${{ github.base_ref }} ${{ github.head_ref }})"
 
       - name: Check for code changes
         id: check_changes
         run: |
-          echo ${{ github.event.before }} ${{ github.event.after }}
-          CODE_CHANGES=$(git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | grep -E '^src/|^tests/')
+          CODE_CHANGES=$(echo "${{ steps.check_changes.outputs.changed }}" | grep -E '^src/|^tests/')
           if [ -z "$CODE_CHANGES" ]; then
             echo "::set-output name=code_was_changed::false"
           else
