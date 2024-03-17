@@ -28,18 +28,21 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Fetch base branch
+        run: git fetch origin ${{ github.base_ref }}:${{ github.base_ref }}
+
       - name: Check for changes
         id: diff_changes
-        run: echo "::set-output name=changed::$(git diff --name-only ${{ github.event.before }} ${{ github.sha }})"
+        run: echo "changed=$(git diff --name-only ${{ github.base_ref }} ${{ github.sha }})" >> $GITHUB_OUTPUT
 
       - name: Check for code changes
         id: check_changes
         run: |
           CODE_CHANGES=$(echo "${{ steps.diff_changes.outputs.changed }}" | grep -E '^src/|^tests/')
           if [ -z "$CODE_CHANGES" ]; then
-            echo "::set-output name=code_was_changed::false"
+            echo "code_was_changed=false" >> $GITHUB_OUTPUT
           else
-            echo "::set-output name=code_was_changed::true"
+            echo "code_was_changed=true" >> $GITHUB_OUTPUT
           fi
 
   set-version:
