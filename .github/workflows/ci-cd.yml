@@ -3,30 +3,8 @@ name: ci-cd
 on:
   push:
     branches: [main]
-    paths-ignore:
-      [
-        "docs/**",
-        ".vscode/**",
-        "**/*.md",
-        "**/codeql-analysis.yml",
-        "**/linter.yml",
-        "**/mutation-tests.yml",
-        "**/renovate.yml",
-        "**/renovate.json",
-      ]
 
   pull_request:
-    paths-ignore:
-      [
-        "docs/**",
-        ".vscode/**",
-        "**/*.md",
-        "**/codeql-analysis.yml",
-        "**/linter.yml",
-        "**/mutation-tests.yml",
-        "**/renovate.yml",
-        "**/renovate.json",
-      ]
 
   release:
     types:
@@ -41,18 +19,30 @@ env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
-
-  debug:
-    name: Debug
+  check_changes:
     runs-on: ubuntu-latest
+    outputs:
+      code_was_changed: ${{ steps.check_changes.outputs.code_was_changed }}
 
     steps:
-      - name: Debug Action
-        uses: hmarr/debug-action@v2.1.0
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Check for code changes
+        id: check_changes
+        run: |
+          CODE_CHANGES=$(git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | grep -E '^src/|^tests/')
+          if [ -z "$CODE_CHANGES" ]; then
+            echo "::set-output name=code_was_changed::false"
+          else
+            echo "::set-output name=code_was_changed::true"
+          fi
 
   set-version:
     name: Set version
     runs-on: ubuntu-latest
+    needs: check_changes
+    if: needs.check_changes.outputs.code_was_changed == 'true'
 
     outputs:
       version: ${{ steps.gitversion.outputs.majorMinorPatch }}
