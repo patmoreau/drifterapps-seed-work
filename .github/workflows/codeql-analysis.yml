@@ -28,7 +28,7 @@ jobs:
     uses: patmoreau/renovate-config/.github/workflows/check-changes-action.yml@main
     with:
       base_ref: ${{ github.base_ref }}
-      file_patterns: ${{ env.CODE_FILE_PATTERNS }}
+      file_patterns: ${{ vars.CODE_FILE_PATTERNS }}
 
   analyze:
     runs-on: ubuntu-latest

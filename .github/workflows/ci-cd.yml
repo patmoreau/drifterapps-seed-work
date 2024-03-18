@@ -24,7 +24,7 @@ jobs:
     uses: patmoreau/renovate-config/.github/workflows/check-changes-action.yml@main
     with:
       base_ref: ${{ github.base_ref }}
-      file_patterns: ${{ env.CODE_FILE_PATTERNS }}
+      file_patterns: ${{ vars.CODE_FILE_PATTERNS }}
     if: not (github.event_name == 'release' && github.event.action == 'created')
 
   set-version:
