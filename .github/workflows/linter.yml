@@ -27,7 +27,7 @@ jobs:
         env:
           HAVE_CHANGES: ${{ needs.check_changes.outputs.code_was_changed }}
         run: |
-          echo "Have changes: $HAVE_CHANGES"
+          echo "Have changes: $HAVE_CHANGES - ${{ needs.check_changes.outputs.code_was_changed }};"
 
   csharp:
     runs-on: ubuntu-latest
