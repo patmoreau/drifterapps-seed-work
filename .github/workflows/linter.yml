@@ -12,8 +12,17 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  check_changes:
+    uses: patmoreau/renovate-config/.github/workflows/check-changes-action.yml@main
+    with:
+      base_ref: ${{ github.base_ref }}
+      file_patterns: ${{ env.CODE_FILE_PATTERNS }}
+
   csharp:
     runs-on: ubuntu-latest
+    needs: check_changes
+    if: needs.check_changes.outputs.code_was_changed == 'true'
+
     steps:
       - uses: actions/checkout@v4
 

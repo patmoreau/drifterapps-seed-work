@@ -25,10 +25,10 @@ concurrency:
 
 jobs:
   check_changes:
-    uses: patmoreau/renovate-config/.github/workflows/check-changes-action.yml.yml@main
+    uses: patmoreau/renovate-config/.github/workflows/check-changes-action.yml@main
     with:
       base_ref: ${{ github.base_ref }}
-      file_patterns: ${{ env.CODE_FILE_PATTERN }}
+      file_patterns: ${{ env.CODE_FILE_PATTERNS }}
 
   analyze:
     runs-on: ubuntu-latest
