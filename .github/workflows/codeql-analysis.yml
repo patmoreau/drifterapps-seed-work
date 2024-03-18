@@ -25,23 +25,10 @@ concurrency:
 
 jobs:
   check_changes:
-    runs-on: ubuntu-latest
-    outputs:
-      code_was_changed: ${{ steps.check_changes.outputs.code_was_changed }}
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Check for code changes
-        id: check_changes
-        run: |
-          CODE_CHANGES=$(git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | grep -E '^src/|^tests/')
-          if [ -z "$CODE_CHANGES" ]; then
-            echo "::set-output name=code_was_changed::false"
-          else
-            echo "::set-output name=code_was_changed::true"
-          fi
+    uses: patmoreau/renovate-config/.github/workflows/check-changes-action.yml.yml@main
+    with:
+      base_ref: ${{ github.base_ref }}
+      file_patterns: ${{ env.CODE_FILE_PATTERN }}
 
   analyze:
     runs-on: ubuntu-latest

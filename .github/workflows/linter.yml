@@ -3,32 +3,9 @@ name: linter
 on:
   push:
     branches: [main]
-    paths-ignore:
-      [
-        "docs/**",
-        ".vscode/**",
-        "**/*.md",
-        "**/ci-cd.yml",
-        "**/codeql-analysis.yml",
-        "**/mutation-tests.yml",
-        "**/renovate.yml",
-        "**/renovate.json",
-      ]
 
   pull_request:
-    paths-ignore:
-      [
-        "docs/**",
-        ".vscode/**",
-        "**/*.md",
-        "**/ci-cd.yml",
-        "**/codeql-analysis.yml",
-        "**/mutation-tests.yml",
-        "**/renovate.yml",
-        "**/renovate.json",
-      ]
-
-  workflow_dispatch:
+    branches: [main]
 
 concurrency:
   group: linter-${{ github.ref }}
