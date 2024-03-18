@@ -36,17 +36,20 @@ jobs:
 
       - name: Check for changes
         id: diff_changes
-        run: echo "changed=$(git diff --name-only origin/${{ github.base_ref }}..HEAD)" >> $GITHUB_ENV
+        run: echo "changed=$(git diff --name-only origin/${{ github.base_ref }}..HEAD | tr '\n' ',')" >> $GITHUB_ENV
 
       - name: Check for code changes
         id: check_changes
         run: |
-          CODE_CHANGES=$(echo "${{ env.changed }}" | grep -E '^src/|^tests/')
-          if [ -z "$CODE_CHANGES" ]; then
-            echo "code_was_changed=false" >> $GITHUB_ENV
-          else
-            echo "code_was_changed=true" >> $GITHUB_ENV
-          fi
+          echo "$changed"
+          IFS=',' read -ra ADDR <<< "$changed"
+          for i in "${ADDR[@]}"; do
+            if [[ $i =~ ^src/|^tests/ ]]; then
+              echo "code_was_changed=true" >> $GITHUB_ENV
+              exit 0
+            fi
+          done
+          echo "code_was_changed=false" >> $GITHUB_ENV
 
   set-version:
     name: Set version
