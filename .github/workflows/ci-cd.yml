@@ -219,7 +219,7 @@ jobs:
     steps:
     - name: Create check run
       id: create_check_run
-      uses: actions/github-script@v5
+      uses: actions/github-script@v7.0.1
       with:
         script: |
           const { data: { id: check_run_id } } = await github.rest.checks.create({
