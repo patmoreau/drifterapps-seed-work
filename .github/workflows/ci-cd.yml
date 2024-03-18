@@ -21,7 +21,7 @@ env:
 
 jobs:
   check_changes:
-    uses: patmoreau/renovate-config/.github/workflows/check-changes-action.yml@fix-check-changes-action
+    uses: patmoreau/renovate-config/.github/workflows/check-changes-action.yml@main
     with:
       base_ref: ${{ github.base_ref }}
       file_patterns: ${{ vars.CODE_FILE_PATTERNS }}
@@ -213,7 +213,21 @@ jobs:
     needs: [check_changes, build]
     runs-on: ubuntu-latest
     if: (needs.check_changes.outputs.code_was_changed == 'false') || (needs.build.result == 'success')
+    outputs:
+      build_completed: ${{ steps.create_check_run.outputs.result }}
+
     steps:
-      - name: Build completed
-        run: |
-          echo "::set-output name=Build completed::success"
+    - name: Create check run
+      id: create_check_run
+      uses: actions/github-script@v5
+      with:
+        script: |
+          const { data: { id: check_run_id } } = await github.rest.checks.create({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            name: 'Build completed',
+            head_sha: context.sha,
+            status: 'completed',
+            conclusion: 'success'
+          });
+          return check_run_id;
