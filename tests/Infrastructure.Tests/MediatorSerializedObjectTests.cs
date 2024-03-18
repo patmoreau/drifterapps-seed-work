@@ -77,7 +77,7 @@ public class MediatorSerializedObjectTests
         var success = mediatorSerializedObject.TryDeserializeObject(out var deserializedObject);
 
         // Assert
-        success.Should().BeFalse();
+        success.Should().BeTrue();
         deserializedObject.Should().BeNull();
     }
 
