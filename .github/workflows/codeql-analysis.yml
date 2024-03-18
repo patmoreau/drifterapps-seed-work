@@ -27,7 +27,6 @@ jobs:
   check_changes:
     uses: patmoreau/renovate-config/.github/workflows/check-changes-action.yml@main
     with:
-      base_ref: ${{ github.base_ref }}
       file_patterns: ${{ vars.CODE_FILE_PATTERNS }}
 
   analyze:
@@ -90,7 +89,7 @@ jobs:
   required_check:
     needs: [check_changes, analyze]
     runs-on: ubuntu-latest
-    if: (needs.check_changes.outputs.code_was_changed == 'false') || (needs.analyze.result == 'success')
+    if: ${{ (needs.check_changes.outputs.code_was_changed == 'false') || (needs.analyze.result == 'success') }}
     outputs:
       codeql_completed: ${{ steps.create_check_run.outputs.result }}
 

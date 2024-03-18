@@ -15,7 +15,6 @@ jobs:
   check_changes:
     uses: patmoreau/renovate-config/.github/workflows/check-changes-action.yml@main
     with:
-      base_ref: ${{ github.base_ref }}
       file_patterns: ${{ vars.CODE_FILE_PATTERNS }}
 
   csharp:
@@ -49,9 +48,9 @@ jobs:
   required_check:
     needs: [check_changes, csharp]
     runs-on: ubuntu-latest
-    if: (needs.check_changes.outputs.code_was_changed == 'false') || (needs.csharp.result == 'success')
+    if: ${{ (needs.check_changes.outputs.code_was_changed == 'false') || (needs.csharp.result == 'success') }}
     outputs:
-      linter_completed: ${{ steps.create_check_run.outputs.result }}
+      Linter completed: ${{ steps.create_check_run.outputs.result }}
 
     steps:
     - name: Create check run
