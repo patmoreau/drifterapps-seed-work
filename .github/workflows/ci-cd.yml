@@ -27,13 +27,15 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
 
       - name: Fetch base branch
         run: git fetch origin ${{ github.base_ref }}:${{ github.head_ref }}
 
       - name: Check for changes
         id: diff_changes
-        run: echo "changed=$(git diff --name-only refs/remotes/origin/${{ github.base_ref }}..${{ github.sha }})" >> $GITHUB_OUTPUT
+        run: echo "changed=$(git diff --name-only origin/${{ github.base_ref }}..${{ github.sha }})" >> $GITHUB_OUTPUT
 
       - name: Check for code changes
         id: check_changes
