@@ -211,7 +211,7 @@ jobs:
   required_check:
     needs: [check_changes, build]
     runs-on: ubuntu-latest
-    if: (needs.check_changes.outputs.code_was_changed == 'false') || (needs.build.result == 'success')
+    if: ${{ (needs.check_changes.outputs.code_was_changed == 'false') || (needs.build.result == 'success') }}
     outputs:
       build_completed: ${{ steps.create_check_run.outputs.result }}
 
