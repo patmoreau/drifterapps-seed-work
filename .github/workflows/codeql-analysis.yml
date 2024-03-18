@@ -14,44 +14,26 @@ name: codeql-analysis
 on:
   push:
     branches: [main]
-    paths-ignore:
-      [
-        "docs/**",
-        ".vscode/**",
-        "**/*.md",
-        "**/ci-cd.yml",
-        "**/linter.yml",
-        "**/mutation-tests.yml",
-        "**/renovate.yml",
-        "**/renovate.json",
-      ]
 
   pull_request:
     # The branches below must be a subset of the branches above
     branches: [main]
-    paths-ignore:
-      [
-        "docs/**",
-        ".vscode/**",
-        "**/*.md",
-        "**/ci-cd.yml",
-        "**/linter.yml",
-        "**/mutation-tests.yml",
-        "**/renovate.yml",
-        "**/renovate.json",
-      ]
-
-  schedule:
-    - cron: "22 3 * * 3"
 
 concurrency:
   group: codeql-analysis-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
+  check_changes:
+    uses: patmoreau/renovate-config/.github/workflows/check-changes-action.yml@main
+    with:
+      base_ref: ${{ github.base_ref }}
+      file_patterns: ${{ vars.CODE_FILE_PATTERNS }}
+
   analyze:
-    name: Analyze
     runs-on: ubuntu-latest
+    needs: check_changes
+    if: needs.check_changes.outputs.code_was_changed == 'true'
 
     strategy:
       fail-fast: false
@@ -104,3 +86,26 @@ jobs:
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v2
+
+  required_check:
+    needs: [check_changes, analyze]
+    runs-on: ubuntu-latest
+    if: (needs.check_changes.outputs.code_was_changed == 'false') || (needs.analyze.result == 'success')
+    outputs:
+      codeql_completed: ${{ steps.create_check_run.outputs.result }}
+
+    steps:
+    - name: Create check run
+      id: create_check_run
+      uses: actions/github-script@v7.0.1
+      with:
+        script: |
+          const { data: { id: check_run_id } } = await github.rest.checks.create({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            name: 'CodeQL completed',
+            head_sha: context.sha,
+            status: 'completed',
+            conclusion: 'success'
+          });
+          return check_run_id;
