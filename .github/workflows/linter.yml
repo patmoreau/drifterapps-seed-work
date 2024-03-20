@@ -16,7 +16,7 @@ env:
 
 jobs:
   check_changes:
-    uses: patmoreau/renovate-config/.github/workflows/check-changes-action.yml@main
+    uses: patmoreau/workflow-config/.github/workflows/check-changes-action.yml@main
     with:
       file_patterns: ${{ vars.CODE_FILE_PATTERNS }}
 
