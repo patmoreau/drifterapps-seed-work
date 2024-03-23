@@ -24,7 +24,6 @@ jobs:
     uses: patmoreau/workflow-config/.github/workflows/check-changes-action.yml@main
     with:
       file_patterns: ${{ vars.CODE_FILE_PATTERNS }}
-    if: ${{ !(github.event_name == 'release' && github.event.action == 'created') }}
 
   set-version:
     runs-on: ubuntu-latest
