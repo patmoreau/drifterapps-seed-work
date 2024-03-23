@@ -208,33 +208,11 @@ jobs:
       - name: Publish Package
         run: dotnet nuget push ./nuget-packages/*.nupkg --source "https://api.nuget.org/v3/index.json" --api-key ${{ secrets.NUGET_API_KEY }} --skip-duplicate
 
-  required_check:
+  create_check:
     needs: [check_changes, build]
-    runs-on: ubuntu-latest
+    uses: patmoreau/workflow-config/.github/workflows/create-check.yml@main
     if: always() && needs.check_changes.result == 'success'
-
-    steps:
-      - name: Check conditions and set conclusion
-        id: check_conditions
-        run: |
-          if [[ "${{ needs.check_changes.outputs.code_was_changed }}" == "false" ]] || [[ "${{ needs.build.result }}" == "success" ]]; then
-            echo "conclusion=success" >> $GITHUB_OUTPUT
-          else
-            echo "conclusion=failure" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Create check run
-        id: create_check_run
-        uses: actions/github-script@v7.0.1
-        with:
-          script: |
-            const head_sha = context.payload.pull_request ? context.payload.pull_request.head.sha : context.sha;
-            const { data: { id: check_run_id } } = await github.rest.checks.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              name: 'build-completed',
-              head_sha: head_sha,
-              status: 'completed',
-              conclusion: '${{ steps.check_conditions.outputs.conclusion }}'
-            });
-            return check_run_id;
+    with:
+      code_was_changed: ${{ needs.check_changes.outputs.code_was_changed }}
+      check_name: 'build-completed'
+      check_result: ${{ needs.build.result }}
