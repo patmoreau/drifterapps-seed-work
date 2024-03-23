@@ -89,6 +89,15 @@ jobs:
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
 
+  create_check:
+    needs: [check_changes, analyze]
+    uses: patmoreau/workflow-config/.github/workflows/create-check.yml@main
+    if: always() && needs.check_changes.result == 'success'
+    with:
+      code_was_changed: ${{ needs.check_changes.outputs.code_was_changed }}
+      check_name: 'codeql-completed'
+      check_result: ${{ needs.analyze.result }}
+
   required_check:
     needs: [check_changes, analyze]
     runs-on: ubuntu-latest
