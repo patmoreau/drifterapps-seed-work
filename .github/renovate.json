@@ -1,5 +1,5 @@
 {
-  "extends": ["github>patmoreau/renovate-config#main"],
+  "extends": ["github>patmoreau/workflow-config#main"],
   "packageRules": [
     {
       "matchUpdateTypes": ["major"],
