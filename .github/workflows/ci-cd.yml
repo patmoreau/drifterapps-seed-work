@@ -152,32 +152,16 @@ jobs:
           file_path: seeds-tests-badge.svg
           file_type: text
 
-      - name: Tag version
-        if:   github.event_name == 'push' && github.event.action != 'closed'
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{secrets.GITHUB_TOKEN}}
-          script: |
-            try {
-              await github.git.deleteRef({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                ref: "tags/v${{ env.VERSION }}"
-              })
-            } catch (e) {
-              console.log("The v${{ env.VERSION }} tag doesn't exist yet: " + e)
-            }
-            await github.git.createRef({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              ref: "refs/tags/v${{ env.VERSION }}",
-              sha: context.sha
-            })
+  tagging:
+    needs: [set-version, build]
+    uses: patmoreau/workflow-config/.github/workflows/tag-version.yml@main
+    if: github.event_name == 'release' && github.event.action == 'created'
+    with:
+      version: ${{ needs.set-version.outputs.version }}
 
   publish:
-    needs: [set-version, build]
+    needs: [set-version, tagging]
     runs-on: ubuntu-latest
-    if: github.event_name == 'release' && github.event.action == 'created'
 
     env:
       VERSION: ${{ needs.set-version.outputs.version }}
