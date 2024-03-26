@@ -1,5 +1,8 @@
 {
-  "extends": ["github>patmoreau/workflow-config#main"],
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "github>patmoreau/workflow-config#main"
+  ],
   "packageRules": [
     {
       "matchUpdateTypes": ["major"],
@@ -12,6 +15,10 @@
       "matchPackageNames": ["Pomelo.EntityFrameworkCore.MySql"],
       "matchCurrentVersion": "^7",
       "enabled": false
+    },
+    {
+      "matchUpdateTypes": ["major"],
+      "dependencyDashboardApproval": true
     }
   ]
 }
