@@ -8,18 +8,18 @@ public abstract class StepDefinition
     protected StepDefinition(IHttpClientDriver httpClientDriver) => HttpClientDriver = httpClientDriver;
     protected IHttpClientDriver HttpClientDriver { get; }
 
-    public Guid WithCreatedId()
+    public async Task<Guid> WithCreatedIdAsync()
     {
-        var result = HttpClientDriver.DeserializeContent<Created>();
+        var result = await HttpClientDriver.DeserializeContentAsync<Created>().ConfigureAwait(false);
 
         result.Should().NotBeNull();
 
         return result!.Id;
     }
 
-    public TResult WithResultAs<TResult>()
+    public async Task<TResult> WithResultAs<TResult>()
     {
-        var result = HttpClientDriver.DeserializeContent<TResult>();
+        var result = await HttpClientDriver.DeserializeContentAsync<TResult>().ConfigureAwait(false);
         result.Should().NotBeNull();
 
         return result!;

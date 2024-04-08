@@ -30,7 +30,7 @@ public abstract partial class Scenario
             foreach (var filter in filters.Split(';'))
                 sb.Append(InvariantCulture, $"filter={filter}&");
 
-        return HttpClientDriver.SendGetRequestAsync(apiResources,
+        return HttpClientDriver.SendRequestAsync(apiResources,
             sb.Length == 0 ? null : sb.Remove(sb.Length - 1, 1).ToString());
     }
 }
