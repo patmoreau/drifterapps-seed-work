@@ -27,9 +27,9 @@ public abstract partial class Scenario
         HttpClientDriver.ResponseMessage.Should().NotBeNull().And.HaveStatusCode(HttpStatusCode.Unauthorized);
 
     [AssertionMethod]
-    protected TContent ShouldHaveReceived<TContent>()
+    protected async Task<TContent> ShouldHaveReceived<TContent>()
     {
-        var result = HttpClientDriver.DeserializeContent<TContent>();
+        var result = await HttpClientDriver.DeserializeContentAsync<TContent>().ConfigureAwait(false);
         result.Should().NotBeNull();
         return result!;
     }
@@ -43,7 +43,7 @@ public abstract partial class Scenario
     {
         ShouldExpectStatusCode(expectedStatusCode);
 
-        var problemDetails = HttpClientDriver.DeserializeContent<ProblemDetails>();
+        var problemDetails = HttpClientDriver.DeserializeContentAsync<ProblemDetails>();
         problemDetails.Should()
             .NotBeNull()
             .And.BeAssignableTo<ProblemDetails>()
@@ -55,7 +55,7 @@ public abstract partial class Scenario
     {
         ShouldExpectStatusCode(HttpStatusCode.UnprocessableEntity);
 
-        var problemDetails = HttpClientDriver.DeserializeContent<ValidationProblemDetails>();
+        var problemDetails = HttpClientDriver.DeserializeContentAsync<ValidationProblemDetails>();
         problemDetails.Should()
             .NotBeNull()
             .And.BeAssignableTo<ValidationProblemDetails>()
@@ -79,7 +79,7 @@ public abstract partial class Scenario
 
     private void ShouldHaveResponseWithStatus(HttpStatusCode httpStatus)
     {
-        LogUnexpectedContent(HttpClientDriver.ResponseMessage, httpStatus, TestOutputHelper);
+        LogUnexpectedContent(HttpClientDriver.ResponseMessage, httpStatus, TestOutputHelper).GetAwaiter().GetResult();
 
         HttpClientDriver.ResponseMessage.Should().NotBeNull().And.HaveStatusCode(httpStatus);
     }

@@ -8,11 +8,10 @@ namespace DrifterApps.Seeds.Testing.Drivers;
 public interface IHttpClientDriver
 {
     HttpResponseMessage? ResponseMessage { get; }
-    T? DeserializeContent<T>();
+    Task<T?> DeserializeContentAsync<T>();
     void AuthenticateUser(string userId);
     void UnAuthenticate();
-    public Task SendGetRequestAsync(ApiResource apiResource, string? query = null);
-    public Task SendGetRequestAsync(ApiResource apiResource, params object[] parameters);
-    public Task SendPostRequestAsync(ApiResource apiResource, string? body = null);
-    public Task SendDeleteRequestAsync(ApiResource apiResource, params object[] parameters);
+
+    Task SendRequestAsync(ApiResource apiResource, string? query = null, string? body = null,
+        params object[] parameters);
 }
