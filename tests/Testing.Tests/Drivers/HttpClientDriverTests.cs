@@ -13,6 +13,7 @@ namespace DrifterApps.Seeds.Testing.Tests.Drivers;
 public sealed class HttpClientDriverTests : IDisposable, IAsyncDisposable
 {
     private static readonly Faker Faker = new();
+
     private readonly ApiResourceBuilder _apiResourceBuilder = new();
     private readonly Driver _driver = new();
 
@@ -89,6 +90,57 @@ public sealed class HttpClientDriverTests : IDisposable, IAsyncDisposable
     }
 
     [Fact]
+    public async Task GivenSendRequestWithBodyAsync_WhenApiResourceIsNull_ThenThrowsArgumentNullException()
+    {
+        // Arrange
+        using var sut = _driver.Build();
+
+        // Act
+        // ReSharper disable once AccessToDisposedClosure
+        var act = async () => await sut.SendRequestWithBodyAsync(null!, Faker.Random.Words());
+
+        // Assert
+        await act.Should().ThrowAsync<ArgumentNullException>();
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData(" ")]
+    public async Task GivenSendRequestWithBodyAsync_WhenBodyIsNullOfEmpty_ThenThrowsArgumentException(string? body)
+    {
+        // Arrange
+        var apiResource = _apiResourceBuilder.Build();
+        using var sut = _driver.Build();
+
+        // Act
+        // ReSharper disable once AccessToDisposedClosure
+        var act = async () => await sut.SendRequestWithBodyAsync(apiResource, body!);
+
+        // Assert
+        await act.Should().ThrowAsync<ArgumentException>();
+    }
+
+    [Theory]
+    [MemberData(nameof(SendRequestWithBodyAsyncTestData))]
+    public async Task GivenSendRequestWithBodyAsync_WhenHttpMethod_ThenSendGetHttpRequestMessage(HttpMethod httpMethod,
+        string endpointTemplate, string body)
+    {
+        // Arrange
+        var apiResource = _apiResourceBuilder
+            .WithHttpMethod(httpMethod)
+            .WithEndpointTemplate(endpointTemplate)
+            .Build();
+        using var sut = _driver.WithSuccessfulResponseMessage().Build();
+
+        // Act
+        await sut.SendRequestWithBodyAsync(apiResource, body);
+
+        // Assert
+        _driver.ShouldHaveSentHttpRequestMessageWithContent(apiResource.HttpMethod, apiResource.EndpointTemplate);
+    }
+
+    [Fact]
     public async Task GivenSendRequestAsync_WhenApiResourceIsNull_ThenThrowsArgumentNullException()
     {
         // Arrange
@@ -103,7 +155,7 @@ public sealed class HttpClientDriverTests : IDisposable, IAsyncDisposable
     }
 
     [Theory]
-    [MemberData(nameof(SendAsyncTestData))]
+    [MemberData(nameof(SendRequestAsyncTestData))]
     public async Task GivenSendRequestAsync_WhenHttpMethod_ThenSendGetHttpRequestMessage(HttpMethod httpMethod,
         string endpointTemplate)
     {
@@ -160,15 +212,6 @@ public sealed class HttpClientDriverTests : IDisposable, IAsyncDisposable
         testOutputHelper.DidNotReceive().WriteLine(Arg.Any<string>());
     }
 
-    public static IEnumerable<object[]> SendAsyncTestData()
-    {
-        yield return [HttpMethod.Get, Faker.Internet.UrlRootedPath()];
-        yield return [HttpMethod.Post, Faker.Internet.UrlRootedPath()];
-        yield return [HttpMethod.Put, Faker.Internet.UrlRootedPath()];
-        yield return [HttpMethod.Patch, Faker.Internet.UrlRootedPath()];
-        yield return [HttpMethod.Delete, Faker.Internet.UrlRootedPath()];
-    }
-
     private void Dispose(bool disposing)
     {
         if (disposing) _driver.Dispose();
@@ -182,7 +225,7 @@ public sealed class HttpClientDriverTests : IDisposable, IAsyncDisposable
 
     ~HttpClientDriverTests() => Dispose(false);
 
-    private class Driver : IDriverOf<HttpClientDriver>, IDisposable
+    internal class Driver : IDriverOf<HttpClientDriver>, IDisposable
     {
         private readonly IHttpMessageHandler _httpMessageHandler = Substitute.For<IHttpMessageHandler>();
         private readonly ITestOutputHelper _testOutputHelper = Substitute.For<ITestOutputHelper>();
@@ -257,6 +300,16 @@ public sealed class HttpClientDriverTests : IDisposable, IAsyncDisposable
                 Arg.Any<CancellationToken>());
         }
 
+        public void ShouldHaveSentHttpRequestMessageWithContent(HttpMethod httpMethod, string endpoint)
+        {
+            var uri = new Uri(_httpClient?.BaseAddress!, endpoint);
+            _httpMessageHandler.Received(1).MockSendAsync(
+                Arg.Is<HttpRequestMessage>(x => x.Method.Equals(httpMethod)
+                                                && x.RequestUri!.Equals(uri)
+                                                && x.Content != null),
+                Arg.Any<CancellationToken>());
+        }
+
         protected virtual void Dispose(bool disposing)
         {
             if (!disposing) return;
@@ -267,5 +320,25 @@ public sealed class HttpClientDriverTests : IDisposable, IAsyncDisposable
         }
     }
 
-    private record TestObject(Guid Id);
+    internal record TestObject(Guid Id);
+
+#pragma warning disable CA2211
+    public static TheoryData<HttpMethod, string, string> SendRequestWithBodyAsyncTestData = new()
+    {
+        {HttpMethod.Get, Faker.Internet.UrlRootedPath(), JsonSerializer.Serialize(Faker.Address)},
+        {HttpMethod.Post, Faker.Internet.UrlRootedPath(), JsonSerializer.Serialize(Faker.Address)},
+        {HttpMethod.Put, Faker.Internet.UrlRootedPath(), JsonSerializer.Serialize(Faker.Address)},
+        {HttpMethod.Patch, Faker.Internet.UrlRootedPath(), JsonSerializer.Serialize(Faker.Address)},
+        {HttpMethod.Delete, Faker.Internet.UrlRootedPath(), JsonSerializer.Serialize(Faker.Address)}
+    };
+
+    public static TheoryData<HttpMethod, string> SendRequestAsyncTestData = new()
+    {
+        {HttpMethod.Get, Faker.Internet.UrlRootedPath()},
+        {HttpMethod.Post, Faker.Internet.UrlRootedPath()},
+        {HttpMethod.Put, Faker.Internet.UrlRootedPath()},
+        {HttpMethod.Patch, Faker.Internet.UrlRootedPath()},
+        {HttpMethod.Delete, Faker.Internet.UrlRootedPath()}
+    };
+#pragma warning restore CA2211
 }
