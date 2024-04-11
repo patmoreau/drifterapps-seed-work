@@ -41,18 +41,30 @@ public sealed class HttpClientDriver : IHttpClientDriver, IDisposable
 
     public void UnAuthenticate() => _httpClient.DefaultRequestHeaders.Authorization = null;
 
-    public async Task SendRequestAsync(ApiResource apiResource, string? query = null, string? body = null,
-        params object[] parameters)
+    public Task SendRequestAsync(ApiResource apiResource, params object[] parameters)
     {
         ArgumentNullException.ThrowIfNull(apiResource);
 
-        var baseUri = apiResource.EndpointFromResource(parameters);
-        var fullUri = baseUri;
-        if (query is not null)
-            fullUri = new Uri($"{fullUri}?{query}", fullUri.IsAbsoluteUri ? UriKind.Absolute : UriKind.Relative);
+        return SendHttpRequestMessageAsync(apiResource, null, parameters);
+    }
 
-        using var requestMessage = new HttpRequestMessage(apiResource.HttpMethod, fullUri);
-        requestMessage.Content = body is not null ? new StringContent(body, Encoding.UTF8, "application/json") : null;
+    public Task SendRequestWithBodyAsync(ApiResource apiResource, string body, params object[] parameters)
+    {
+        ArgumentNullException.ThrowIfNull(apiResource);
+        // ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
+        ArgumentException.ThrowIfNullOrEmpty(body?.Trim());
+
+        return SendHttpRequestMessageAsync(apiResource, body, parameters);
+    }
+
+    private async Task SendHttpRequestMessageAsync(ApiResource apiResource, string? body, params object[] parameters)
+    {
+        var baseUri = apiResource.EndpointFromResource(parameters);
+
+        using var requestMessage = new HttpRequestMessage(apiResource.HttpMethod, baseUri);
+        requestMessage.Content = body is not null
+            ? new StringContent(body, Encoding.UTF8, "application/json")
+            : null;
 
         ResponseMessage = await _httpClient.SendAsync(requestMessage).ConfigureAwait(false);
 

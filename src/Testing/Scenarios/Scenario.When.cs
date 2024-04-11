@@ -8,16 +8,17 @@ public abstract partial class Scenario
 {
     /// <summary>
     /// </summary>
-    /// <param name="apiResources"></param>
+    /// <param name="apiResource"></param>
     /// <param name="offset"></param>
     /// <param name="limit"></param>
     /// <param name="sorts"></param>
     /// <param name="filters"></param>
+    /// <param name="parameters"></param>
     /// <returns></returns>
-    public Task QueryEndpoint(ApiResource apiResources, int? offset = null, int? limit = null,
-        string? sorts = null, string? filters = null)
+    public Task QueryEndpoint(ApiResource apiResource, int? offset = null, int? limit = null,
+        string? sorts = null, string? filters = null, params object[] parameters)
     {
-        StringBuilder sb = new();
+        StringBuilder sb = new("?");
         if (offset is not null) sb.Append(InvariantCulture, $"offset={offset}&");
 
         if (limit is not null) sb.Append(InvariantCulture, $"limit={limit}&");
@@ -30,7 +31,8 @@ public abstract partial class Scenario
             foreach (var filter in filters.Split(';'))
                 sb.Append(InvariantCulture, $"filter={filter}&");
 
-        return HttpClientDriver.SendRequestAsync(apiResources,
-            sb.Length == 0 ? null : sb.Remove(sb.Length - 1, 1).ToString());
+        var args = parameters.Concat([sb.Length == 1 ? string.Empty : sb.Remove(sb.Length - 1, 1).ToString()])
+            .ToArray();
+        return HttpClientDriver.SendRequestAsync(apiResource, args);
     }
 }
