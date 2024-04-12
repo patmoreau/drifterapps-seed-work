@@ -9,40 +9,40 @@ public class RootStepDefinitionTests
     private readonly RootStepDefinitionDriver _driver = new();
 
     [Fact]
-    public async Task GivenWithCreatedId_WhenCreatedIdValid_ThenReturnCreatedId()
+    public void GivenWithCreatedId_WhenCreatedIdValid_ThenReturnCreatedId()
     {
         // Arrange
         var createdId = Guid.NewGuid();
         var sut = _driver.WithCreatedId(createdId).Build();
 
         // Act
-        var result = await sut.WithCreatedIdAsync();
+        var result = sut.WithCreatedId();
 
         // Assert
         result.Should().Be(createdId);
     }
 
     [Fact]
-    public async Task GivenWithCreatedId_WhenCreatedIdEmpty_ThenReturnCreatedId()
+    public void GivenWithCreatedId_WhenCreatedIdEmpty_ThenReturnCreatedId()
     {
         // Arrange
         var sut = _driver.WithNoCreatedId().Build();
 
         // Act
-        var action = () => sut.WithCreatedIdAsync();
+        var action = () => sut.WithCreatedId();
 
         // Assert
-        await action.Should().ThrowAsync<XunitException>();
+        action.Should().Throw<XunitException>();
     }
 
     [Fact]
-    public async Task GivenWithResultAs_WhenCreatedIdEmpty_ThenReturnCreatedId()
+    public void GivenWithResultAs_WhenCreatedIdEmpty_ThenReturnCreatedId()
     {
         // Arrange
         var sut = _driver.WithStringResultData().Build();
 
         // Act
-        var result = await sut.WithResultAs<string>();
+        var result = sut.WithResultAs<string>();
 
         // Assert
         result.Should().NotBeEmpty();
@@ -56,7 +56,7 @@ public class RootStepDefinitionTests
 
         public RootStepDefinitionDriver WithCreatedId(Guid id)
         {
-            _httpClientDriver.DeserializeContentAsync<StepDefinition.Created>()
+            _httpClientDriver.DeserializeContent<StepDefinition.Created>()
                 .Returns(new StepDefinition.Created(id));
 
             return this;
@@ -64,7 +64,7 @@ public class RootStepDefinitionTests
 
         public RootStepDefinitionDriver WithStringResultData()
         {
-            _httpClientDriver.DeserializeContentAsync<string>().Returns(Fakerizer.Lorem.Text());
+            _httpClientDriver.DeserializeContent<string>().Returns(Fakerizer.Lorem.Text());
 
             return this;
         }
@@ -72,8 +72,8 @@ public class RootStepDefinitionTests
         public RootStepDefinitionDriver WithNoCreatedId()
         {
             _httpClientDriver
-                .DeserializeContentAsync<StepDefinition.Created>()
-                .Returns(_ => Task.FromResult(null as StepDefinition.Created));
+                .DeserializeContent<StepDefinition.Created>()
+                .Returns(_ => null);
 
             return this;
         }

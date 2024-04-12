@@ -1,3 +1,4 @@
+using System.Net;
 using DrifterApps.Seeds.Testing.Infrastructure;
 
 namespace DrifterApps.Seeds.Testing.Drivers;
@@ -7,9 +8,13 @@ namespace DrifterApps.Seeds.Testing.Drivers;
 /// </summary>
 public interface IHttpClientDriver
 {
-    HttpResponseMessage? ResponseMessage { get; }
+    HttpStatusCode ResponseStatusCode { get; }
 
-    Task<T?> DeserializeContentAsync<T>();
+    string? ResponseContent { get; }
+
+    Uri? ResponseLocation { get; }
+
+    T? DeserializeContent<T>();
 
     void AuthenticateUser(string userId);
 

@@ -34,11 +34,11 @@ public sealed class HttpClientDriverTests : IDisposable, IAsyncDisposable
     {
         // Arrange
         var apiResource = _apiResourceBuilder.Build();
-        using var sut = _driver.WithEmptyResponseMessage().Build();
+        var sut = _driver.WithEmptyResponseMessage().Build();
 
         // Act
         await sut.SendRequestAsync(apiResource);
-        var result = await sut.DeserializeContentAsync<object>();
+        var result = sut.DeserializeContent<object>();
 
         // Assert
         result.Should().BeNull();
@@ -50,11 +50,11 @@ public sealed class HttpClientDriverTests : IDisposable, IAsyncDisposable
         // Arrange
         var data = new TestObject(Guid.NewGuid());
         var apiResource = _apiResourceBuilder.Build();
-        using var sut = _driver.WithResponseMessage(data).Build();
+        var sut = _driver.WithResponseMessage(data).Build();
 
         // Act
         await sut.SendRequestAsync(apiResource);
-        var result = await sut.DeserializeContentAsync<TestObject>();
+        var result = sut.DeserializeContent<TestObject>();
 
         // Assert
         result.Should().NotBeNull().And.BeEquivalentTo(data);
@@ -65,7 +65,7 @@ public sealed class HttpClientDriverTests : IDisposable, IAsyncDisposable
     {
         // Arrange
         var userId = Faker.Internet.UserName();
-        using var sut = _driver.Build();
+        var sut = _driver.Build();
 
         // Act
         sut.AuthenticateUser(userId);
@@ -79,7 +79,7 @@ public sealed class HttpClientDriverTests : IDisposable, IAsyncDisposable
     {
         // Arrange
         var userId = Faker.Internet.UserName();
-        using var sut = _driver.Build();
+        var sut = _driver.Build();
         sut.AuthenticateUser(userId);
 
         // Act
@@ -93,7 +93,7 @@ public sealed class HttpClientDriverTests : IDisposable, IAsyncDisposable
     public async Task GivenSendRequestWithBodyAsync_WhenApiResourceIsNull_ThenThrowsArgumentNullException()
     {
         // Arrange
-        using var sut = _driver.Build();
+        var sut = _driver.Build();
 
         // Act
         // ReSharper disable once AccessToDisposedClosure
@@ -111,7 +111,7 @@ public sealed class HttpClientDriverTests : IDisposable, IAsyncDisposable
     {
         // Arrange
         var apiResource = _apiResourceBuilder.Build();
-        using var sut = _driver.Build();
+        var sut = _driver.Build();
 
         // Act
         // ReSharper disable once AccessToDisposedClosure
@@ -131,7 +131,7 @@ public sealed class HttpClientDriverTests : IDisposable, IAsyncDisposable
             .WithHttpMethod(httpMethod)
             .WithEndpointTemplate(endpointTemplate)
             .Build();
-        using var sut = _driver.WithSuccessfulResponseMessage().Build();
+        var sut = _driver.WithSuccessfulResponseMessage().Build();
 
         // Act
         await sut.SendRequestWithBodyAsync(apiResource, body);
@@ -144,7 +144,7 @@ public sealed class HttpClientDriverTests : IDisposable, IAsyncDisposable
     public async Task GivenSendRequestAsync_WhenApiResourceIsNull_ThenThrowsArgumentNullException()
     {
         // Arrange
-        using var sut = _driver.Build();
+        var sut = _driver.Build();
 
         // Act
         // ReSharper disable once AccessToDisposedClosure
@@ -164,7 +164,7 @@ public sealed class HttpClientDriverTests : IDisposable, IAsyncDisposable
             .WithHttpMethod(httpMethod)
             .WithEndpointTemplate(endpointTemplate)
             .Build();
-        using var sut = _driver.WithSuccessfulResponseMessage().Build();
+        var sut = _driver.WithSuccessfulResponseMessage().Build();
 
         // Act
         await sut.SendRequestAsync(apiResource);
@@ -186,32 +186,6 @@ public sealed class HttpClientDriverTests : IDisposable, IAsyncDisposable
         act.Should().Throw<ArgumentNullException>();
     }
 
-    [Fact]
-    public async Task GivenLogUnexpectedErrors_WhenResponseMessageIsNull_ThenDoesNotWriteToOutput()
-    {
-        // Arrange
-        var testOutputHelper = Substitute.For<ITestOutputHelper>();
-
-        // Act
-        await HttpClientDriver.LogUnexpectedErrors(null, testOutputHelper);
-
-        // Assert
-        testOutputHelper.DidNotReceive().WriteLine(Arg.Any<string>());
-    }
-
-    [Fact]
-    public async Task GivenLogUnexpectedContent_WhenResponseMessageIsNull_ThenDoesNotWriteToOutput()
-    {
-        // Arrange
-        var testOutputHelper = Substitute.For<ITestOutputHelper>();
-
-        // Act
-        await HttpClientDriver.LogUnexpectedContent(null, HttpStatusCode.OK, testOutputHelper);
-
-        // Assert
-        testOutputHelper.DidNotReceive().WriteLine(Arg.Any<string>());
-    }
-
     private void Dispose(bool disposing)
     {
         if (disposing) _driver.Dispose();
@@ -225,7 +199,7 @@ public sealed class HttpClientDriverTests : IDisposable, IAsyncDisposable
 
     ~HttpClientDriverTests() => Dispose(false);
 
-    internal class Driver : IDriverOf<HttpClientDriver>, IDisposable
+    internal sealed class Driver : IDriverOf<HttpClientDriver>, IDisposable
     {
         private readonly IHttpMessageHandler _httpMessageHandler = Substitute.For<IHttpMessageHandler>();
         private readonly ITestOutputHelper _testOutputHelper = Substitute.For<ITestOutputHelper>();
@@ -233,11 +207,7 @@ public sealed class HttpClientDriverTests : IDisposable, IAsyncDisposable
         private MockHttpMessageHandler? _mockHttpMessageHandler;
         private HttpResponseMessage? _responseMessage;
 
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
+        public void Dispose() => Dispose(true);
 
         public HttpClientDriver Build()
         {
@@ -310,7 +280,7 @@ public sealed class HttpClientDriverTests : IDisposable, IAsyncDisposable
                 Arg.Any<CancellationToken>());
         }
 
-        protected virtual void Dispose(bool disposing)
+        private void Dispose(bool disposing)
         {
             if (!disposing) return;
 
@@ -320,7 +290,7 @@ public sealed class HttpClientDriverTests : IDisposable, IAsyncDisposable
         }
     }
 
-    internal record TestObject(Guid Id);
+    private record TestObject(Guid Id);
 
 #pragma warning disable CA2211
     public static TheoryData<HttpMethod, string, string> SendRequestWithBodyAsyncTestData = new()
