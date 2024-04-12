@@ -3,7 +3,6 @@ using DrifterApps.Seeds.Testing.Attributes;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using Microsoft.AspNetCore.Mvc;
-using static DrifterApps.Seeds.Testing.Drivers.HttpClientDriver;
 
 namespace DrifterApps.Seeds.Testing.Scenarios;
 
@@ -15,21 +14,21 @@ public abstract partial class Scenario
 
     [AssertionMethod]
     protected void ShouldBeAuthorizedToAccessEndpoint() =>
-        HttpClientDriver.ResponseMessage.Should().NotBeNull().And.NotHaveStatusCode(HttpStatusCode.Forbidden).And
-            .NotHaveStatusCode(HttpStatusCode.Unauthorized);
+        HttpClientDriver.ResponseStatusCode.Should().NotBe(HttpStatusCode.Forbidden).And
+            .NotBe(HttpStatusCode.Unauthorized);
 
     [AssertionMethod]
     protected void ShouldBeForbiddenToAccessEndpoint() =>
-        HttpClientDriver.ResponseMessage.Should().NotBeNull().And.HaveStatusCode(HttpStatusCode.Forbidden);
+        HttpClientDriver.ResponseStatusCode.Should().Be(HttpStatusCode.Forbidden);
 
     [AssertionMethod]
     protected void ShouldNotBeAuthorizedToAccessEndpoint() =>
-        HttpClientDriver.ResponseMessage.Should().NotBeNull().And.HaveStatusCode(HttpStatusCode.Unauthorized);
+        HttpClientDriver.ResponseStatusCode.Should().Be(HttpStatusCode.Unauthorized);
 
     [AssertionMethod]
-    protected async Task<TContent> ShouldHaveReceived<TContent>()
+    protected TContent ShouldHaveReceived<TContent>()
     {
-        var result = await HttpClientDriver.DeserializeContentAsync<TContent>().ConfigureAwait(false);
+        var result = HttpClientDriver.DeserializeContent<TContent>();
         result.Should().NotBeNull();
         return result!;
     }
@@ -43,7 +42,7 @@ public abstract partial class Scenario
     {
         ShouldExpectStatusCode(expectedStatusCode);
 
-        var problemDetails = HttpClientDriver.DeserializeContentAsync<ProblemDetails>();
+        var problemDetails = HttpClientDriver.DeserializeContent<ProblemDetails>();
         problemDetails.Should()
             .NotBeNull()
             .And.BeAssignableTo<ProblemDetails>()
@@ -55,7 +54,7 @@ public abstract partial class Scenario
     {
         ShouldExpectStatusCode(HttpStatusCode.UnprocessableEntity);
 
-        var problemDetails = HttpClientDriver.DeserializeContentAsync<ValidationProblemDetails>();
+        var problemDetails = HttpClientDriver.DeserializeContent<ValidationProblemDetails>();
         problemDetails.Should()
             .NotBeNull()
             .And.BeAssignableTo<ValidationProblemDetails>()
@@ -66,31 +65,27 @@ public abstract partial class Scenario
     [AssertionMethod]
     protected Uri ShouldGetTheRouteOfTheNewResourceInTheHeader()
     {
-        var headers = HttpClientDriver.ResponseMessage!.Headers;
-        headers.Should().ContainKey("Location");
+        HttpClientDriver.ResponseLocation.Should().NotBeNull();
 
-        var locations = headers.GetValues("Location").ToList();
-        locations.Should().HaveCount(1);
-
-        Uri.TryCreate(locations[0], UriKind.RelativeOrAbsolute, out var uri).Should().BeTrue();
-
-        return uri!;
+        return HttpClientDriver.ResponseLocation!;
     }
 
     private void ShouldHaveResponseWithStatus(HttpStatusCode httpStatus)
     {
-        LogUnexpectedContent(HttpClientDriver.ResponseMessage, httpStatus, TestOutputHelper).GetAwaiter().GetResult();
+        if (HttpClientDriver.ResponseStatusCode != httpStatus)
+        {
+            var content = string.IsNullOrWhiteSpace(HttpClientDriver.ResponseContent)
+                ? "<empty response>"
+                : HttpClientDriver.ResponseContent;
+            TestOutputHelper.WriteLine(
+                $"Unexpected HTTP {HttpClientDriver.ResponseStatusCode} Code with Response: {content}");
+        }
 
-        HttpClientDriver.ResponseMessage.Should().NotBeNull().And.HaveStatusCode(httpStatus);
+        HttpClientDriver.ResponseStatusCode.Should().Be(httpStatus);
     }
 
-    private void ShouldHaveResponseWithStatus(Func<HttpStatusCode?, bool> httpStatusPredicate)
-    {
-        ArgumentNullException.ThrowIfNull(httpStatusPredicate);
-
-        HttpClientDriver.ResponseMessage.Should().NotBeNull();
-        httpStatusPredicate(HttpClientDriver.ResponseMessage!.StatusCode).Should().BeTrue();
-    }
+    private void ShouldHaveResponseWithStatus(Func<HttpStatusCode?, bool> httpStatusPredicate) =>
+        httpStatusPredicate(HttpClientDriver.ResponseStatusCode).Should().BeTrue();
 
 #pragma warning disable CA1822
     [AssertionMethod]

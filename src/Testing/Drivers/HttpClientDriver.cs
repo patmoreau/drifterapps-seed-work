@@ -8,7 +8,7 @@ using Xunit.Abstractions;
 
 namespace DrifterApps.Seeds.Testing.Drivers;
 
-public sealed class HttpClientDriver : IHttpClientDriver, IDisposable
+public sealed class HttpClientDriver : IHttpClientDriver
 {
     private static readonly JsonSerializerOptions JsonSerializerOptions = new() {PropertyNameCaseInsensitive = true};
 
@@ -21,17 +21,17 @@ public sealed class HttpClientDriver : IHttpClientDriver, IDisposable
         _testOutputHelper = testOutputHelper;
     }
 
-    public void Dispose() => ResponseMessage?.Dispose();
+    public HttpStatusCode ResponseStatusCode { get; private set; }
 
-    public HttpResponseMessage? ResponseMessage { get; private set; }
+    public string? ResponseContent { get; private set; }
 
-    public async Task<T?> DeserializeContentAsync<T>()
+    public Uri? ResponseLocation { get; private set; }
+
+    public T? DeserializeContent<T>()
     {
-        if (ResponseMessage is null) return default;
-        var resultAsString = await ResponseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
-        if (string.IsNullOrWhiteSpace(resultAsString)) return default;
+        if (string.IsNullOrWhiteSpace(ResponseContent)) return default;
 
-        var content = JsonSerializer.Deserialize<T>(resultAsString, JsonSerializerOptions);
+        var content = JsonSerializer.Deserialize<T>(ResponseContent, JsonSerializerOptions);
         return content;
     }
 
@@ -66,9 +66,13 @@ public sealed class HttpClientDriver : IHttpClientDriver, IDisposable
             ? new StringContent(body, Encoding.UTF8, "application/json")
             : null;
 
-        ResponseMessage = await _httpClient.SendAsync(requestMessage).ConfigureAwait(false);
+        using var responseMessage = await _httpClient.SendAsync(requestMessage).ConfigureAwait(false);
 
-        await LogUnexpectedErrors(ResponseMessage, _testOutputHelper).ConfigureAwait(false);
+        ResponseStatusCode = responseMessage.StatusCode;
+        ResponseLocation = responseMessage.Headers.Location;
+        ResponseContent = await responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+        LogUnexpectedErrors(_testOutputHelper);
     }
 
     public static IHttpClientDriver CreateDriver(HttpClient httpClient, ITestOutputHelper testOutputHelper)
@@ -78,30 +82,11 @@ public sealed class HttpClientDriver : IHttpClientDriver, IDisposable
         return new HttpClientDriver(httpClient, testOutputHelper);
     }
 
-    internal static async Task LogUnexpectedErrors(HttpResponseMessage? responseMessage,
-        ITestOutputHelper testOutputHelper)
+    private void LogUnexpectedErrors(ITestOutputHelper testOutputHelper)
     {
-        if (responseMessage is null) return;
+        if (ResponseStatusCode != HttpStatusCode.InternalServerError) return;
 
-        if (responseMessage.StatusCode != HttpStatusCode.InternalServerError) return;
-
-        var resultAsString = await responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
-
-        var content = string.IsNullOrWhiteSpace(resultAsString) ? "<empty response>" : resultAsString;
+        var content = string.IsNullOrWhiteSpace(ResponseContent) ? "<empty response>" : ResponseContent;
         testOutputHelper.WriteLine($"HTTP 500 Response: {content}");
-    }
-
-    internal static async Task LogUnexpectedContent(HttpResponseMessage? responseMessage,
-        HttpStatusCode expectedStatusCode,
-        ITestOutputHelper testOutputHelper)
-    {
-        if (responseMessage is null) return;
-
-        if (responseMessage.StatusCode == expectedStatusCode) return;
-
-        var resultAsString = await responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
-
-        var content = string.IsNullOrWhiteSpace(resultAsString) ? "<empty response>" : resultAsString;
-        testOutputHelper.WriteLine($"Unexpected HTTP {responseMessage.StatusCode} Code with Response: {content}");
     }
 }
