@@ -47,5 +47,12 @@ public class MariaDatabaseServer : IDatabaseServer
     }
 
     public static MariaDatabaseServer CreateServer(string databaseName) => new(databaseName);
+
+    public static MariaDatabaseServer CreateServer(string databaseName, string image) =>
+        new(databaseName, image: image);
+
     public static MariaDatabaseServer CreateServer(string databaseName, int port) => new(databaseName, port);
+
+    public static MariaDatabaseServer CreateServer(string databaseName, int port, string image) =>
+        new(databaseName, port, image);
 }
