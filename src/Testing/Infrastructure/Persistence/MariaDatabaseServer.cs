@@ -14,7 +14,7 @@ public class MariaDatabaseServer : IDatabaseServer
     private const string RootPassword = "root_password";
     private readonly MariaDbContainer _container;
 
-    private MariaDatabaseServer(string databaseName, int? port = null)
+    private MariaDatabaseServer(string databaseName, int? port = null, string? image = null)
     {
         var builder = new MariaDbBuilder()
             .WithDatabase(databaseName)
@@ -23,6 +23,7 @@ public class MariaDatabaseServer : IDatabaseServer
             .WithWaitStrategy(Wait.ForUnixContainer());
 
         if (port is not null) builder.WithPortBinding(port.Value);
+        if (!string.IsNullOrWhiteSpace(image)) builder.WithImage(image);
 
         _container = builder.Build();
     }
