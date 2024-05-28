@@ -8,7 +8,7 @@ public static class DbContextExtensions
     {
         ArgumentNullException.ThrowIfNull(dbContext);
 
-        dbContext.Add(entity);
+        await dbContext.AddAsync(entity).ConfigureAwait(false);
         await dbContext.SaveChangesAsync().ConfigureAwait(false);
     }
 
