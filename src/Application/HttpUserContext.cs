@@ -4,21 +4,21 @@ using Microsoft.AspNetCore.Http;
 namespace DrifterApps.Seeds.Application;
 
 /// <inheritdoc />
-internal sealed class UserContext(IHttpContextAccessor httpContextAccessor) : IUserContext
+internal sealed class HttpUserContext(IHttpContextAccessor httpContextAccessor) : IHttpUserContext
 {
     /// <inheritdoc />
-    public Guid Id => GetUserId();
+    public string IdentityObjectId => GetIdentityObjectIdFromClaims();
 
-    private Guid GetUserId()
+    private string GetIdentityObjectIdFromClaims()
     {
         var user = httpContextAccessor.HttpContext?.User;
-        if (user is null) return Guid.Empty;
+        if (user is null) return string.Empty;
 
         var value = GetFirstClaimValue(user, ClaimTypes.NameIdentifier);
 
         if (string.IsNullOrWhiteSpace(value)) value = GetFirstClaimValue(user, "sub");
 
-        return string.IsNullOrWhiteSpace(value) ? Guid.Empty : Guid.Parse(value);
+        return value ?? string.Empty;
     }
 
     private static string? GetFirstClaimValue(ClaimsPrincipal principal, string claimType)

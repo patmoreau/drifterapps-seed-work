@@ -17,7 +17,7 @@ public class UserContextTests
         var sut = _driver.WhenUserHasNameIdentifierClaim(out var idNameIdentifier).Build();
 
         // act
-        var result = sut.Id;
+        var result = sut.IdentityObjectId;
 
         // assert
         result.Should().Be(idNameIdentifier);
@@ -30,7 +30,7 @@ public class UserContextTests
         var sut = _driver.WhenUserHasSubClaim(out var idSub).Build();
 
         // act
-        var result = sut.Id;
+        var result = sut.IdentityObjectId;
 
         // assert
         result.Should().Be(idSub);
@@ -43,7 +43,7 @@ public class UserContextTests
         var sut = _driver.WhenUserHasNameIdentifierAndSubClaim(out var idNameIdentifier).Build();
 
         // act
-        var result = sut.Id;
+        var result = sut.IdentityObjectId;
 
         // assert
         result.Should().Be(idNameIdentifier);
@@ -56,10 +56,10 @@ public class UserContextTests
         var sut = _driver.WhenHttpContextIsNull().Build();
 
         // act
-        var result = sut.Id;
+        var result = sut.IdentityObjectId;
 
         // assert
-        result.Should().Be(Guid.Empty);
+        result.Should().Be(string.Empty);
     }
 
     [Fact]
@@ -69,64 +69,64 @@ public class UserContextTests
         var sut = _driver.WhenUserHasNoClaims().Build();
 
         // act
-        var result = sut.Id;
+        var result = sut.IdentityObjectId;
 
         // assert
-        result.Should().Be(Guid.Empty);
+        result.Should().Be(string.Empty);
     }
 
-    private class UserContextDriver : IDriverOf<UserContext>
+    private class UserContextDriver : IDriverOf<HttpUserContext>
     {
         private readonly IHttpContextAccessor _httpContextAccessor = Substitute.For<IHttpContextAccessor>();
 
-        private readonly Guid _idNameIdentifier;
-        private readonly Guid _idSub;
+        private readonly string _idNameIdentifier;
+        private readonly string _idSub;
 
         public UserContextDriver()
         {
-            _idNameIdentifier = Fakerizer.Random.Guid();
-            _idSub = Fakerizer.Random.Guid();
+            _idNameIdentifier = Fakerizer.Random.Hash();
+            _idSub = Fakerizer.Random.Hash();
         }
 
-        public UserContext Build() => new(_httpContextAccessor);
+        public HttpUserContext Build() => new(_httpContextAccessor);
 
-        public UserContextDriver WhenUserHasNameIdentifierClaim(out Guid idNameIdentifier)
+        public UserContextDriver WhenUserHasNameIdentifierClaim(out string idNameIdentifier)
         {
             _httpContextAccessor.HttpContext = new DefaultHttpContext
             {
-                User = new ClaimsPrincipal(new ClaimsIdentity(new[]
-                {
-                    new Claim(ClaimTypes.NameIdentifier, _idNameIdentifier.ToString())
-                }))
+                User = new ClaimsPrincipal(new ClaimsIdentity(
+                [
+                    new Claim(ClaimTypes.NameIdentifier, _idNameIdentifier)
+                ]))
             };
             idNameIdentifier = _idNameIdentifier;
 
             return this;
         }
 
-        public UserContextDriver WhenUserHasSubClaim(out Guid idSub)
+        public UserContextDriver WhenUserHasSubClaim(out string idSub)
         {
             _httpContextAccessor.HttpContext = new DefaultHttpContext
             {
-                User = new ClaimsPrincipal(new ClaimsIdentity(new[]
-                {
-                    new Claim("sub", _idSub.ToString())
-                }))
+                User = new ClaimsPrincipal(new ClaimsIdentity(
+                [
+                    new Claim("sub", _idSub)
+                ]))
             };
             idSub = _idSub;
 
             return this;
         }
 
-        public UserContextDriver WhenUserHasNameIdentifierAndSubClaim(out Guid idNameIdentifier)
+        public UserContextDriver WhenUserHasNameIdentifierAndSubClaim(out string idNameIdentifier)
         {
             _httpContextAccessor.HttpContext = new DefaultHttpContext
             {
-                User = new ClaimsPrincipal(new ClaimsIdentity(new[]
-                {
-                    new Claim(ClaimTypes.NameIdentifier, _idNameIdentifier.ToString()),
-                    new Claim("sub", _idSub.ToString())
-                }))
+                User = new ClaimsPrincipal(new ClaimsIdentity(
+                [
+                    new Claim(ClaimTypes.NameIdentifier, _idNameIdentifier),
+                    new Claim("sub", _idSub)
+                ]))
             };
             idNameIdentifier = _idNameIdentifier;
 
