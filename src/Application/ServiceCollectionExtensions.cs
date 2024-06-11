@@ -8,7 +8,7 @@ namespace DrifterApps.Seeds.Application;
 public static class ServiceCollectionExtensions
 {
     /// <summary>
-    ///     Add <see cref="IUserContext" /> transient implementation
+    ///     Add <see cref="IHttpUserContext" /> transient implementation
     /// </summary>
     /// <param name="services">
     ///     <see cref="IServiceCollection" />
@@ -19,7 +19,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddUserContext(this IServiceCollection services)
     {
         services.AddHttpContextAccessor()
-            .AddTransient<IUserContext, UserContext>()
+            .AddTransient<IHttpUserContext, HttpUserContext>()
             .AddMemoryCache();
 
         return services;

@@ -5,10 +5,10 @@ namespace DrifterApps.Seeds.Application;
 /// <summary>
 ///     Interface to extract user context information fro the <see cref="IHttpContextAccessor" />.
 /// </summary>
-public interface IUserContext
+public interface IHttpUserContext
 {
     /// <summary>
-    ///     Id extracted from user claims
+    ///     Object Id extracted from user claims
     /// </summary>
-    Guid Id { get; }
+    string IdentityObjectId { get; }
 }
