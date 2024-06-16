@@ -54,8 +54,8 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageVersion>
-    <PackageVersion Include="Testcontainers" Version="3.8.0" />
-    <PackageVersion Include="Testcontainers.MariaDb" Version="3.8.0" />
+    <PackageVersion Include="Testcontainers" Version="3.9.0" />
+    <PackageVersion Include="Testcontainers.MariaDb" Version="3.9.0" />
     <PackageVersion Include="xunit" Version="2.8.1" />
     <PackageVersion Include="xunit.analyzers" Version="1.14.0" />
     <PackageVersion Include="xunit.categories" Version="2.0.8" />
