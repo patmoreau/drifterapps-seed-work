@@ -6,15 +6,15 @@
   "packageRules": [
     {
       "matchUpdateTypes": ["major"],
-      "matchPackageNames": ["Microsoft.EntityFrameworkCore"],
+      "matchPackageNames": ["Microsoft.EntityFrameworkCore", "Pomelo.EntityFrameworkCore.MySql"],
       "matchCurrentVersion": "^7",
       "enabled": false
     },
     {
-      "matchUpdateTypes": ["major"],
-      "matchPackageNames": ["Pomelo.EntityFrameworkCore.MySql"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "matchPackageNames": ["Microsoft.EntityFrameworkCore", "Pomelo.EntityFrameworkCore.MySql"],
       "matchCurrentVersion": "^7",
-      "enabled": false
+      "enabled": true
     },
     {
       "matchUpdateTypes": ["major"],
