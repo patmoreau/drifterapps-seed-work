@@ -155,6 +155,7 @@ jobs:
   tagging:
     needs: [set-version, build]
     uses: patmoreau/workflow-config/.github/workflows/tag-version.yml@main
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
     with:
       version: ${{ needs.set-version.outputs.version }}
 
