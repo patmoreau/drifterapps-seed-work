@@ -7,24 +7,24 @@
     {
       "matchPackageNames": ["Microsoft.EntityFrameworkCore", "Pomelo.EntityFrameworkCore.MySql"],
       "allowedVersions": "<8.0.0",
-      "matchDepTypes": ["dependency"],
-      "packageRules": [
-        {
-          "matchUpdateTypes": ["minor", "patch"],
-          "matchCurrentVersion": "^7.0.0"
-        }
-      ]
+      "matchDepTypes": ["dependency"]
+    },
+    {
+      "matchPackageNames": ["Microsoft.EntityFrameworkCore", "Pomelo.EntityFrameworkCore.MySql"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "matchCurrentVersion": "^7.0.0",
+      "matchDepTypes": ["dependency"]
     },
     {
       "matchPackageNames": ["Microsoft.EntityFrameworkCore", "Pomelo.EntityFrameworkCore.MySql"],
       "allowedVersions": ">=8.0.0",
-      "matchDepTypes": ["dependency"],
-      "packageRules": [
-        {
-          "matchUpdateTypes": ["minor", "patch"],
-          "matchCurrentVersion": "^8.0.0"
-        }
-      ]
+      "matchDepTypes": ["dependency"]
+    },
+    {
+      "matchPackageNames": ["Microsoft.EntityFrameworkCore", "Pomelo.EntityFrameworkCore.MySql"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "matchCurrentVersion": "^8.0.0",
+      "matchDepTypes": ["dependency"]
     },
     {
       "matchPackagePatterns": ["^Microsoft.", "^System."],
