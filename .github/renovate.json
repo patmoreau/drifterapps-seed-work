@@ -5,16 +5,39 @@
   ],
   "packageRules": [
     {
-      "matchUpdateTypes": ["major"],
       "matchPackageNames": ["Microsoft.EntityFrameworkCore", "Pomelo.EntityFrameworkCore.MySql"],
-      "matchCurrentVersion": "^7",
-      "enabled": false
+      "allowedVersions": "<8.0.0",
+      "matchDepTypes": ["dependency"],
+      "packageRules": [
+        {
+          "matchUpdateTypes": ["minor", "patch"],
+          "matchCurrentVersion": "^7.0.0"
+        }
+      ]
+    },
+    {
+      "matchPackageNames": ["Microsoft.EntityFrameworkCore", "Pomelo.EntityFrameworkCore.MySql"],
+      "allowedVersions": ">=8.0.0",
+      "matchDepTypes": ["dependency"],
+      "packageRules": [
+        {
+          "matchUpdateTypes": ["minor", "patch"],
+          "matchCurrentVersion": "^8.0.0"
+        }
+      ]
+    },
+    {
+      "matchPackagePatterns": ["^Microsoft.", "^System."],
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "Microsoft minor and patch updates",
+      "groupSlug": "microsoft-minor-patch-updates"
     },
     {
       "matchUpdateTypes": ["minor", "patch"],
-      "matchPackageNames": ["Microsoft.EntityFrameworkCore", "Pomelo.EntityFrameworkCore.MySql"],
-      "matchCurrentVersion": "^7",
-      "enabled": true
+      "excludePackagePatterns": ["^Microsoft.", "^System."],
+      "excludePackageNames": ["Microsoft.EntityFrameworkCore", "Pomelo.EntityFrameworkCore.MySql"],
+      "groupName": "3rd parties .NET packages updates",
+      "groupSlug": "other-dotnet-updates"
     },
     {
       "matchUpdateTypes": ["major"],
