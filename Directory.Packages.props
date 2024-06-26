@@ -33,7 +33,7 @@
     <PackageVersion Include="Pomelo.EntityFrameworkCore.MySql" Version="7.0.0" Condition="'$(TargetFramework)' == 'net7.0'" />
     <PackageVersion Include="Pomelo.EntityFrameworkCore.MySql" Version="8.0.2" Condition="'$(TargetFramework)' == 'net8.0'" />
     <PackageVersion Include="Respawn" Version="6.2.1" />
-    <PackageVersion Include="SonarAnalyzer.CSharp" Version="9.27.0.93347">
+    <PackageVersion Include="SonarAnalyzer.CSharp" Version="9.28.0.94264">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageVersion>
