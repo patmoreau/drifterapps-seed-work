@@ -18,7 +18,7 @@
     <PackageVersion Include="Hangfire" Version="1.8.14" />
     <PackageVersion Include="MediatR" Version="12.3.0" />
     <PackageVersion Include="MediatR.Contracts" Version="2.0.1" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="7.0.20" Condition="'$(TargetFramework)' == 'net7.0'" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="8.0.7" Condition="'$(TargetFramework)' == 'net7.0'" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="8.0.7"  Condition="'$(TargetFramework)' == 'net8.0'"/>
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.1" />
     <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.1" />
