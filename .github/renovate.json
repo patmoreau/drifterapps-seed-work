@@ -18,15 +18,13 @@
     },
     {
       "matchUpdateTypes": ["major"],
-      "dependencyDashboardApproval": true
+      "matchPackageNames": ["Microsoft.EntityFrameworkCore", "Pomelo.EntityFrameworkCore.MySql"],
+      "enabled": false
     },
     {
       "matchUpdateTypes": ["major"],
-      "matchPackageNames": ["Microsoft.EntityFrameworkCore", "Pomelo.EntityFrameworkCore.MySql"],
-      "excludePackagePatterns": ["*"],
-      "enabled": false,
-      "matchDepTypes": ["dependency"],
-      "matchCurrentVersion": "/^7\\./"
+      "excludePackageNames": ["Microsoft.EntityFrameworkCore", "Pomelo.EntityFrameworkCore.MySql"],
+      "dependencyDashboardApproval": true
     }
   ]
 }
