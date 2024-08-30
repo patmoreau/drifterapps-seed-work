@@ -29,7 +29,10 @@ public sealed class HttpClientDriver : IHttpClientDriver
 
     public T? DeserializeContent<T>()
     {
-        if (string.IsNullOrWhiteSpace(ResponseContent)) return default;
+        if (string.IsNullOrWhiteSpace(ResponseContent))
+        {
+            return default;
+        }
 
         var content = JsonSerializer.Deserialize<T>(ResponseContent, JsonSerializerOptions);
         return content;
@@ -84,7 +87,10 @@ public sealed class HttpClientDriver : IHttpClientDriver
 
     private void LogUnexpectedErrors(ITestOutputHelper testOutputHelper)
     {
-        if (ResponseStatusCode != HttpStatusCode.InternalServerError) return;
+        if (ResponseStatusCode != HttpStatusCode.InternalServerError)
+        {
+            return;
+        }
 
         var content = string.IsNullOrWhiteSpace(ResponseContent) ? "<empty response>" : ResponseContent;
         testOutputHelper.WriteLine($"HTTP 500 Response: {content}");

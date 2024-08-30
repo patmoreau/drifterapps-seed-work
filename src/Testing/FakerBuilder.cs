@@ -59,7 +59,10 @@ public abstract class FakerBuilder<T> where T : class
         await using (dbContext.ConfigureAwait(false))
         {
             var entities = BuildCollection(count);
-            foreach (var entity in entities) await dbContext.SaveAsync(entity).ConfigureAwait(false);
+            foreach (var entity in entities)
+            {
+                await dbContext.SaveAsync(entity).ConfigureAwait(false);
+            }
 
             return entities;
         }

@@ -14,8 +14,10 @@ public class MediatorSerializedObject
     public MediatorSerializedObject(string assemblyQualifiedName, string data, string additionalDescription)
     {
         if (string.IsNullOrWhiteSpace(assemblyQualifiedName))
+        {
             throw new ArgumentNullException(nameof(assemblyQualifiedName),
                 $"Missing assembly name for '{additionalDescription}'");
+        }
 
         _ = Type.GetType(assemblyQualifiedName, false) ??
             throw new ArgumentException("Invalid Type name", assemblyQualifiedName);
@@ -81,8 +83,16 @@ public class MediatorSerializedObject
 
     public override bool Equals(object? obj)
     {
-        if (obj is null) return false;
-        if (ReferenceEquals(this, obj)) return true;
+        if (obj is null)
+        {
+            return false;
+        }
+
+        if (ReferenceEquals(this, obj))
+        {
+            return true;
+        }
+
         return obj.GetType() == GetType() && Equals((MediatorSerializedObject) obj);
     }
 

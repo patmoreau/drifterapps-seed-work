@@ -15,8 +15,10 @@ internal sealed class ScenarioRunner : IScenarioRunner, IStepRunner
     private ScenarioRunner(string description, ITestOutputHelper testOutputHelper)
     {
         if (string.IsNullOrWhiteSpace(description))
+        {
             throw new ArgumentNullException(nameof(description),
                 "Please explain your intent by documenting your scenario.");
+        }
 
         ArgumentNullException.ThrowIfNull(testOutputHelper);
 
@@ -124,7 +126,10 @@ internal sealed class ScenarioRunner : IScenarioRunner, IStepRunner
     {
         var previousCommand = _steps.LastOrDefault();
 
-        if (string.IsNullOrWhiteSpace(previousCommand.Command)) return Given(description, step);
+        if (string.IsNullOrWhiteSpace(previousCommand.Command))
+        {
+            return Given(description, step);
+        }
 
         return previousCommand.Command switch
         {
@@ -199,6 +204,7 @@ internal sealed class ScenarioRunner : IScenarioRunner, IStepRunner
         _steps.Clear();
 
         foreach (var step in steps)
+        {
             try
             {
                 await step.Step().ConfigureAwait(false);
@@ -209,6 +215,7 @@ internal sealed class ScenarioRunner : IScenarioRunner, IStepRunner
                 _testOutputHelper.WriteLine($"\u2717 {step.Description}");
                 throw;
             }
+        }
     }
 
     private void AddStep(string command, string description, Action step) =>
@@ -217,8 +224,10 @@ internal sealed class ScenarioRunner : IScenarioRunner, IStepRunner
     private void AddStep(string command, string description, Func<Task> step)
     {
         if (string.IsNullOrWhiteSpace(description))
+        {
             throw new ArgumentNullException(nameof(description),
                 "Please explain your intent by documenting your test.");
+        }
 
         var previousCommand = _steps.LastOrDefault();
         var textCommand = command.Equals(previousCommand.Command, StringComparison.OrdinalIgnoreCase)

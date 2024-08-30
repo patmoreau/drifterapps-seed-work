@@ -85,7 +85,8 @@ public class ResultTests
         Action act = () => _ = Result<string>.Success(null!);
 
         // Assert
-        act.Should().Throw<ArgumentException>().WithMessage("Value cannot be null when the operation is successful. (Parameter 'value')");
+        act.Should().Throw<ArgumentException>()
+            .WithMessage("Value cannot be null when the operation is successful. (Parameter 'value')");
     }
 
     [Fact]
@@ -102,6 +103,20 @@ public class ResultTests
         result.IsFailure.Should().BeTrue();
         result.Error.Should().Be(error);
         result.Value.Should().BeNull();
+    }
+
+    [Fact]
+    public void GivenValue_WhenFailure_ThenThrowException()
+    {
+        // Arrange
+        var error = CreateError();
+        var result = Result<string>.Failure(error);
+
+        // Act
+        Action act = () => _ = result.Value;
+
+        // Assert
+        act.Should().Throw<InvalidOperationException>().WithMessage("Cannot access the value of a failed result.");
     }
 
     private ResultError CreateError() => new(_faker.Random.Hash(), _faker.Lorem.Sentence());

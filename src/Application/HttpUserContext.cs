@@ -12,11 +12,17 @@ internal sealed class HttpUserContext(IHttpContextAccessor httpContextAccessor) 
     private string GetIdentityObjectIdFromClaims()
     {
         var user = httpContextAccessor.HttpContext?.User;
-        if (user is null) return string.Empty;
+        if (user is null)
+        {
+            return string.Empty;
+        }
 
         var value = GetFirstClaimValue(user, ClaimTypes.NameIdentifier);
 
-        if (string.IsNullOrWhiteSpace(value)) value = GetFirstClaimValue(user, "sub");
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            value = GetFirstClaimValue(user, "sub");
+        }
 
         return value ?? string.Empty;
     }
@@ -30,7 +36,9 @@ internal sealed class HttpUserContext(IHttpContextAccessor httpContextAccessor) 
             var claim = identity.FindFirst(claimType);
             if (claim != null)
                 // Return the value of the first claim found
+            {
                 return claim.Value;
+            }
         }
 
         // No matching claim found, return null or an appropriate default value

@@ -33,7 +33,9 @@ public static class ServiceCollectionExtensions
 
         if (services.SingleOrDefault(d => d.ServiceType == typeof(DbContextOptions<TDbContext>)) is
             { } dbContextDescriptor)
+        {
             services.Remove(dbContextDescriptor);
+        }
 
 
         services.AddSingleton<DbContextOptions<TDbContext>>(_ => databaseDriver.GetDbContextOptions());

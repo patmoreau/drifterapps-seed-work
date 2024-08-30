@@ -22,8 +22,15 @@ public class MariaDatabaseServer : IDatabaseServer
             .WithPassword(RootPassword)
             .WithWaitStrategy(Wait.ForUnixContainer());
 
-        if (port is not null) builder = builder.WithPortBinding(port.Value);
-        if (!string.IsNullOrWhiteSpace(image)) builder = builder.WithImage(image);
+        if (port is not null)
+        {
+            builder = builder.WithPortBinding(port.Value);
+        }
+
+        if (!string.IsNullOrWhiteSpace(image))
+        {
+            builder = builder.WithImage(image);
+        }
 
         _container = builder.Build();
     }

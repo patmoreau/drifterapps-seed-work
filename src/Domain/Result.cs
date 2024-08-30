@@ -14,7 +14,10 @@ public class Result
     protected Result(bool isSuccess, ResultError error)
     {
         if ((isSuccess && error != ResultError.None) || (!isSuccess && error == ResultError.None))
+        {
             throw new ArgumentException("Invalid error", nameof(error));
+        }
+
         IsSuccess = isSuccess;
         Error = error;
     }

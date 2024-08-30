@@ -217,7 +217,10 @@ public class MediatRServiceConfigurationExtensionsTests : IAsyncDisposable
     {
         public Task<Pong> Handle(Ping request, CancellationToken cancellationToken)
         {
-            if (request.Missed) throw new PingException();
+            if (request.Missed)
+            {
+                throw new PingException();
+            }
 
             return Task.FromResult(new Pong($"{request.Message} Pong"));
         }

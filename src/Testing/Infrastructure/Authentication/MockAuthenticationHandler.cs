@@ -27,16 +27,25 @@ public sealed class MockAuthenticationHandler(
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
         if (!Context.Request.Headers.TryGetValue("Authorization", out var value))
+        {
             return Task.FromResult(AuthenticateResult.NoResult());
+        }
 
         if (!AuthenticationHeaderValue.TryParse(value,
                 out var headerValue))
+        {
             return Task.FromResult(AuthenticateResult.NoResult());
+        }
 
         if (!AuthenticationScheme.Equals(headerValue.Scheme, StringComparison.OrdinalIgnoreCase))
+        {
             return Task.FromResult(AuthenticateResult.NoResult());
+        }
 
-        if (headerValue.Parameter is null) return Task.FromResult(AuthenticateResult.NoResult());
+        if (headerValue.Parameter is null)
+        {
+            return Task.FromResult(AuthenticateResult.NoResult());
+        }
 
         var userId = headerValue.Parameter;
 
