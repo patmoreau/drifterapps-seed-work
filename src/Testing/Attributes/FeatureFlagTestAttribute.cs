@@ -42,6 +42,8 @@ internal sealed class FeatureFlagTestDiscoverer : ITraitDiscoverer
         yield return new KeyValuePair<string, string>("Category", FeatureFlagTestAttribute.Type);
 
         if (!string.IsNullOrWhiteSpace(name))
+        {
             yield return new KeyValuePair<string, string>(FeatureFlagTestAttribute.Type, name);
+        }
     }
 }

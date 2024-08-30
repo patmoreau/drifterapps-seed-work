@@ -32,7 +32,10 @@ public static partial class SqlBuilderExtensions
     {
         ArgumentNullException.ThrowIfNull(filter);
 
-        if (filter.Count == 0) return query;
+        if (filter.Count == 0)
+        {
+            return query;
+        }
 
         foreach (var f in filter)
         {
@@ -51,7 +54,10 @@ public static partial class SqlBuilderExtensions
     {
         ArgumentNullException.ThrowIfNull(sort);
 
-        if (sort.Count == 0) return query;
+        if (sort.Count == 0)
+        {
+            return query;
+        }
 
         var sorts = (from match in SortRegex().Matches(string.Join(";", sort))
             let asc = string.IsNullOrWhiteSpace(match.Groups["desc"].Value) ? "ASC" : "DESC"
@@ -111,17 +117,25 @@ public static partial class SqlBuilderExtensions
             {
                 typedValue = null;
                 if (Nullable.GetUnderlyingType(left.Type) == null)
+                {
                     left = Expression.Convert(left, typeof(Nullable<>).MakeGenericType(left.Type));
+                }
             }
             else
             {
                 var valueType = Nullable.GetUnderlyingType(left.Type) ?? left.Type;
                 if (valueType.IsEnum)
+                {
                     typedValue = Enum.Parse(valueType, value);
+                }
                 else if (valueType == typeof(Guid))
+                {
                     typedValue = Guid.Parse(value);
+                }
                 else
+                {
                     typedValue = Convert.ChangeType(value, valueType, CultureInfo.InvariantCulture);
+                }
             }
         }
 

@@ -23,6 +23,9 @@ public static class DbContextExtensions
     private static void RefreshAll(DbContext dbContext)
     {
         var entitiesList = dbContext.ChangeTracker.Entries().ToList();
-        foreach (var entity in entitiesList) entity.Reload();
+        foreach (var entity in entitiesList)
+        {
+            entity.Reload();
+        }
     }
 }

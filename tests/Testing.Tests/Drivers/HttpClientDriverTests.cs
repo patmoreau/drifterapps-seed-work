@@ -188,7 +188,10 @@ public sealed class HttpClientDriverTests : IDisposable, IAsyncDisposable
 
     private void Dispose(bool disposing)
     {
-        if (disposing) _driver.Dispose();
+        if (disposing)
+        {
+            _driver.Dispose();
+        }
     }
 
     private ValueTask DisposeAsyncCore()
@@ -282,7 +285,10 @@ public sealed class HttpClientDriverTests : IDisposable, IAsyncDisposable
 
         private void Dispose(bool disposing)
         {
-            if (!disposing) return;
+            if (!disposing)
+            {
+                return;
+            }
 
             _mockHttpMessageHandler?.Dispose();
             _responseMessage?.Dispose();

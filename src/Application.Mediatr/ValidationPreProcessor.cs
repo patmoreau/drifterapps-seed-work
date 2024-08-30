@@ -12,7 +12,10 @@ public sealed class ValidationPreProcessor<TRequest>(IEnumerable<IValidator<TReq
 
     public async Task Process(TRequest request, CancellationToken cancellationToken)
     {
-        if (_validators.Count == 0) return;
+        if (_validators.Count == 0)
+        {
+            return;
+        }
 
         var validationContext = new ValidationContext<TRequest>(request);
         var failures = await Task
@@ -22,6 +25,9 @@ public sealed class ValidationPreProcessor<TRequest>(IEnumerable<IValidator<TReq
         var validationFailures =
             failures.SelectMany(result => result.Errors).Where(failure => failure != null).ToList();
 
-        if (validationFailures.Count != 0) throw new ValidationException(validationFailures);
+        if (validationFailures.Count != 0)
+        {
+            throw new ValidationException(validationFailures);
+        }
     }
 }

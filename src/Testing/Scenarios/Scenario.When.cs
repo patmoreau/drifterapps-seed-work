@@ -19,17 +19,31 @@ public abstract partial class Scenario
         string? sorts = null, string? filters = null, params object[] parameters)
     {
         StringBuilder sb = new("?");
-        if (offset is not null) sb.Append(InvariantCulture, $"offset={offset}&");
+        if (offset is not null)
+        {
+            sb.Append(InvariantCulture, $"offset={offset}&");
+        }
 
-        if (limit is not null) sb.Append(InvariantCulture, $"limit={limit}&");
+        if (limit is not null)
+        {
+            sb.Append(InvariantCulture, $"limit={limit}&");
+        }
 
         if (!string.IsNullOrWhiteSpace(sorts))
+        {
             foreach (var sort in sorts.Split(';'))
+            {
                 sb.Append(InvariantCulture, $"sort={sort}&");
+            }
+        }
 
         if (!string.IsNullOrWhiteSpace(filters))
+        {
             foreach (var filter in filters.Split(';'))
+            {
                 sb.Append(InvariantCulture, $"filter={filter}&");
+            }
+        }
 
         var args = parameters.Concat([sb.Length == 1 ? string.Empty : sb.Remove(sb.Length - 1, 1).ToString()])
             .ToArray();

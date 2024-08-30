@@ -32,9 +32,15 @@ public class QueryParams
 
     private QueryParams(int offset, int limit, IEnumerable<string> sort, IEnumerable<string> filter)
     {
-        if (offset < 0) throw new ArgumentOutOfRangeException(nameof(offset), @"offset cannot be negative");
+        if (offset < 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(offset), @"offset cannot be negative");
+        }
 
-        if (limit <= 0) throw new ArgumentOutOfRangeException(nameof(limit), @"limit must be positive");
+        if (limit <= 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(limit), @"limit must be positive");
+        }
 
         ArgumentNullException.ThrowIfNull(sort);
 
