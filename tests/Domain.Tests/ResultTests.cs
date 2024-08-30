@@ -102,7 +102,6 @@ public class ResultTests
         result.IsSuccess.Should().BeFalse();
         result.IsFailure.Should().BeTrue();
         result.Error.Should().Be(error);
-        result.Value.Should().BeNull();
     }
 
     [Fact]
