@@ -160,7 +160,7 @@ jobs:
       version: ${{ needs.set-version.outputs.version }}
 
   publish:
-    needs: [set-version, tagging]
+    needs: [set-version, build]
     runs-on: ubuntu-latest
     if: github.event_name == 'release' && github.event.action == 'created'
 
