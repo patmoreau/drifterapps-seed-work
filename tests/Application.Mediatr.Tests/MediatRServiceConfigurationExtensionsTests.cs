@@ -4,7 +4,6 @@ using DrifterApps.Seeds.Testing.Attributes;
 using FluentAssertions.Execution;
 using FluentValidation;
 using MediatR;
-using MediatR.Pipeline;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -35,7 +34,7 @@ public class MediatRServiceConfigurationExtensionsTests : IAsyncDisposable
     }
 
     [Fact]
-    public void GivenPing_WhenNoFirstMessage_ThenValidatorIsCalledAndThrowsValidationException()
+    public void GivenPingWithPongResponse_WhenNoFirstMessage_ThenValidatorIsCalledAndThrowsValidationException()
     {
         // arrange
         var mediator = _driver.GivenMediatrIsConfigured()
@@ -43,11 +42,81 @@ public class MediatRServiceConfigurationExtensionsTests : IAsyncDisposable
             .Build();
 
         // act
-        Func<Task> action = async () => await mediator.Send(new Ping(string.Empty, false));
+        var action = async () => await mediator.Send(new TestRequests.PingWithPongResponse(string.Empty, false));
 
         // assert
         using var scope = new AssertionScope();
         action.Should().ThrowAsync<ValidationException>();
+    }
+
+    [Fact]
+    public void GivenPingWithIntResponse_WhenNoFirstMessage_ThenValidatorIsCalledAndThrowsValidationException()
+    {
+        // arrange
+        var mediator = _driver.GivenMediatrIsConfigured()
+            .GivenPingPongGameIsReady()
+            .Build();
+
+        // act
+        var action = async () => await mediator.Send(new TestRequests.PingWithIntResponse(string.Empty, false));
+
+        // assert
+        using var scope = new AssertionScope();
+        action.Should().ThrowAsync<ValidationException>();
+    }
+
+    [Fact]
+    public void GivenPingWithNoResponse_WhenNoFirstMessage_ThenValidatorIsCalledAndThrowsValidationException()
+    {
+        // arrange
+        var mediator = _driver.GivenMediatrIsConfigured()
+            .GivenPingPongGameIsReady()
+            .Build();
+
+        // act
+        var action = async () => await mediator.Send(new TestRequests.PingWithNoResponse(string.Empty, false));
+
+        // assert
+        using var scope = new AssertionScope();
+        action.Should().ThrowAsync<ValidationException>();
+    }
+
+    [Fact]
+    public async Task GivenPingWithPongResult_WhenNoFirstMessage_ThenValidatorIsCalledAndReturnsResultFailure()
+    {
+        // arrange
+        var mediator = _driver.GivenMediatrIsConfigured()
+            .GivenPingPongGameIsReady()
+            .Build();
+
+        // act
+        var result = await mediator.Send(new TestRequests.PingWithPongResult(string.Empty, false));
+
+        // assert
+        using var scope = new AssertionScope();
+        result.Should().NotBeNull();
+        result.IsFailure.Should().BeTrue();
+        result.Error.Should().BeOfType<ResultValidationErrors>();
+        result.Error.As<ResultValidationErrors>().ValidationFailures.Should().HaveCount(1);
+    }
+
+    [Fact]
+    public async Task GivenPingWithResult_WhenNoFirstMessage_ThenValidatorIsCalledAndReturnsResultFailure()
+    {
+        // arrange
+        var mediator = _driver.GivenMediatrIsConfigured()
+            .GivenPingPongGameIsReady()
+            .Build();
+
+        // act
+        var result = await mediator.Send(new TestRequests.PingWithResult(string.Empty, false));
+
+        // assert
+        using var scope = new AssertionScope();
+        result.Should().NotBeNull();
+        result.IsFailure.Should().BeTrue();
+        result.Error.Should().BeOfType<ResultValidationErrors>();
+        result.Error.As<ResultValidationErrors>().ValidationFailures.Should().HaveCount(1);
     }
 
     [Fact]
@@ -59,11 +128,12 @@ public class MediatRServiceConfigurationExtensionsTests : IAsyncDisposable
             .Build();
 
         // act
-        Func<Task> action = async () => await mediator.Send(new Ping(nameof(Ping), true));
+        var action = async () =>
+            await mediator.Send(new TestRequests.PingWithPongResponse(nameof(TestRequests.PingWithPongResponse), true));
 
         // assert
         using var scope = new AssertionScope();
-        action.Should().ThrowAsync<PingException>();
+        action.Should().ThrowAsync<TestExceptions.PingException>();
         _driver
             .ShouldHaveCalledUnitOfWorkBeginWorkAsync()
             .ShouldHaveCalledUnitOfWorkRollbackWorkAsync()
@@ -79,11 +149,12 @@ public class MediatRServiceConfigurationExtensionsTests : IAsyncDisposable
             .Build();
 
         // act
-        var pong = await mediator.Send(new Ping(nameof(Ping), false));
+        var pong = await mediator.Send(
+            new TestRequests.PingWithPongResponse(nameof(TestRequests.PingWithPongResponse), false));
 
         // assert
         using var scope = new AssertionScope();
-        pong.Should().NotBeNull().And.BeEquivalentTo(new Pong("Ping Pong"));
+        pong.Should().NotBeNull().And.BeEquivalentTo(new TestResponses.Pong("PingWithPongResponse Pong"));
         _driver
             .ShouldHaveCalledUnitOfWorkBeginWorkAsync()
             .ShouldHaveCalledUnitOfWorkCommitWorkAsync()
@@ -92,16 +163,24 @@ public class MediatRServiceConfigurationExtensionsTests : IAsyncDisposable
 
     private class Driver : IDriverOf<IMediator>, IAsyncDisposable
     {
-        private readonly ILogger<Ping> _logger;
+        private readonly ILogger<TestRequests.PingWithIntResponse> _loggerWithIntResponse;
+        private readonly ILogger<TestRequests.PingWithNoResponse> _loggerWithNoResponse;
+        private readonly ILogger<TestRequests.PingWithPongResponse> _loggerWithPongResponse;
+        private readonly ILogger<TestRequests.PingWithPongResult> _loggerWithPongResult;
+        private readonly ILogger<TestRequests.PingWithResult> _loggerWithResult;
         private readonly ServiceCollection _serviceCollection;
         private readonly IUnitOfWork _unitOfWork;
         private ServiceProvider? _serviceProvider;
 
         public Driver()
         {
-            _serviceCollection = new ServiceCollection();
+            _serviceCollection = [];
             _unitOfWork = Substitute.For<IUnitOfWork>();
-            _logger = Substitute.For<ILogger<Ping>>();
+            _loggerWithPongResponse = Substitute.For<ILogger<TestRequests.PingWithPongResponse>>();
+            _loggerWithIntResponse = Substitute.For<ILogger<TestRequests.PingWithIntResponse>>();
+            _loggerWithNoResponse = Substitute.For<ILogger<TestRequests.PingWithNoResponse>>();
+            _loggerWithPongResult = Substitute.For<ILogger<TestRequests.PingWithPongResult>>();
+            _loggerWithResult = Substitute.For<ILogger<TestRequests.PingWithResult>>();
         }
 
         public async ValueTask DisposeAsync()
@@ -128,8 +207,26 @@ public class MediatRServiceConfigurationExtensionsTests : IAsyncDisposable
         public Driver GivenPingPongGameIsReady()
         {
             _serviceCollection.AddTransient<IUnitOfWork>(_ => _unitOfWork);
-            _serviceCollection.AddTransient<ILogger<Ping>>(_ => _logger);
-            _serviceCollection.AddTransient<IValidator<Ping>, PingValidator>();
+            _serviceCollection.AddTransient<ILogger<TestRequests.PingWithPongResponse>>(_ => _loggerWithPongResponse);
+            _serviceCollection.AddTransient<ILogger<TestRequests.PingWithIntResponse>>(_ => _loggerWithIntResponse);
+            _serviceCollection.AddTransient<ILogger<TestRequests.PingWithNoResponse>>(_ => _loggerWithNoResponse);
+            _serviceCollection.AddTransient<ILogger<TestRequests.PingWithPongResult>>(_ => _loggerWithPongResult);
+            _serviceCollection.AddTransient<ILogger<TestRequests.PingWithResult>>(_ => _loggerWithResult);
+            _serviceCollection
+                .AddTransient<IValidator<TestRequests.PingWithPongResponse>,
+                    TestValidators.PingWithPongResponseValidator>();
+            _serviceCollection
+                .AddTransient<IValidator<TestRequests.PingWithIntResponse>,
+                    TestValidators.PingWithIntResponseValidator>();
+            _serviceCollection
+                .AddTransient<IValidator<TestRequests.PingWithNoResponse>,
+                    TestValidators.PingWithNoResponseValidator>();
+            _serviceCollection
+                .AddTransient<IValidator<TestRequests.PingWithPongResult>,
+                    TestValidators.PingWithPongResultValidator>();
+            _serviceCollection
+                .AddTransient<IValidator<TestRequests.PingWithResult>,
+                    TestValidators.PingWithResultValidator>();
 
             return this;
         }
@@ -148,8 +245,8 @@ public class MediatRServiceConfigurationExtensionsTests : IAsyncDisposable
                 serviceDescriptor.ImplementationType == typeof(UnitOfWorkBehavior<,>) &&
                 serviceDescriptor.Lifetime == ServiceLifetime.Transient);
             _serviceCollection.Should().Contain(serviceDescriptor =>
-                serviceDescriptor.ServiceType == typeof(IRequestPreProcessor<>) &&
-                serviceDescriptor.ImplementationType == typeof(ValidationPreProcessor<>) &&
+                serviceDescriptor.ServiceType == typeof(IPipelineBehavior<,>) &&
+                serviceDescriptor.ImplementationType == typeof(ValidationBehavior<,>) &&
                 serviceDescriptor.Lifetime == ServiceLifetime.Transient);
         }
 
@@ -202,29 +299,124 @@ public class MediatRServiceConfigurationExtensionsTests : IAsyncDisposable
         }
     }
 
-    internal record Ping(string Message, bool Missed) : IRequest<Pong>, IUnitOfWorkRequest;
-
-    internal class PingException : Exception
+    internal static class TestRequests
     {
+        internal record PingWithPongResponse(string Message, bool Missed)
+            : IRequest<TestResponses.Pong>, IUnitOfWorkRequest;
+
+        internal record PingWithIntResponse(string Message, bool Missed) : IRequest<int>, IUnitOfWorkRequest;
+
+        internal record PingWithNoResponse(string Message, bool Missed) : IRequest, IUnitOfWorkRequest;
+
+        internal record PingWithResult(string Message, bool Missed) : IRequest<Result>, IUnitOfWorkRequest;
+
+        internal record PingWithPongResult(string Message, bool Missed)
+            : IRequest<Result<TestResponses.Pong>>, IUnitOfWorkRequest;
     }
 
-    internal class PingValidator : AbstractValidator<Ping>
+    internal static class TestExceptions
     {
-        public PingValidator() => RuleFor(x => x.Message).NotNull().NotEmpty();
+        internal class PingException : Exception;
     }
 
-    internal class PingHandler : IRequestHandler<Ping, Pong>
+    internal static class TestValidators
     {
-        public Task<Pong> Handle(Ping request, CancellationToken cancellationToken)
+        internal class PingWithPongResponseValidator : AbstractValidator<TestRequests.PingWithPongResponse>
         {
-            if (request.Missed)
-            {
-                throw new PingException();
-            }
+            public PingWithPongResponseValidator() => RuleFor(x => x.Message).NotNull().NotEmpty();
+        }
 
-            return Task.FromResult(new Pong($"{request.Message} Pong"));
+        internal class PingWithIntResponseValidator : AbstractValidator<TestRequests.PingWithIntResponse>
+        {
+            public PingWithIntResponseValidator() => RuleFor(x => x.Message).NotNull().NotEmpty();
+        }
+
+        internal class PingWithNoResponseValidator : AbstractValidator<TestRequests.PingWithNoResponse>
+        {
+            public PingWithNoResponseValidator() => RuleFor(x => x.Message).NotNull().NotEmpty();
+        }
+
+        internal class PingWithResultValidator : AbstractValidator<TestRequests.PingWithResult>
+        {
+            public PingWithResultValidator() => RuleFor(x => x.Message).NotNull().NotEmpty();
+        }
+
+        internal class PingWithPongResultValidator : AbstractValidator<TestRequests.PingWithPongResult>
+        {
+            public PingWithPongResultValidator() => RuleFor(x => x.Message).NotNull().NotEmpty();
         }
     }
 
-    internal record Pong(string Message);
+    internal static class TestHandlers
+    {
+        internal class
+            PingWithPongResponseHandler : IRequestHandler<TestRequests.PingWithPongResponse, TestResponses.Pong>
+        {
+            public Task<TestResponses.Pong> Handle(TestRequests.PingWithPongResponse request,
+                CancellationToken cancellationToken)
+            {
+                if (request.Missed)
+                {
+                    throw new TestExceptions.PingException();
+                }
+
+                return Task.FromResult(new TestResponses.Pong($"{request.Message} Pong"));
+            }
+        }
+
+        internal class
+            PingWithIntResponseHandler : IRequestHandler<TestRequests.PingWithIntResponse, int>
+        {
+            public Task<int> Handle(TestRequests.PingWithIntResponse request,
+                CancellationToken cancellationToken)
+            {
+                if (request.Missed)
+                {
+                    throw new TestExceptions.PingException();
+                }
+
+                return Task.FromResult(1);
+            }
+        }
+
+        internal class PingWithNoResultHandler : IRequestHandler<TestRequests.PingWithNoResponse>
+        {
+            public Task Handle(TestRequests.PingWithNoResponse request, CancellationToken cancellationToken)
+            {
+                if (request.Missed)
+                {
+                    throw new TestExceptions.PingException();
+                }
+
+                return Task.CompletedTask;
+            }
+        }
+
+        internal class
+            PingWithPongResultHandler : IRequestHandler<TestRequests.PingWithPongResult, Result<TestResponses.Pong>>
+        {
+            public Task<Result<TestResponses.Pong>> Handle(TestRequests.PingWithPongResult request,
+                CancellationToken cancellationToken) =>
+                Task.FromResult(
+                    request.Missed
+                        ? Result<TestResponses.Pong>.Failure(new ResultError("Ping.Pong", "Missed"))
+                        : Result<TestResponses.Pong>.Success(new TestResponses.Pong($"{request.Message} Pong")));
+        }
+
+        internal class
+            PingWithResultHandler : IRequestHandler<TestRequests.PingWithResult, Result>
+        {
+            public Task<Result> Handle(TestRequests.PingWithResult request,
+                CancellationToken cancellationToken) =>
+                Task.FromResult(
+                    request.Missed
+                        ? Result.Failure(new ResultError("Ping.Pong", "Missed"))
+                        : Result.Success());
+        }
+    }
+
+    internal static class TestResponses
+    {
+        internal record Pong(string Message);
+    }
 }

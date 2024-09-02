@@ -16,7 +16,7 @@ namespace DrifterApps.Seeds.Domain;
 ///     }
 ///     </code>
 /// </example>
-public sealed record ResultError(string Code, string Description)
+public record ResultError(string Code, string Description)
 {
     public static readonly ResultError None = new(string.Empty, string.Empty);
 }
