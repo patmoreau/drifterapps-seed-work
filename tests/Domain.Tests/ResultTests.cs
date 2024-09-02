@@ -118,20 +118,6 @@ public class ResultTests
         act.Should().Throw<InvalidOperationException>().WithMessage("Cannot access the value of a failed result.");
     }
 
-    [Fact]
-    public void GivenValue_WhenFailure_ThenThrowException()
-    {
-        // Arrange
-        var error = CreateError();
-        var result = Result<string>.Failure(error);
-
-        // Act
-        Action act = () => _ = result.Value;
-
-        // Assert
-        act.Should().Throw<InvalidOperationException>().WithMessage("Cannot access the value of a failed result.");
-    }
-
     private ResultError CreateError() => new(_faker.Random.Hash(), _faker.Lorem.Sentence());
 
     private class MyResult(bool isSuccess, ResultError error) : Result(isSuccess, error);
