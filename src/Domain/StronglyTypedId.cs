@@ -12,7 +12,7 @@ namespace DrifterApps.Seeds.Domain;
 [SuppressMessage("Usage", "CA2225:Operator overloads have named alternates")]
 [SuppressMessage("Major Code Smell", "S125:Sections of code should not be commented out")]
 [SuppressMessage("Major Code Smell", "S4035:Classes implementing \"IEquatable<T>\" should be sealed")]
-public abstract class StronglyTypedId<T> : IStronglyTypedId, IEqualityComparer<T>, IComparable<T>
+public abstract record StronglyTypedId<T> : IStronglyTypedId, IEqualityComparer<T>, IComparable<T>
     where T : StronglyTypedId<T>, new()
 {
     /// <summary>
@@ -81,13 +81,6 @@ public abstract class StronglyTypedId<T> : IStronglyTypedId, IEqualityComparer<T
     /// <summary>
     ///     Determines whether the current instance is equal to another strongly-typed identifier.
     /// </summary>
-    /// <param name="obj">The strongly-typed identifier to compare with.</param>
-    /// <returns>true if the current instance is equal to the other strongly-typed identifier; otherwise, false.</returns>
-    public override bool Equals(object? obj) => obj is T id && Equals(id);
-
-    /// <summary>
-    ///     Determines whether the current instance is equal to another strongly-typed identifier.
-    /// </summary>
     /// <param name="other">The strongly-typed identifier to compare with.</param>
     /// <returns>true if the current instance is equal to the other strongly-typed identifier; otherwise, false.</returns>
     public bool Equals(T? other) => other is not null && Value.Equals(other.Value);
@@ -97,42 +90,6 @@ public abstract class StronglyTypedId<T> : IStronglyTypedId, IEqualityComparer<T
     /// </summary>
     /// <returns>A hash code for the current instance.</returns>
     public override int GetHashCode() => Value.GetHashCode();
-
-    /// <summary>
-    ///     Returns a string that represents the current instance.
-    /// </summary>
-    /// <returns>A string that represents the current instance.</returns>
-    public override string ToString() => Value.ToString();
-
-    /// <summary>
-    ///     Determines whether one strongly-typed identifier is equal to another.
-    /// </summary>
-    /// <param name="a">The first strongly-typed identifier.</param>
-    /// <param name="b">The second strongly-typed identifier.</param>
-    /// <returns>true if the first strongly-typed identifier is greater than the second; otherwise, false.</returns>
-    public static bool operator ==(StronglyTypedId<T>? a, StronglyTypedId<T>? b) =>
-        a switch
-        {
-            null when b is null => true,
-            null => false,
-            not null when b is null => false,
-            _ => a.Equals(b)
-        };
-
-    /// <summary>
-    ///     Determines whether one strongly-typed identifier is not equal to another.
-    /// </summary>
-    /// <param name="a">The first strongly-typed identifier.</param>
-    /// <param name="b">The second strongly-typed identifier.</param>
-    /// <returns>true if the first strongly-typed identifier is greater than the second; otherwise, false.</returns>
-    public static bool operator !=(StronglyTypedId<T>? a, StronglyTypedId<T>? b) =>
-        a switch
-        {
-            null when b is null => false,
-            null => true,
-            not null when b is null => true,
-            _ => !a.Equals(b)
-        };
 
     /// <summary>
     ///     Determines whether one strongly-typed identifier is greater than another.

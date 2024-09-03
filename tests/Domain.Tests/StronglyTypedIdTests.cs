@@ -167,20 +167,6 @@ public class StronglyTypedIdTests
         result.Should().Be(guid.GetHashCode());
     }
 
-    [Fact]
-    public void GivenToString_WhenInvoked_ThenReturnHashCodeOfValue()
-    {
-        // arrange
-        var guid = _faker.Random.Guid();
-        var id = MyId.Create(guid);
-
-        // act
-        var result = id.ToString();
-
-        // assert
-        result.Should().Be(guid.ToString());
-    }
-
     [Theory]
     [ClassData(typeof(OperatorEqualData))]
     public void GivenOperatorEqual_WhenInvoked_ThenReturnExpected(MyId? a, MyId? b, bool expected)
@@ -286,7 +272,7 @@ public class StronglyTypedIdTests
         result.Value.Should().Be(id);
     }
 
-    public class MyId : StronglyTypedId<MyId>;
+    public record MyId : StronglyTypedId<MyId>;
 
     public class EqualityComparerEqualsData : TheoryData<MyId?, MyId?, bool>
     {
