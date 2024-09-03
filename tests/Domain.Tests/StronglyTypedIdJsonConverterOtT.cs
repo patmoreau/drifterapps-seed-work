@@ -51,7 +51,7 @@ public class StronglyTypedIdJsonConverterTests
     }
 
     [Fact]
-    public void GivenRead_WhenInalidGuid_ThenThrowJsonException()
+    public void GivenRead_WhenInvalidGuid_ThenThrowJsonException()
     {
         // arrange
         const string json = "\"invalid-guid\"";
@@ -76,5 +76,5 @@ public class StronglyTypedIdJsonConverterTests
         json.Should().Be("\"d2719b2e-4b8b-4c8b-9b2e-4b8b4c8b9b2e\"");
     }
 
-    public class SampleStronglyTypedId : StronglyTypedId<SampleStronglyTypedId>;
+    public record SampleStronglyTypedId : StronglyTypedId<SampleStronglyTypedId>;
 }
