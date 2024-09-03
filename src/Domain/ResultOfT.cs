@@ -5,7 +5,7 @@ namespace DrifterApps.Seeds.Domain;
 ///     Represents the result of an operation with a value.
 /// </summary>
 /// <typeparam name="T">The type of the value.</typeparam>
-public class Result<T> : Result
+public record Result<T> : Result
 {
     private readonly T? _value;
 

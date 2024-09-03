@@ -3,7 +3,7 @@ namespace DrifterApps.Seeds.Domain;
 /// <summary>
 ///     Represents the result of an operation.
 /// </summary>
-public class Result
+public record Result
 {
     /// <summary>
     ///     Initializes a new instance of the <see cref="Result" /> class.

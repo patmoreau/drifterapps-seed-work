@@ -120,5 +120,5 @@ public class ResultTests
 
     private ResultError CreateError() => new(_faker.Random.Hash(), _faker.Lorem.Sentence());
 
-    private class MyResult(bool isSuccess, ResultError error) : Result(isSuccess, error);
+    private record MyResult(bool IsSuccess, ResultError Error) : Result(IsSuccess, Error);
 }
