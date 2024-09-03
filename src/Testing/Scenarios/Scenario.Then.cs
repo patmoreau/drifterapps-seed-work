@@ -50,9 +50,10 @@ public abstract partial class Scenario
     }
 
     [AssertionMethod]
-    protected void ShouldReceiveValidationProblemDetailsWithErrorMessage(string errorMessage)
+    protected void ShouldReceiveValidationProblemDetailsWithErrorMessage(string errorMessage,
+        HttpStatusCode expectedStatusCode = HttpStatusCode.UnprocessableEntity)
     {
-        ShouldExpectStatusCode(HttpStatusCode.UnprocessableEntity);
+        ShouldExpectStatusCode(expectedStatusCode);
 
         var problemDetails = HttpClientDriver.DeserializeContent<ValidationProblemDetails>();
         problemDetails.Should()

@@ -7,7 +7,7 @@ using MediatR;
 namespace DrifterApps.Seeds.Application.Mediatr;
 
 /// <summary>
-/// A behavior for MediatR pipeline that handles validation of requests.
+///     A behavior for MediatR pipeline that handles validation of requests.
 /// </summary>
 /// <typeparam name="TRequest">The type of the request.</typeparam>
 /// <typeparam name="TResponse">The type of the response.</typeparam>
@@ -19,7 +19,7 @@ public sealed class ValidationBehavior<TRequest, TResponse>(IEnumerable<IValidat
         validators.ToList() ?? throw new ArgumentNullException(nameof(validators));
 
     /// <summary>
-    /// Handles the request and performs validation.
+    ///     Handles the request and performs validation.
     /// </summary>
     /// <param name="request">The request to handle.</param>
     /// <param name="next">The next delegate in the pipeline.</param>
@@ -34,7 +34,7 @@ public sealed class ValidationBehavior<TRequest, TResponse>(IEnumerable<IValidat
     }
 
     /// <summary>
-    /// Internal method to handle the request and perform validation.
+    ///     Internal method to handle the request and perform validation.
     /// </summary>
     /// <param name="request">The request to handle.</param>
     /// <param name="next">The next delegate in the pipeline.</param>
@@ -53,7 +53,7 @@ public sealed class ValidationBehavior<TRequest, TResponse>(IEnumerable<IValidat
     }
 
     /// <summary>
-    /// Validates the request using the provided validators.
+    ///     Validates the request using the provided validators.
     /// </summary>
     /// <param name="request">The request to validate.</param>
     /// <param name="cancellationToken">A token to cancel the operation.</param>
@@ -74,7 +74,7 @@ public sealed class ValidationBehavior<TRequest, TResponse>(IEnumerable<IValidat
     }
 
     /// <summary>
-    /// Returns the validation errors as a response.
+    ///     Returns the validation errors as a response.
     /// </summary>
     /// <param name="validationFailures">The list of validation failures.</param>
     /// <returns>The response containing validation errors.</returns>
@@ -88,7 +88,7 @@ public sealed class ValidationBehavior<TRequest, TResponse>(IEnumerable<IValidat
         };
 
     /// <summary>
-    /// Creates an instance of a failure result for non-generic Result type.
+    ///     Creates an instance of a failure result for non-generic Result type.
     /// </summary>
     /// <param name="validationFailures">The list of validation failures.</param>
     /// <returns>The failure result instance.</returns>
@@ -96,13 +96,13 @@ public sealed class ValidationBehavior<TRequest, TResponse>(IEnumerable<IValidat
     {
         var failureInstance = typeof(Result)
             .GetMethod("Failure", BindingFlags.Static | BindingFlags.Public)
-            ?.Invoke(null, [ResultValidationErrors.ValidationErrors(typeof(TRequest), validationFailures)]);
+            ?.Invoke(null, [FluentValidationErrors.ValidationErrors(typeof(TRequest), validationFailures)]);
 
         return (TResponse) failureInstance!;
     }
 
     /// <summary>
-    /// Creates an instance of a failure result for generic Result type.
+    ///     Creates an instance of a failure result for generic Result type.
     /// </summary>
     /// <param name="validationFailures">The list of validation failures.</param>
     /// <returns>The failure result instance.</returns>
@@ -112,7 +112,7 @@ public sealed class ValidationBehavior<TRequest, TResponse>(IEnumerable<IValidat
         var failureInstance = typeof(Result<>)
             .MakeGenericType(genericType)
             .GetMethod("Failure", BindingFlags.Static | BindingFlags.Public)
-            ?.Invoke(null, [ResultValidationErrors.ValidationErrors(typeof(TRequest), validationFailures)]);
+            ?.Invoke(null, [FluentValidationErrors.ValidationErrors(typeof(TRequest), validationFailures)]);
 
         return (TResponse) failureInstance!;
     }
