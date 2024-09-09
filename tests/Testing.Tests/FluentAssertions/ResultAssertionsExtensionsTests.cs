@@ -61,6 +61,33 @@ public class ResultAssertionsExtensionsTests
     }
 
     [Fact]
+    public void GivenWithErrorResult_WhenIsSuccessful_ThenAssertIfErrorNotNone()
+    {
+        // arrange
+        var result = Result.Success();
+
+        // act
+        Action act = () => result.Should().BeSuccessful().WithError(ResultError.None);
+
+        // assert
+        act.Should().NotThrow<XunitException>();
+    }
+
+    [Fact]
+    public void GivenWithErrorResult_WhenIsFailure_ThenAssertIfErrorNotAsExpected()
+    {
+        // arrange
+        var error = new ResultError(_faker.Random.Word(), _faker.Random.Words());
+        var result = Result.Failure(error);
+
+        // act
+        Action act = () => result.Should().BeFailure().WithError(error);
+
+        // assert
+        act.Should().NotThrow<XunitException>();
+    }
+
+    [Fact]
     public void GivenBeSuccessfulResultOfT_WhenIsSuccess_ThenDontAssert()
     {
         // arrange
@@ -122,7 +149,7 @@ public class ResultAssertionsExtensionsTests
         var result = Result<string>.Success(value);
 
         // act
-        Action act = () => result.Should().HaveValue(value);
+        Action act = () => result.Should().BeSuccessful().WithValue(value);
 
         // assert
         act.Should().NotThrow<XunitException>();
@@ -136,9 +163,37 @@ public class ResultAssertionsExtensionsTests
         var result = Result<string>.Failure(new ResultError(_faker.Random.Word(), _faker.Random.Words()));
 
         // act
-        Action act = () => result.Should().HaveValue(value);
+        Action act = () => result.Should().BeFailure().WithValue(value);
 
         // assert
         act.Should().Throw<XunitException>();
+    }
+
+    [Fact]
+    public void GivenWithErrorResultOfT_WhenIsSuccessful_ThenAssertIfErrorNotNone()
+    {
+        // arrange
+        var value = _faker.Random.Word();
+        var result = Result<string>.Success(value);
+
+        // act
+        Action act = () => result.Should().BeSuccessful().WithError(ResultError.None);
+
+        // assert
+        act.Should().NotThrow<XunitException>();
+    }
+
+    [Fact]
+    public void GivenWithErrorResultOfT_WhenIsFailure_ThenAssertIfErrorNotAsExpected()
+    {
+        // arrange
+        var error = new ResultError(_faker.Random.Word(), _faker.Random.Words());
+        var result = Result<string>.Failure(error);
+
+        // act
+        Action act = () => result.Should().BeFailure().WithError(error);
+
+        // assert
+        act.Should().NotThrow<XunitException>();
     }
 }
