@@ -20,4 +20,8 @@
         <PackageReference Include="xunit.categories"/>
     </ItemGroup>
 
+    <ItemGroup>
+        <ProjectReference Include="..\Domain\Domain.csproj"/>
+    </ItemGroup>
+
 </Project>
