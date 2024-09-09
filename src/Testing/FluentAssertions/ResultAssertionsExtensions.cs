@@ -31,37 +31,44 @@ public static class ResultAssertionsExtensions
     ///     Asserts that the specified result is successful.
     /// </summary>
     /// <typeparam name="TSubject">The type of the result.</typeparam>
-    /// <param name="scope">The assertion scope.</param>
+    /// <param name="assertion">The assertion scope.</param>
     /// <param name="subject">The result to assert.</param>
-    /// <param name="because">A formatted phrase explaining why the assertion is needed.</param>
-    /// <param name="becauseArgs">Zero or more objects to format using the placeholders in <paramref name="because" />.</param>
-    /// <returns>A continuation for further assertions.</returns>
-    internal static Continuation IsSuccessfulAssertion<TSubject>(this AssertionScope scope, TSubject subject,
-        string because = "",
-        params object[] becauseArgs)
+    /// <returns>A <see cref="Continuation" /> for further assertions.</returns>
+    internal static Continuation IsSuccessfulAssertion<TSubject>(this AssertionScope assertion, TSubject subject)
         where TSubject : Result =>
-        scope
+        assertion
             .ForCondition(subject.IsSuccess)
-            .BecauseOf(because, becauseArgs)
             .FailWith("Expected {context:result} to be a success{reason}, but it was a failure.");
 
     /// <summary>
     ///     Asserts that the specified result is a failure.
     /// </summary>
     /// <typeparam name="TSubject">The type of the result.</typeparam>
-    /// <param name="scope">The assertion scope.</param>
+    /// <param name="assertion">The assertion scope.</param>
     /// <param name="subject">The result to assert.</param>
-    /// <param name="because">A formatted phrase explaining why the assertion is needed.</param>
-    /// <param name="becauseArgs">Zero or more objects to format using the placeholders in <paramref name="because" />.</param>
-    /// <returns>A continuation for further assertions.</returns>
-    internal static Continuation IsFailureAssertion<TSubject>(this AssertionScope scope, TSubject subject,
-        string because = "",
-        params object[] becauseArgs)
+    /// <returns>A <see cref="Continuation" /> for further assertions.</returns>
+    internal static Continuation IsFailureAssertion<TSubject>(this AssertionScope assertion, TSubject subject)
         where TSubject : Result =>
-        scope
+        assertion
             .ForCondition(subject.IsFailure)
-            .BecauseOf(because, becauseArgs)
             .FailWith("Expected {context:result} to be a failure{reason}, but it was not.");
+
+    /// <summary>
+    ///     Asserts that the specified error is as expected.
+    /// </summary>
+    /// <typeparam name="TSubject">The type of the result.</typeparam>
+    /// <param name="assertion">The assertion scope.</param>
+    /// <param name="subject">The result to assert.</param>
+    /// <param name="resultError">The <see cref="ResultError" /> to assert</param>
+    /// <returns>A <see cref="Continuation" /> for further assertions.</returns>
+    internal static Continuation WithErrorAssertion<TSubject>(this AssertionScope assertion,
+        TSubject subject,
+        ResultError resultError)
+        where TSubject : Result =>
+        assertion
+            .ForCondition(subject.Error.Equals(resultError))
+            .FailWith("Expected {context:result} to have error {0}{reason}, but found {1}.", resultError,
+                subject.Error);
 }
 
 /// <summary>
@@ -79,14 +86,17 @@ public class ResultAssertions(Result instance) : ReferenceTypeAssertions<Result,
     /// </summary>
     /// <param name="because">A formatted phrase explaining why the assertion is needed.</param>
     /// <param name="becauseArgs">Zero or more objects to format using the placeholders in <paramref name="because" />.</param>
-    /// <returns>An <see cref="AndConstraint{T}" /> to allow chaining assertions.</returns>
+    /// <returns>
+    ///     <see cref="ResultAssertions" />
+    /// </returns>
     [CustomAssertion]
-    public AndConstraint<ResultAssertions> BeSuccessful(string because = "", params object[] becauseArgs)
+    public ResultAssertions BeSuccessful(string because = "", params object[] becauseArgs)
     {
-        Execute.Assertion
-            .IsSuccessfulAssertion(Subject, because, becauseArgs);
+        var assertion = Execute.Assertion.BecauseOf(because, becauseArgs).UsingLineBreaks;
 
-        return new AndConstraint<ResultAssertions>(this);
+        assertion.IsSuccessfulAssertion(Subject);
+
+        return this;
     }
 
     /// <summary>
@@ -94,14 +104,37 @@ public class ResultAssertions(Result instance) : ReferenceTypeAssertions<Result,
     /// </summary>
     /// <param name="because">A formatted phrase explaining why the assertion is needed.</param>
     /// <param name="becauseArgs">Zero or more objects to format using the placeholders in <paramref name="because" />.</param>
-    /// <returns>An <see cref="AndConstraint{T}" /> to allow chaining assertions.</returns>
+    /// <returns>
+    ///     <see cref="ResultAssertions" />
+    /// </returns>
     [CustomAssertion]
-    public AndConstraint<ResultAssertions> BeFailure(string because = "", params object[] becauseArgs)
+    public ResultAssertions BeFailure(string because = "", params object[] becauseArgs)
     {
-        Execute.Assertion
-            .IsFailureAssertion(Subject, because, becauseArgs);
+        var assertion = Execute.Assertion.BecauseOf(because, becauseArgs).UsingLineBreaks;
 
-        return new AndConstraint<ResultAssertions>(this);
+        assertion.IsFailureAssertion(Subject);
+
+        return this;
+    }
+
+    /// <summary>
+    ///     Asserts that the result error is as expected.
+    /// </summary>
+    /// <param name="resultError">The expected <see cref="ResultError" /></param>
+    /// <param name="because">A formatted phrase explaining why the assertion is needed.</param>
+    /// <param name="becauseArgs">Zero or more objects to format using the placeholders in <paramref name="because" />.</param>
+    /// <returns>
+    ///     <see cref="ResultAssertions" />
+    /// </returns>
+    [CustomAssertion]
+    public ResultAssertions WithError(ResultError resultError, string because = "",
+        params object[] becauseArgs)
+    {
+        var assertion = Execute.Assertion.BecauseOf(because, becauseArgs).UsingLineBreaks;
+
+        assertion.WithErrorAssertion(Subject, resultError);
+
+        return this;
     }
 }
 
@@ -122,15 +155,18 @@ public class ResultAssertions<TValue, TResult>(TResult instance)
     /// </summary>
     /// <param name="because">A formatted phrase explaining why the assertion is needed.</param>
     /// <param name="becauseArgs">Zero or more objects to format using the placeholders in <paramref name="because" />.</param>
-    /// <returns>An <see cref="AndConstraint{T}" /> to allow chaining assertions.</returns>
+    /// <returns>
+    ///     <see cref="ResultAssertions{TValue, TResult}" />
+    /// </returns>
     [CustomAssertion]
-    public AndConstraint<ResultAssertions<TValue, TResult>> BeSuccessful(string because = "",
+    public ResultAssertions<TValue, TResult> BeSuccessful(string because = "",
         params object[] becauseArgs)
     {
-        Execute.Assertion
-            .IsSuccessfulAssertion(Subject, because, becauseArgs);
+        var assertion = Execute.Assertion.BecauseOf(because, becauseArgs).UsingLineBreaks;
 
-        return new AndConstraint<ResultAssertions<TValue, TResult>>(this);
+        assertion.IsSuccessfulAssertion(Subject);
+
+        return this;
     }
 
     /// <summary>
@@ -138,14 +174,17 @@ public class ResultAssertions<TValue, TResult>(TResult instance)
     /// </summary>
     /// <param name="because">A formatted phrase explaining why the assertion is needed.</param>
     /// <param name="becauseArgs">Zero or more objects to format using the placeholders in <paramref name="because" />.</param>
-    /// <returns>An <see cref="AndConstraint{T}" /> to allow chaining assertions.</returns>
+    /// <returns>
+    ///     <see cref="ResultAssertions{TValue, TResult}" />
+    /// </returns>
     [CustomAssertion]
-    public AndConstraint<ResultAssertions<TValue, TResult>> BeFailure(string because = "", params object[] becauseArgs)
+    public ResultAssertions<TValue, TResult> BeFailure(string because = "", params object[] becauseArgs)
     {
-        Execute.Assertion
-            .IsFailureAssertion(Subject, because, becauseArgs);
+        var assertion = Execute.Assertion.BecauseOf(because, becauseArgs).UsingLineBreaks;
 
-        return new AndConstraint<ResultAssertions<TValue, TResult>>(this);
+        assertion.IsFailureAssertion(Subject);
+
+        return this;
     }
 
     /// <summary>
@@ -154,19 +193,42 @@ public class ResultAssertions<TValue, TResult>(TResult instance)
     /// <param name="expectedValue">The expected value.</param>
     /// <param name="because">A formatted phrase explaining why the assertion is needed.</param>
     /// <param name="becauseArgs">Zero or more objects to format using the placeholders in <paramref name="because" />.</param>
-    /// <returns>An <see cref="AndConstraint{T}" /> to allow chaining assertions.</returns>
+    /// <returns>
+    ///     <see cref="ResultAssertions{TValue, TResult}" />
+    /// </returns>
     [CustomAssertion]
-    public AndConstraint<ResultAssertions<TValue, TResult>> HaveValue(TValue expectedValue,
+    public ResultAssertions<TValue, TResult> WithValue(TValue expectedValue,
         string because = "", params object[] becauseArgs)
     {
-        Execute.Assertion
-            .IsSuccessfulAssertion(Subject, "a value can only be retrieved from a successful result")
+        var assertion = Execute.Assertion.BecauseOf(because, becauseArgs).UsingLineBreaks;
+
+        assertion.IsSuccessfulAssertion(Subject)
             .Then
             .ForCondition(Subject.IsSuccess && Subject.Value!.Equals(expectedValue))
             .BecauseOf(because, becauseArgs)
             .FailWith("Expected {context:result} to have value {0}{reason}, but found {1}.", expectedValue,
                 Subject.Value);
 
-        return new AndConstraint<ResultAssertions<TValue, TResult>>(this);
+        return this;
+    }
+
+    /// <summary>
+    ///     Asserts that the result error is as expected.
+    /// </summary>
+    /// <param name="resultError">The expected <see cref="ResultError" /></param>
+    /// <param name="because">A formatted phrase explaining why the assertion is needed.</param>
+    /// <param name="becauseArgs">Zero or more objects to format using the placeholders in <paramref name="because" />.</param>
+    /// <returns>
+    ///     <see cref="ResultAssertions{TValue, TResult}" />
+    /// </returns>
+    [CustomAssertion]
+    public ResultAssertions<TValue, TResult> WithError(ResultError resultError, string because = "",
+        params object[] becauseArgs)
+    {
+        var assertion = Execute.Assertion.BecauseOf(because, becauseArgs).UsingLineBreaks;
+
+        assertion.WithErrorAssertion(Subject, resultError);
+
+        return this;
     }
 }
