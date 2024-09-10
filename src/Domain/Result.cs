@@ -49,4 +49,12 @@ public record Result
     /// <param name="error">The error associated with the failed operation.</param>
     /// <returns>A new instance of <see cref="Result" /> representing a failed operation.</returns>
     public static Result Failure(ResultError error) => new(false, error);
+
+    /// <summary>
+    ///     Validates the result of a <see cref="ResultValidation" />.
+    /// </summary>
+    /// <param name="validator">The struct used for validation.</param>
+    /// <returns>A new instance of <see cref="Result" /> representing the validation result.</returns>
+    public static Result Validate(ResultValidation validator) =>
+        validator.Validation() ? Success() : Failure(validator.Error);
 }

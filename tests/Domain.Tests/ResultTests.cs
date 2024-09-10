@@ -118,6 +118,40 @@ public class ResultTests
         act.Should().Throw<InvalidOperationException>().WithMessage("Cannot access the value of a failed result.");
     }
 
+    [Fact]
+    public void GivenValidate_WhenValidationFuncReturnTrue_ThenReturnSuccess()
+    {
+        // Arrange
+        ResultValidation MyIdValidation(Guid id)
+        {
+            return ResultValidation.Create(() => id == Guid.Empty, CreateError());
+        }
+
+        // Act
+        var result = Result.Validate(MyIdValidation(Guid.Empty));
+
+        // Assert
+        result.Should().BeSuccessful();
+    }
+
+    [Fact]
+    public void GivenValidate_WhenValidationFuncReturnFalse_ThenReturnFailureWithError()
+    {
+        // Arrange
+        var error = CreateError();
+
+        ResultValidation MyIdValidation(Guid id)
+        {
+            return ResultValidation.Create(() => id != Guid.Empty, error);
+        }
+
+        // Act
+        var result = Result.Validate(MyIdValidation(Guid.Empty));
+
+        // Assert
+        result.Should().BeFailure().WithError(error);
+    }
+
     private ResultError CreateError() => new(_faker.Random.Hash(), _faker.Lorem.Sentence());
 
     private record MyResult(bool IsSuccess, ResultError Error) : Result(IsSuccess, Error);
