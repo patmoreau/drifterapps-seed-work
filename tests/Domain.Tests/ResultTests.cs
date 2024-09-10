@@ -7,6 +7,9 @@ public class ResultTests
 {
     private readonly Faker _faker = new();
 
+    private readonly ResultError _idError = new("errorId", "Error Id");
+    private readonly ResultError _otherError = new("errorOther", "Error Other");
+
     [Fact]
     public void GivenConstructor_WhenSuccessAndErrorIsNone_ThenIsSuccessIsTrue()
     {
@@ -122,13 +125,9 @@ public class ResultTests
     public void GivenValidate_WhenValidationFuncReturnTrue_ThenReturnSuccess()
     {
         // Arrange
-        ResultValidation MyIdValidation(Guid id)
-        {
-            return ResultValidation.Create(() => id == Guid.Empty, CreateError());
-        }
 
         // Act
-        var result = Result.Validate(MyIdValidation(Guid.Empty));
+        var result = Result.Validate(MyIdValidation(Guid.NewGuid()));
 
         // Assert
         result.Should().BeSuccessful();
@@ -138,19 +137,57 @@ public class ResultTests
     public void GivenValidate_WhenValidationFuncReturnFalse_ThenReturnFailureWithError()
     {
         // Arrange
-        var error = CreateError();
-
-        ResultValidation MyIdValidation(Guid id)
-        {
-            return ResultValidation.Create(() => id != Guid.Empty, error);
-        }
 
         // Act
         var result = Result.Validate(MyIdValidation(Guid.Empty));
 
         // Assert
-        result.Should().BeFailure().WithError(error);
+        result.Should().BeFailure()
+            .WithError(new ResultAggregateError(Result.CodeValidateErrors, "1 validation failed", [_idError]));
     }
+
+    [Fact]
+    public void GivenValidate_WhenAllValidationFuncReturnTrue_ThenReturnSuccess()
+    {
+        // Arrange
+
+        // Act
+        var result = Result.Validate(MyIdValidation(Guid.NewGuid()), MyOtherValidation(1));
+
+        // Assert
+        result.Should().BeSuccessful();
+    }
+
+    [Fact]
+    public void GivenValidate_WhenMixValidationFuncReturnFalse_ThenReturnFailureWithErrors()
+    {
+        // Arrange
+
+        // Act
+        var result = Result.Validate(MyIdValidation(Guid.NewGuid()), MyOtherValidation(0));
+
+        // Assert
+        result.Should().BeFailure()
+            .WithError(new ResultAggregateError(Result.CodeValidateErrors, "1 validation failed", [_otherError]));
+    }
+
+    [Fact]
+    public void GivenValidate_WhenAllValidationFuncReturnFalse_ThenReturnFailureWithErrors()
+    {
+        // Arrange
+
+        // Act
+        var result = Result.Validate(MyIdValidation(Guid.Empty), MyOtherValidation(0));
+
+        // Assert
+        result.Should().BeFailure()
+            .WithError(new ResultAggregateError(Result.CodeValidateErrors, "2 validations failed",
+                [_idError, _otherError]));
+    }
+
+    private ResultValidation MyIdValidation(Guid id) => ResultValidation.Create(() => id != Guid.Empty, _idError);
+
+    private ResultValidation MyOtherValidation(int count) => ResultValidation.Create(() => count > 0, _otherError);
 
     private ResultError CreateError() => new(_faker.Random.Hash(), _faker.Lorem.Sentence());
 

@@ -5,6 +5,8 @@ namespace DrifterApps.Seeds.Domain;
 /// </summary>
 public record Result
 {
+    public const string CodeValidateErrors = $"{nameof(Result)}.{nameof(Validate)}";
+
     /// <summary>
     ///     Initializes a new instance of the <see cref="Result" /> class.
     /// </summary>
@@ -53,8 +55,26 @@ public record Result
     /// <summary>
     ///     Validates the result of a <see cref="ResultValidation" />.
     /// </summary>
-    /// <param name="validator">The struct used for validation.</param>
+    /// <param name="firstValidator">The struct used for validation.</param>
+    /// <param name="additionalValidators">Additional validators.</param>
     /// <returns>A new instance of <see cref="Result" /> representing the validation result.</returns>
-    public static Result Validate(ResultValidation validator) =>
-        validator.Validation() ? Success() : Failure(validator.Error);
+    public static Result Validate(ResultValidation firstValidator, params ResultValidation[] additionalValidators)
+    {
+        List<ResultError> errors = [];
+        if (!firstValidator.Validation())
+        {
+            errors.Add(firstValidator.Error);
+        }
+
+        errors.AddRange(from validator in additionalValidators ?? []
+            where !validator.Validation()
+            select validator.Error);
+
+        return errors is {Count: 0}
+            ? Success()
+            : Failure(new ResultAggregateError(CodeValidateErrors,
+#pragma warning disable S3358
+                $"{errors.Count} validation{(errors.Count > 1 ? "s" : string.Empty)} failed", [.. errors]));
+#pragma warning restore S3358
+    }
 }
