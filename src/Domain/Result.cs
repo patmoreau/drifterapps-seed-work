@@ -5,8 +5,6 @@ namespace DrifterApps.Seeds.Domain;
 /// </summary>
 public record Result
 {
-    public const string CodeValidateErrors = $"{nameof(Result)}.{nameof(Validate)}";
-
     /// <summary>
     ///     Initializes a new instance of the <see cref="Result" /> class.
     /// </summary>
@@ -72,9 +70,6 @@ public record Result
 
         return errors is {Count: 0}
             ? Success()
-            : Failure(new ResultAggregateError(CodeValidateErrors,
-#pragma warning disable S3358
-                $"{errors.Count} validation{(errors.Count > 1 ? "s" : string.Empty)} failed", [.. errors]));
-#pragma warning restore S3358
+            : Failure(ResultAggregateError.CreateValidationError(errors));
     }
 }
