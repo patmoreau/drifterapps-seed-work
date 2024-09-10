@@ -11,6 +11,8 @@ public record ResultAggregateError(
     string Description,
     IReadOnlyCollection<ResultError> Errors) : ResultError(Code, Description)
 {
+    public const string CodeValidateErrors = $"{nameof(ResultAggregateError)}.ValidationErrors";
+
     public virtual bool Equals(ResultAggregateError? other)
     {
         if (other is null)
@@ -27,4 +29,11 @@ public record ResultAggregateError(
     }
 
     public override int GetHashCode() => HashCode.Combine(base.GetHashCode(), Errors);
+
+    public static ResultAggregateError CreateValidationError(IReadOnlyCollection<ResultError> errors)
+    {
+        var errorsList = errors?.ToList() ?? [];
+        return new ResultAggregateError(CodeValidateErrors,
+            $"{errorsList.Count} validation{(errorsList.Count > 1 ? "s" : string.Empty)} failed", errorsList);
+    }
 }

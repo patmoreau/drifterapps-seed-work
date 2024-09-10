@@ -143,7 +143,7 @@ public class ResultTests
 
         // Assert
         result.Should().BeFailure()
-            .WithError(new ResultAggregateError(Result.CodeValidateErrors, "1 validation failed", [_idError]));
+            .WithError(ResultAggregateError.CreateValidationError([_idError]));
     }
 
     [Fact]
@@ -168,7 +168,7 @@ public class ResultTests
 
         // Assert
         result.Should().BeFailure()
-            .WithError(new ResultAggregateError(Result.CodeValidateErrors, "1 validation failed", [_otherError]));
+            .WithError(ResultAggregateError.CreateValidationError([_otherError]));
     }
 
     [Fact]
@@ -181,8 +181,7 @@ public class ResultTests
 
         // Assert
         result.Should().BeFailure()
-            .WithError(new ResultAggregateError(Result.CodeValidateErrors, "2 validations failed",
-                [_idError, _otherError]));
+            .WithError(ResultAggregateError.CreateValidationError([_idError, _otherError]));
     }
 
     private ResultValidation MyIdValidation(Guid id) => ResultValidation.Create(() => id != Guid.Empty, _idError);
