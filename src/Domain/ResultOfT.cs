@@ -1,6 +1,5 @@
 namespace DrifterApps.Seeds.Domain;
 
-#pragma warning disable CA1000
 /// <summary>
 ///     Represents the result of an operation with a value.
 /// </summary>
@@ -56,4 +55,3 @@ public record Result<T> : Result
     /// <returns>A new instance of <see cref="Result" /> representing a failed operation.</returns>
     public new static Result<T> Failure(ResultError error) => new(false, error, default);
 }
-#pragma warning restore CA1000
