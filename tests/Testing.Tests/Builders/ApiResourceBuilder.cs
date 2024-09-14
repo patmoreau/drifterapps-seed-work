@@ -1,4 +1,3 @@
-using Bogus;
 using DrifterApps.Seeds.Testing.Infrastructure;
 
 namespace DrifterApps.Seeds.Testing.Tests.Builders;
@@ -8,8 +7,8 @@ internal class ApiResourceBuilder : FakerBuilder<ApiResource>
     private string? _endpointTemplate;
     private HttpMethod? _httpMethod;
 
-    protected override Faker<ApiResource> ConfigureRules(Faker<ApiResource> fakerBuilder) =>
-        fakerBuilder.CustomInstantiator(f =>
+    protected override void ConfigureFakerRules() =>
+        Faker.CustomInstantiator(f =>
             ApiResource.DefineApi(
                 _endpointTemplate ?? f.Internet.UrlRootedPath(),
                 _httpMethod ?? f.PickRandom(new List<HttpMethod>
