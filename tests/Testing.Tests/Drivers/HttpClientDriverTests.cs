@@ -3,6 +3,7 @@ using System.Net.Http.Headers;
 using System.Text.Json;
 using Bogus;
 using DrifterApps.Seeds.Testing.Drivers;
+using DrifterApps.Seeds.Testing.Infrastructure;
 using DrifterApps.Seeds.Testing.Infrastructure.Authentication;
 using DrifterApps.Seeds.Testing.Tests.Builders;
 using Xunit.Abstractions;
@@ -14,7 +15,9 @@ public sealed class HttpClientDriverTests : IDisposable, IAsyncDisposable
 {
     private static readonly Faker Faker = new();
 
-    private readonly ApiResourceBuilder _apiResourceBuilder = new();
+    private readonly ApiResourceBuilder _apiResourceBuilder =
+        FakerBuilder<ApiResource>.CreateBuilder<ApiResourceBuilder>();
+
     private readonly Driver _driver = new();
 
     public async ValueTask DisposeAsync()
