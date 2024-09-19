@@ -1,5 +1,4 @@
 using System.Diagnostics.CodeAnalysis;
-using System.Text.Json.Serialization;
 
 namespace DrifterApps.Seeds.Domain;
 
@@ -7,7 +6,6 @@ namespace DrifterApps.Seeds.Domain;
 ///     Represents a strongly-typed identifier based on a GUID.
 /// </summary>
 /// <typeparam name="T">The type of the strongly-typed identifier.</typeparam>
-[JsonConverter(typeof(StronglyTypedIdJsonConverter<>))]
 [SuppressMessage("Design", "CA1000:Do not declare static members on generic types")]
 [SuppressMessage("Usage", "CA2225:Operator overloads have named alternates")]
 [SuppressMessage("Major Code Smell", "S125:Sections of code should not be commented out")]
