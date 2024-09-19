@@ -1,9 +1,11 @@
 using System.Text.Json;
+using DrifterApps.Seeds.Application.Converters;
+using DrifterApps.Seeds.Domain;
 
-namespace DrifterApps.Seeds.Domain.Tests;
+namespace DrifterApps.Seeds.Application.Tests.Converters;
 
 [UnitTest]
-public class StronglyTypedIdJsonConverterTests
+public class StronglyTypedIdJsonConverterOfTTests
 {
     private readonly JsonSerializerOptions _options = new()
     {
