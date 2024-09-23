@@ -10,4 +10,10 @@
         <PackageReference Include="MediatR.Contracts"/>
     </ItemGroup>
 
+    <ItemGroup>
+        <Compile Update="ResultExtensions.Async.cs">
+            <DependentUpon>ResultExtensions.cs</DependentUpon>
+        </Compile>
+    </ItemGroup>
+
 </Project>
