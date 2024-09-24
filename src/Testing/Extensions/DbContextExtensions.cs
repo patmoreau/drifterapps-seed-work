@@ -1,5 +1,7 @@
 // ReSharper disable once CheckNamespace
 
+using DrifterApps.Seeds.Domain;
+
 namespace Microsoft.EntityFrameworkCore;
 
 public static class DbContextExtensions
@@ -12,11 +14,16 @@ public static class DbContextExtensions
         await dbContext.SaveChangesAsync().ConfigureAwait(false);
     }
 
-    public static async Task<T?> FindByIdAsync<T>(this DbContext dbContext, Guid id) where T : class
+    public static async Task<T?> FindByIdAsync<T>(this DbContext dbContext, object id) where T : class
     {
         ArgumentNullException.ThrowIfNull(dbContext);
 
         RefreshAll(dbContext);
+        if (id is IStronglyTypedId stronglyTypedId)
+        {
+            return await dbContext.FindAsync<T>(stronglyTypedId.Value).ConfigureAwait(false);
+        }
+
         return await dbContext.FindAsync<T>(id).ConfigureAwait(false);
     }
 
