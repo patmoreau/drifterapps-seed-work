@@ -10,7 +10,7 @@ namespace DrifterApps.Seeds.Domain;
 [SuppressMessage("Usage", "CA2225:Operator overloads have named alternates")]
 [SuppressMessage("Major Code Smell", "S125:Sections of code should not be commented out")]
 [SuppressMessage("Major Code Smell", "S4035:Classes implementing \"IEquatable<T>\" should be sealed")]
-public abstract record StronglyTypedId<T> : IStronglyTypedId, IEqualityComparer<T>, IComparable<T>
+public abstract record StronglyTypedId<T> : IStronglyTypedId, IEqualityComparer<T>, IComparable<T>, IParsable<T>
     where T : StronglyTypedId<T>, new()
 {
     /// <summary>
@@ -62,6 +62,48 @@ public abstract record StronglyTypedId<T> : IStronglyTypedId, IEqualityComparer<
     {
         ArgumentNullException.ThrowIfNull(obj);
         return obj.Value.GetHashCode();
+    }
+
+    /// <summary>
+    ///     Parses the string representation of a GUID to a strongly-typed identifier.
+    /// </summary>
+    /// <param name="s">The string representation of the GUID.</param>
+    /// <param name="provider">An object that provides culture-specific formatting information.</param>
+    /// <returns>
+    ///     A new instance of the strongly-typed identifier if the parse operation succeeds; otherwise, an empty
+    ///     identifier.
+    /// </returns>
+    public static T Parse(string s, IFormatProvider? provider) =>
+        Guid.TryParse(s, provider, out var guid) ? Create(guid) : Empty;
+
+    /// <summary>
+    ///     Tries to parse the string representation of a GUID to a strongly-typed identifier.
+    /// </summary>
+    /// <param name="s">The string representation of the GUID.</param>
+    /// <param name="provider">An object that provides culture-specific formatting information.</param>
+    /// <param name="result">
+    ///     When this method returns, contains the strongly-typed identifier equivalent to the GUID contained
+    ///     in <paramref name="s" />, if the parse operation succeeds, or an empty identifier if the parse operation fails.
+    ///     This parameter is passed uninitialized.
+    /// </param>
+    /// <returns><c>true</c> if <paramref name="s" /> was converted successfully; otherwise, <c>false</c>.</returns>
+    public static bool TryParse([NotNullWhen(true)] string? s, IFormatProvider? provider,
+        [MaybeNullWhen(false)] out T result)
+    {
+        if (s is null)
+        {
+            result = Empty;
+            return false;
+        }
+
+        if (Guid.TryParse(s, provider, out var guid))
+        {
+            result = Create(guid);
+            return true;
+        }
+
+        result = Empty;
+        return false;
     }
 
     /// <summary>

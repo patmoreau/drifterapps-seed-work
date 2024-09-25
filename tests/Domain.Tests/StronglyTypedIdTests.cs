@@ -1,3 +1,4 @@
+using System.Globalization;
 using Bogus;
 
 namespace DrifterApps.Seeds.Domain.Tests;
@@ -270,6 +271,75 @@ public class StronglyTypedIdTests
         // assert
         result.Should().BeOfType(typeof(MyId));
         result.Value.Should().Be(id);
+    }
+
+    [Fact]
+    public void GivenParse_WhenStringIsNotGuid_ThenReturnEmpty()
+    {
+        // arrange
+        var id = _faker.Random.String();
+
+        // act
+        var result = MyId.Parse(id, CultureInfo.InvariantCulture);
+
+        // assert
+        result.Should().Be(MyId.Empty);
+    }
+
+    [Fact]
+    public void GivenParse_WhenStringIsGuid_ThenReturnNewId()
+    {
+        // arrange
+        var guid = _faker.Random.Guid();
+
+        // act
+        var result = MyId.Parse(guid.ToString(), CultureInfo.InvariantCulture);
+
+        // assert
+        result.Should().NotBe(MyId.Empty);
+        result.Value.Should().Be(guid);
+    }
+
+    [Fact]
+    public void GivenTryParse_WhenStringIsNull_ThenReturnFalseEmpty()
+    {
+        // arrange
+
+        // act
+        var result = MyId.TryParse(null, CultureInfo.InvariantCulture, out var id);
+
+        // assert
+        result.Should().BeFalse();
+        id.Should().Be(MyId.Empty);
+    }
+
+    [Fact]
+    public void GivenTryParse_WhenStringIsNotGuid_ThenReturnFalseEmpty()
+    {
+        // arrange
+        var guid = _faker.Random.String();
+
+        // act
+        var result = MyId.TryParse(guid, CultureInfo.InvariantCulture, out var id);
+
+        // assert
+        result.Should().BeFalse();
+        id.Should().Be(MyId.Empty);
+    }
+
+    [Fact]
+    public void GivenTryParse_WhenStringIsGuid_ThenReturnTrueId()
+    {
+        // arrange
+        var guid = _faker.Random.Guid();
+
+        // act
+        var result = MyId.TryParse(guid.ToString(), CultureInfo.InvariantCulture, out var id);
+
+        // assert
+        result.Should().BeTrue();
+        id.Should().NotBeNull();
+        id!.Value.Should().Be(guid);
     }
 
     public record MyId : StronglyTypedId<MyId>;
