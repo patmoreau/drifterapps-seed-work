@@ -1,5 +1,7 @@
+using System.Globalization;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
 using Bogus;
 
 namespace DrifterApps.Seeds.Testing;
@@ -24,14 +26,15 @@ public abstract partial class FakerBuilder<TFaked>
     }
 
     /// <summary>
-    ///     Creates a new instance of the <see cref="FakerBuilder{T}" /> class for record object.
+    ///     Creates a new instance of the <see cref="FakerBuilder{T}" /> for a class without a
+    ///     parameterless constructor.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <returns>
     ///     <see cref="FakerBuilder{T}" />
     /// </returns>
     /// <exception cref="InvalidOperationException"></exception>
-    public static T CreateRecordBuilder<T>() where T : FakerBuilder<TFaked>, new()
+    public static T CreateUninitializedBuilder<T>() where T : FakerBuilder<TFaked>, new()
     {
         var builder = new T
         {
@@ -44,7 +47,7 @@ public abstract partial class FakerBuilder<TFaked>
     }
 
     /// <summary>
-    ///     Creates a new instance of the <see cref="FakerBuilder{T}" /> class with a backing field binder.
+    ///     Creates a new instance of the <see cref="FakerBuilder{T}" /> for a class with a backing field binder.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <returns>
@@ -63,25 +66,45 @@ public abstract partial class FakerBuilder<TFaked>
         return builder;
     }
 
-    private class BackingFieldBinder : IBinder
+    private partial class BackingFieldBinder : IBinder
     {
+        private const string BackingFieldSuffix = ">k__BackingField";
+
         public Dictionary<string, MemberInfo> GetMembers(Type t)
         {
             var availableFieldsForFakerOfT = new Dictionary<string, MemberInfo>();
             var bindingFlags = BindingFlags.Instance | BindingFlags.NonPublic;
             var allMembers = t.GetMembers(bindingFlags);
             var allBackingFields = allMembers.OfType<FieldInfo>()
-                .Where(fi => fi is {IsPrivate: true /*, IsInitOnly: true*/})
-                .Where(fi => fi.Name.EndsWith("__BackingField", StringComparison.InvariantCulture))
+                .Where(FieldIsPrivate)
+                .Where(IsBackingField)
                 .ToList();
             foreach (var backingField in allBackingFields)
             {
-                var fieldName = backingField.Name[1..]
-                    .Replace(">k__BackingField", "", StringComparison.InvariantCulture);
+                var fieldName = backingField.Name[0] switch
+                {
+                    '<' => ToPropertyName(backingField.Name[1..]),
+                    '_' => ToPascalCase(backingField.Name[1..]),
+                    _ => backingField.Name
+                };
                 availableFieldsForFakerOfT.TryAdd(fieldName, backingField);
             }
 
             return availableFieldsForFakerOfT;
         }
+
+        private static bool FieldIsPrivate(FieldInfo fi) => fi is {IsPrivate: true};
+
+        private static bool IsBackingField(FieldInfo fi) =>
+            fi.Name.EndsWith(BackingFieldSuffix, StringComparison.InvariantCulture) || fi.Name.StartsWith('_');
+
+        private static string ToPropertyName(string input) =>
+            input.Replace(BackingFieldSuffix, "", StringComparison.InvariantCulture);
+
+        private static string ToPascalCase(string input) =>
+            ToPascalRegex().Replace(input, match => match.Groups[2].Value.ToUpper(CultureInfo.InvariantCulture));
+
+        [GeneratedRegex("(^|_)([a-z])")]
+        private static partial Regex ToPascalRegex();
     }
 }
