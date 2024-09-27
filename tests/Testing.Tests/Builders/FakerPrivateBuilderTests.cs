@@ -2,6 +2,8 @@
 // ReSharper disable AutoPropertyCanBeMadeGetOnly.Local
 
 using System.Collections.Immutable;
+using Bogus;
+using FluentAssertions.Execution;
 
 namespace DrifterApps.Seeds.Testing.Tests.Builders;
 
@@ -18,12 +20,13 @@ public class FakerPrivateBuilderTests
     public void GivenFakePrivateClassBuilder_WhenBuildingWithBaseConfig_ShouldReturnARandomInstanceWithDefaultValues()
     {
         // Arrange
-        var builder = FakerBuilder<FakePrivateClass>.CreatePrivateBuilder<FakeClassPrivateBuilder>();
+        var builder = new FakeClassPrivateBuilder();
 
         // Act
         var result = builder.Build();
 
         // Assert
+        using var scope = new AssertionScope();
         result.Should().NotBeNull();
         result.Id.Should().Be(DefaultId);
         result.PrivateInitProperty.Should().Be(DefaultPrivateInitProperty);
@@ -38,12 +41,13 @@ public class FakerPrivateBuilderTests
     public void GivenFakeClassPrivateBuilder_WhenBuildingWithId_ShouldReturnExpectedInstance()
     {
         // Arrange
-        var builder = FakerBuilder<FakePrivateClass>.CreatePrivateBuilder<FakeClassPrivateBuilder>().WithNoId();
+        var builder = new FakeClassPrivateBuilder().WithNoId();
 
         // Act
         var result = builder.Build();
 
         // Assert
+        using var scope = new AssertionScope();
         result.Should().NotBeNull();
         result.Id.Should().Be(Guid.Empty);
         result.PrivateInitProperty.Should().Be(DefaultPrivateInitProperty);
@@ -56,13 +60,14 @@ public class FakerPrivateBuilderTests
     public void GivenFakeClassPrivateBuilder_WhenBuildingWithVisibleProperty_ShouldReturnExpectedInstance()
     {
         // Arrange
-        var builder = FakerBuilder<FakePrivateClass>.CreatePrivateBuilder<FakeClassPrivateBuilder>()
+        var builder = new FakeClassPrivateBuilder()
             .WithPrivateInitPropertyHasHash();
 
         // Act
         var result = builder.Build();
 
         // Assert
+        using var scope = new AssertionScope();
         result.Should().NotBeNull();
         result.Id.Should().Be(DefaultId);
         result.PrivateInitProperty.Should().NotBe(DefaultPrivateInitProperty);
@@ -71,10 +76,16 @@ public class FakerPrivateBuilderTests
         result.InternalInitProperty.Should().Be(DefaultInternalInitProperty);
     }
 
-    private class FakePrivateClass
+    private class FakeBasePrivateClass
+    {
+        private readonly IReadOnlyCollection<string> _readOnlyCollection = [];
+
+        public IReadOnlyCollection<string> ReadOnlyCollection => _readOnlyCollection.ToImmutableList();
+    }
+
+    private class FakePrivateClass : FakeBasePrivateClass
     {
         private readonly decimal _privateField = 0;
-        private readonly IReadOnlyCollection<string> _readOnlyCollection = [];
 
         private FakePrivateClass(Guid id) => Id = id;
 
@@ -90,8 +101,6 @@ public class FakerPrivateBuilderTests
 
         public string InternalInitProperty { get; } = string.Empty;
 
-        public IReadOnlyCollection<string> ReadOnlyCollection => _readOnlyCollection.ToImmutableList();
-
         public decimal PrivateDecimalField => _privateField + 10;
 
         private int CreateValue() => PrivateInitProperty.Length;
@@ -101,8 +110,7 @@ public class FakerPrivateBuilderTests
 
     private class FakeClassPrivateBuilder : FakerBuilder<FakePrivateClass>
     {
-        protected override void ConfigureFakerRules() =>
-            Faker
+        protected override Faker<FakePrivateClass> Faker { get; } = CreatePrivateFaker()
                 .RuleFor(x => x.Id, DefaultId)
                 .RuleFor(x => x.PrivateInitProperty, DefaultPrivateInitProperty)
                 .RuleFor(x => x.NormalProperty, DefaultNormalProperty)

@@ -8,63 +8,17 @@ namespace DrifterApps.Seeds.Testing;
 
 public abstract partial class FakerBuilder<TFaked>
 {
-    /// <summary>
-    ///     Creates a new instance of the <see cref="FakerBuilder{T}" /> class.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <returns>
-    ///     <see cref="FakerBuilder{T}" />
-    /// </returns>
-    public static T CreateBuilder<T>() where T : FakerBuilder<TFaked>, new()
-    {
-        var builder = new T
-        {
-            Faker = new Faker<TFaked>()
-        };
-        builder.ConfigureFakerRules();
-        return builder;
-    }
+    public static Faker<TFaked> CreateFaker() => new();
 
-    /// <summary>
-    ///     Creates a new instance of the <see cref="FakerBuilder{T}" /> for a class without a
-    ///     parameterless constructor.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <returns>
-    ///     <see cref="FakerBuilder{T}" />
-    /// </returns>
-    /// <exception cref="InvalidOperationException"></exception>
-    public static T CreateUninitializedBuilder<T>() where T : FakerBuilder<TFaked>, new()
-    {
-        var builder = new T
-        {
-            Faker = new Faker<TFaked>().CustomInstantiator(_ =>
-                RuntimeHelpers.GetUninitializedObject(typeof(TFaked)) as TFaked ??
-                throw new InvalidOperationException())
-        };
-        builder.ConfigureFakerRules();
-        return builder;
-    }
+    public static Faker<TFaked> CreateUninitializedFaker() =>
+        new Faker<TFaked>().CustomInstantiator(_ =>
+            RuntimeHelpers.GetUninitializedObject(typeof(TFaked)) as TFaked ??
+            throw new InvalidOperationException());
 
-    /// <summary>
-    ///     Creates a new instance of the <see cref="FakerBuilder{T}" /> for a class with a backing field binder.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <returns>
-    ///     <see cref="FakerBuilder{T}" />
-    /// </returns>
-    /// <exception cref="InvalidOperationException"></exception>
-    public static T CreatePrivateBuilder<T>() where T : FakerBuilder<TFaked>, new()
-    {
-        var builder = new T
-        {
-            Faker = new Faker<TFaked>(binder: new BackingFieldBinder()).CustomInstantiator(_ =>
-                RuntimeHelpers.GetUninitializedObject(typeof(TFaked)) as TFaked ??
-                throw new InvalidOperationException())
-        };
-        builder.ConfigureFakerRules();
-        return builder;
-    }
+    public static Faker<TFaked>  CreatePrivateFaker() =>
+        new Faker<TFaked>(binder: new BackingFieldBinder()).CustomInstantiator(_ =>
+            RuntimeHelpers.GetUninitializedObject(typeof(TFaked)) as TFaked ??
+            throw new InvalidOperationException());
 
     private partial class BackingFieldBinder : IBinder
     {
@@ -74,20 +28,27 @@ public abstract partial class FakerBuilder<TFaked>
         {
             var availableFieldsForFakerOfT = new Dictionary<string, MemberInfo>();
             var bindingFlags = BindingFlags.Instance | BindingFlags.NonPublic;
-            var allMembers = t.GetMembers(bindingFlags);
-            var allBackingFields = allMembers.OfType<FieldInfo>()
-                .Where(FieldIsPrivate)
-                .Where(IsBackingField)
-                .ToList();
-            foreach (var backingField in allBackingFields)
+
+            Type? recursiveType = t;
+            while (recursiveType is not null && recursiveType != typeof(object))
             {
-                var fieldName = backingField.Name[0] switch
+                var allMembers = recursiveType.GetMembers(bindingFlags);
+                var allBackingFields = allMembers.OfType<FieldInfo>()
+                    .Where(FieldIsPrivate)
+                    .Where(IsBackingField)
+                    .ToList();
+                foreach (var backingField in allBackingFields)
                 {
-                    '<' => ToPropertyName(backingField.Name[1..]),
-                    '_' => ToPascalCase(backingField.Name[1..]),
-                    _ => backingField.Name
-                };
-                availableFieldsForFakerOfT.TryAdd(fieldName, backingField);
+                    var fieldName = backingField.Name[0] switch
+                    {
+                        '<' => ToPropertyName(backingField.Name[1..]),
+                        '_' => ToPascalCase(backingField.Name[1..]),
+                        _ => backingField.Name
+                    };
+                    availableFieldsForFakerOfT.TryAdd(fieldName, backingField);
+                }
+
+                recursiveType = recursiveType.BaseType;
             }
 
             return availableFieldsForFakerOfT;
