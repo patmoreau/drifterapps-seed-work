@@ -4,7 +4,7 @@
 namespace DrifterApps.Seeds.Testing.Tests.Builders;
 
 [UnitTest]
-public class FakerBuilderTests
+public class FakerUninitializedBuilderTests
 {
     private const string DefaultPrivateInitProperty = "default_private_init_property";
     private const string DefaultNormalProperty = "default_normal_property";
@@ -13,10 +13,11 @@ public class FakerBuilderTests
     private static readonly Guid DefaultId = Guid.Parse("98306af0-721e-11ef-a499-0800200c9a66");
 
     [Fact]
-    public void GivenFakeClassBuilder_WhenBuildingWithBaseConfig_ShouldReturnARandomInstanceWithDefaultValues()
+    public void GivenFakeRecordBuilder_WhenBuildingWithBaseConfig_ShouldReturnARandomInstanceWithDefaultValues()
     {
         // Arrange
-        var builder = FakerBuilder<FakeClass>.CreateBuilder<FakeClassBuilder>();
+        var builder = FakerBuilder<FakeUninitializedRecord>
+            .CreateUninitializedBuilder<FakeUninitializedRecordBuilder>();
 
         // Act
         var result = builder.Build();
@@ -31,10 +32,11 @@ public class FakerBuilderTests
     }
 
     [Fact]
-    public void GivenFakeClassBuilder_WhenBuildingWithId_ShouldReturnExpectedInstance()
+    public void GivenFakeRecordBuilder_WhenBuildingWithId_ShouldReturnExpectedInstance()
     {
         // Arrange
-        var builder = FakerBuilder<FakeClass>.CreateBuilder<FakeClassBuilder>().WithNoId();
+        var builder = FakerBuilder<FakeUninitializedRecord>.CreateUninitializedBuilder<FakeUninitializedRecordBuilder>()
+            .WithNoId();
 
         // Act
         var result = builder.Build();
@@ -49,10 +51,11 @@ public class FakerBuilderTests
     }
 
     [Fact]
-    public void GivenFakeClassBuilder_WhenBuildingWithVisibleProperty_ShouldReturnExpectedInstance()
+    public void GivenFakeRecordBuilder_WhenBuildingWithVisibleProperty_ShouldReturnExpectedInstance()
     {
         // Arrange
-        var builder = FakerBuilder<FakeClass>.CreateBuilder<FakeClassBuilder>().WithPrivateInitPropertyHasHash();
+        var builder = FakerBuilder<FakeUninitializedRecord>.CreateUninitializedBuilder<FakeUninitializedRecordBuilder>()
+            .WithPrivateInitPropertyHasHash();
 
         // Act
         var result = builder.Build();
@@ -66,24 +69,14 @@ public class FakerBuilderTests
         result.InternalInitProperty.Should().Be(DefaultInternalInitProperty);
     }
 
-    private class FakeClass
-    {
-        public Guid Id { get; init; }
+    private record FakeUninitializedRecord(
+        Guid Id,
+        string PrivateInitProperty,
+        string NormalProperty,
+        string InitProperty,
+        string InternalInitProperty);
 
-        public int NeverReplaceProperty => CreateValue();
-
-        public string PrivateInitProperty { get; init; } = string.Empty;
-
-        public string NormalProperty { get; init; } = string.Empty;
-
-        public string InitProperty { get; init; } = string.Empty;
-
-        public string InternalInitProperty { get; init; } = string.Empty;
-
-        private int CreateValue() => PrivateInitProperty.Length;
-    }
-
-    private class FakeClassBuilder : FakerBuilder<FakeClass>
+    private class FakeUninitializedRecordBuilder : FakerBuilder<FakeUninitializedRecord>
     {
         protected override void ConfigureFakerRules() =>
             Faker
@@ -93,13 +86,13 @@ public class FakerBuilderTests
                 .RuleFor(x => x.InitProperty, DefaultInitProperty)
                 .RuleFor(x => x.InternalInitProperty, DefaultInternalInitProperty);
 
-        public FakeClassBuilder WithNoId()
+        public FakeUninitializedRecordBuilder WithNoId()
         {
             Faker.RuleFor(x => x.Id, _ => Guid.Empty);
             return this;
         }
 
-        public FakeClassBuilder WithPrivateInitPropertyHasHash()
+        public FakeUninitializedRecordBuilder WithPrivateInitPropertyHasHash()
         {
             Faker.RuleFor(x => x.PrivateInitProperty, faker => faker.Random.Hash());
             return this;
