@@ -15,8 +15,7 @@ public sealed class HttpClientDriverTests : IDisposable, IAsyncDisposable
 {
     private static readonly Faker Faker = new();
 
-    private readonly ApiResourceBuilder _apiResourceBuilder =
-        FakerBuilder<ApiResource>.CreateBuilder<ApiResourceBuilder>();
+    private readonly ApiResourceBuilder _apiResourceBuilder = new();
 
     private readonly Driver _driver = new();
 

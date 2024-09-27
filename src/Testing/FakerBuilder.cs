@@ -16,14 +16,7 @@ public abstract partial class FakerBuilder<TFaked> where TFaked : class
     ///     Gets an instance of the <see cref="Faker{T}" /> class,
     ///     which is used to generate fake data for testing purposes.
     /// </summary>
-    protected Faker<TFaked> Faker { get; private init; } = default!;
-
-    /// <summary>
-    ///     Configures the rules for generating instances of <typeparamref name="TFaked" />.
-    /// </summary>
-    protected virtual void ConfigureFakerRules()
-    {
-    }
+    protected abstract Faker<TFaked> Faker { get; }
 
     /// <summary>
     ///     Builds an instance of <typeparamref name="TFaked" /> using the configured rules.

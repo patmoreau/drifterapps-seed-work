@@ -1,6 +1,9 @@
 // ReSharper disable UnusedAutoPropertyAccessor.Local
 // ReSharper disable AutoPropertyCanBeMadeGetOnly.Local
 
+using Bogus;
+using FluentAssertions.Execution;
+
 namespace DrifterApps.Seeds.Testing.Tests.Builders;
 
 [UnitTest]
@@ -16,13 +19,13 @@ public class FakerUninitializedBuilderTests
     public void GivenFakeRecordBuilder_WhenBuildingWithBaseConfig_ShouldReturnARandomInstanceWithDefaultValues()
     {
         // Arrange
-        var builder = FakerBuilder<FakeUninitializedRecord>
-            .CreateUninitializedBuilder<FakeUninitializedRecordBuilder>();
+        var builder = new FakeUninitializedRecordBuilder();
 
         // Act
         var result = builder.Build();
 
         // Assert
+        using var scope = new AssertionScope();
         result.Should().NotBeNull();
         result.Id.Should().Be(DefaultId);
         result.PrivateInitProperty.Should().Be(DefaultPrivateInitProperty);
@@ -35,13 +38,13 @@ public class FakerUninitializedBuilderTests
     public void GivenFakeRecordBuilder_WhenBuildingWithId_ShouldReturnExpectedInstance()
     {
         // Arrange
-        var builder = FakerBuilder<FakeUninitializedRecord>.CreateUninitializedBuilder<FakeUninitializedRecordBuilder>()
-            .WithNoId();
+        var builder = new FakeUninitializedRecordBuilder().WithNoId();
 
         // Act
         var result = builder.Build();
 
         // Assert
+        using var scope = new AssertionScope();
         result.Should().NotBeNull();
         result.Id.Should().Be(Guid.Empty);
         result.PrivateInitProperty.Should().Be(DefaultPrivateInitProperty);
@@ -54,13 +57,13 @@ public class FakerUninitializedBuilderTests
     public void GivenFakeRecordBuilder_WhenBuildingWithVisibleProperty_ShouldReturnExpectedInstance()
     {
         // Arrange
-        var builder = FakerBuilder<FakeUninitializedRecord>.CreateUninitializedBuilder<FakeUninitializedRecordBuilder>()
-            .WithPrivateInitPropertyHasHash();
+        var builder = new FakeUninitializedRecordBuilder().WithPrivateInitPropertyHasHash();
 
         // Act
         var result = builder.Build();
 
         // Assert
+        using var scope = new AssertionScope();
         result.Should().NotBeNull();
         result.Id.Should().Be(DefaultId);
         result.PrivateInitProperty.Should().NotBe(DefaultPrivateInitProperty);
@@ -78,8 +81,7 @@ public class FakerUninitializedBuilderTests
 
     private class FakeUninitializedRecordBuilder : FakerBuilder<FakeUninitializedRecord>
     {
-        protected override void ConfigureFakerRules() =>
-            Faker
+        protected override Faker<FakeUninitializedRecord> Faker { get; } = CreateUninitializedFaker()
                 .RuleFor(x => x.Id, DefaultId)
                 .RuleFor(x => x.PrivateInitProperty, DefaultPrivateInitProperty)
                 .RuleFor(x => x.NormalProperty, DefaultNormalProperty)
