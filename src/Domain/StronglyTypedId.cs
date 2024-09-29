@@ -203,4 +203,19 @@ public abstract record StronglyTypedId<T> : IStronglyTypedId, IEqualityComparer<
     /// </summary>
     /// <param name="value">The GUID value.</param>
     public static implicit operator StronglyTypedId<T>(Guid value) => new T {Value = value};
+
+    /// <summary>
+    ///     Implicitly converts a strongly-typed identifier to a GUID.
+    /// </summary>
+    /// <param name="stronglyTypedId">The strongly-typed identifier.</param>
+#pragma warning disable CA1062
+    public static implicit operator string(StronglyTypedId<T> stronglyTypedId) => stronglyTypedId.Value.ToString();
+#pragma warning restore CA1062
+
+    /// <summary>
+    ///     Implicitly converts a GUID to a strongly-typed identifier.
+    /// </summary>
+    /// <param name="value">The GUID value.</param>
+    public static implicit operator StronglyTypedId<T>(string value) =>
+        TryParse(value, null, out var result) ? result : Empty;
 }

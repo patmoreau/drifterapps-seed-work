@@ -3,7 +3,7 @@
 
 namespace DrifterApps.Seeds.Testing;
 
-public interface IDriverOf<out TSystemUnderTest> where TSystemUnderTest : class
+public interface IDriverOf<out TSystemUnderTest>
 {
     TSystemUnderTest Build();
 }

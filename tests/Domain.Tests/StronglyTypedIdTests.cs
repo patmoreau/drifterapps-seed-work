@@ -342,6 +342,21 @@ public class StronglyTypedIdTests
         id!.Value.Should().Be(guid);
     }
 
+    [Fact]
+    public void GivenCompareTo_WhenStringIsGuid_ThenReturnEqual()
+    {
+        // arrange
+        var guid = _faker.Random.Guid();
+        var myId = MyId.Create(guid);
+
+        // act
+
+        var result = myId == guid.ToString();
+
+        // assert
+        result.Should().BeTrue();
+    }
+
     public record MyId : StronglyTypedId<MyId>;
 
     public class EqualityComparerEqualsData : TheoryData<MyId?, MyId?, bool>
