@@ -4,7 +4,7 @@ namespace DrifterApps.Seeds.Application.Extensions;
 
 public static class QueryableExtensions
 {
-    internal static IQueryable<T> ApplyQueryParams<T>(this IQueryable<T> query, QueryParams queryParams)
+    public static IQueryable<T> Query<T>(this IQueryable<T> query, QueryParams queryParams)
     {
         // Apply filters
         foreach (var filter in queryParams.Filter)
