@@ -1,14 +1,14 @@
 using System.Globalization;
 using System.Linq.Dynamic.Core;
 using System.Linq.Expressions;
-using System.Text.RegularExpressions;
+using DrifterApps.Seeds.Domain;
 
 namespace DrifterApps.Seeds.Application.Extensions;
 
 /// <summary>
 ///     IQueryable extensions method for filtering and sorting from the IRequestQuery parameters.
 /// </summary>
-public static partial class SqlBuilderExtensions
+public static class SqlBuilderExtensions
 {
     private static readonly IDictionary<string, string> Operators =
         new Dictionary<string, string>
@@ -39,7 +39,7 @@ public static partial class SqlBuilderExtensions
 
         foreach (var f in filter)
         {
-            var match = FilterRegex().Match(f);
+            var match = QueryParams.FilterPatternRegex().Match(f);
             var property = match.Groups["property"].Value;
             var op = match.Groups["operator"].Value;
             var value = match.Groups["value"].Value;
@@ -59,7 +59,7 @@ public static partial class SqlBuilderExtensions
             return query;
         }
 
-        var sorts = (from match in SortRegex().Matches(string.Join(";", sort))
+        var sorts = (from match in QueryParams.SortPatternRegex().Matches(string.Join(";", sort))
             let asc = string.IsNullOrWhiteSpace(match.Groups["desc"].Value) ? "ASC" : "DESC"
             let field = match.Groups["field"].Value
             select $"{field} {asc}").ToList();
@@ -128,7 +128,7 @@ public static partial class SqlBuilderExtensions
                 {
                     typedValue = Enum.Parse(valueType, value);
                 }
-                else if (valueType == typeof(Guid))
+                else if (valueType == typeof(Guid) || valueType.IsAssignableFrom(typeof(IStronglyTypedId)))
                 {
                     typedValue = Guid.Parse(value);
                 }
@@ -142,10 +142,4 @@ public static partial class SqlBuilderExtensions
         var right = Expression.Constant(typedValue, left.Type);
         return Expression.MakeBinary(type, left, right);
     }
-
-    [GeneratedRegex("(?<property>\\w+)(?<operator>:(eq|ne|lt|le|gt|ge):)(?<value>.*)")]
-    private static partial Regex FilterRegex();
-
-    [GeneratedRegex("(?<desc>-{0,1})(?<field>\\w+)")]
-    private static partial Regex SortRegex();
 }
