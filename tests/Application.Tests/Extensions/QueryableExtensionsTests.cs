@@ -185,5 +185,5 @@ public class QueryableExtensionsTests
 
     private record MyId : StronglyTypedId<MyId>;
 
-    private record FakeClass(IStronglyTypedId PersonId, string Name, decimal Bonus, bool IsWorking);
+    private record FakeClass(MyId PersonId, string Name, decimal Bonus, bool IsWorking);
 }
