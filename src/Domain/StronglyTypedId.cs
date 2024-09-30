@@ -10,8 +10,8 @@ namespace DrifterApps.Seeds.Domain;
 [SuppressMessage("Usage", "CA2225:Operator overloads have named alternates")]
 [SuppressMessage("Major Code Smell", "S125:Sections of code should not be commented out")]
 [SuppressMessage("Major Code Smell", "S4035:Classes implementing \"IEquatable<T>\" should be sealed")]
-public abstract record StronglyTypedId<T> : IStronglyTypedId, IEqualityComparer<T>, IComparable<T>, IParsable<T>
-    where T : StronglyTypedId<T>, new()
+public abstract record StronglyTypedId<T> : IStronglyTypedId, IEqualityComparer<T>, IComparable<T>,
+    IParsable<T> where T : StronglyTypedId<T>, new()
 {
     /// <summary>
     ///     Creates a new instance of the strongly-typed identifier with a new GUID value.
@@ -109,7 +109,7 @@ public abstract record StronglyTypedId<T> : IStronglyTypedId, IEqualityComparer<
     /// <summary>
     ///     Gets the GUID value of the strongly-typed identifier.
     /// </summary>
-    public Guid Value { get; init; }
+    public Guid Value { get; private init; }
 
     /// <summary>
     ///     Creates a new instance of the strongly-typed identifier with the specified GUID value.
@@ -195,7 +195,7 @@ public abstract record StronglyTypedId<T> : IStronglyTypedId, IEqualityComparer<
     /// </summary>
     /// <param name="stronglyTypedId">The strongly-typed identifier.</param>
 #pragma warning disable CA1062
-    public static implicit operator Guid(StronglyTypedId<T> stronglyTypedId) => stronglyTypedId!.Value;
+    public static implicit operator Guid(StronglyTypedId<T> stronglyTypedId) => stronglyTypedId.Value;
 #pragma warning restore CA1062
 
     /// <summary>
