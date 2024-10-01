@@ -1,3 +1,6 @@
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using DrifterApps.Seeds.Application.Converters;
 using DrifterApps.Seeds.Infrastructure;
 using DrifterApps.Seeds.Testing;
 using MediatR;
@@ -39,13 +42,29 @@ public class RequestExecutorTests
 
     private class Driver : IDriverOf<RequestExecutor>
     {
+        private readonly JsonSerializerOptions _options;
+
+        private readonly IJsonSerializerOptionsFactory _jsonSerializerOptionsFactory =
+            Substitute.For<IJsonSerializerOptionsFactory>();
+
         private readonly ILogger<RequestExecutor> _logger = Substitute.For<ILogger<RequestExecutor>>();
         private readonly IMediator _mediator = Substitute.For<IMediator>();
 
-        public MediatorSerializedObject SerializedObject { get; private set; } =
-            MediatorSerializedObject.SerializeObject(new SampleRequest(), nameof(SampleRequest));
+        public Driver()
+        {
+            _options = new()
+            {
+                DefaultIgnoreCondition = JsonIgnoreCondition.Never
+            };
+            _options.Converters.Add(new StronglyTypedIdJsonConverterFactory());
+            _jsonSerializerOptionsFactory.CreateOptions().Returns(_options);
+            SerializedObject  =
+                MediatorSerializedObject.SerializeObject(new SampleRequest(), nameof(SampleRequest), _options);
+        }
 
-        public RequestExecutor Build() => new(_mediator, _logger);
+        public MediatorSerializedObject SerializedObject { get; private set; }
+
+        public RequestExecutor Build() => new(_jsonSerializerOptionsFactory, _mediator, _logger);
 
         public Driver GivenSerializedObjectNotOfTypeIBaseRequest()
         {
