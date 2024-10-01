@@ -1,3 +1,4 @@
+using System.Text.Json;
 using DrifterApps.Seeds.Application;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -11,14 +12,17 @@ public static class ServiceCollectionExtensions
     /// <param name="services">
     ///     <see cref="IServiceCollection" />
     /// </param>
+    /// <param name="jsonOptions"></param>
     /// <returns>
     ///     <see cref="IServiceCollection" />
     /// </returns>
-    public static IServiceCollection AddHangfireRequestScheduler(this IServiceCollection services)
+    public static IServiceCollection AddHangfireRequestScheduler(this IServiceCollection services,
+        Func<JsonSerializerOptions>? jsonOptions = null)
     {
         services
             .AddTransient<IRequestScheduler, RequestScheduler>()
-            .AddTransient<IRequestExecutor, RequestExecutor>();
+            .AddTransient<IRequestExecutor, RequestExecutor>()
+            .AddSingleton<IJsonSerializerOptionsFactory>(new JsonSerializerOptionsFactory(jsonOptions));
 
         return services;
     }

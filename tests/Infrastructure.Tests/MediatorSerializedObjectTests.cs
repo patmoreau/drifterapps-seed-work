@@ -1,4 +1,6 @@
 using System.Text.Json;
+using DrifterApps.Seeds.Application.Converters;
+using DrifterApps.Seeds.Domain;
 using DrifterApps.Seeds.Infrastructure;
 using DrifterApps.Seeds.Testing;
 using MediatR;
@@ -8,7 +10,14 @@ namespace Infrastructure.Tests;
 [UnitTest]
 public class MediatorSerializedObjectTests
 {
-    private readonly Driver _driver = new();
+    private static readonly JsonSerializerOptionsFactory Factory = new(() =>
+    {
+        var options = new JsonSerializerOptions(JsonSerializerDefaults.Web);
+        options.Converters.Add(new StronglyTypedIdJsonConverterFactory());
+        return options;
+    });
+
+    private readonly Driver _driver = new(Factory);
 
     [Fact]
     public void GivenConstructor_WhenFullTypeNameNotFound_ThenShouldThrowArgumentException()
@@ -54,10 +63,11 @@ public class MediatorSerializedObjectTests
     public void TryDeserializeObject_WithValidData_ShouldDeserializeObject()
     {
         // Arrange
+        var options = Factory.CreateOptions();
         var mediatorSerializedObject = _driver.Build();
 
         // Act
-        var success = mediatorSerializedObject.TryDeserializeObject(out var deserializedObject);
+        var success = mediatorSerializedObject.TryDeserializeObject(out var deserializedObject, options);
 
         // Assert
         success.Should().BeTrue();
@@ -71,10 +81,11 @@ public class MediatorSerializedObjectTests
     public void TryDeserializeObject_WithInvalidData_ShouldReturnFalse()
     {
         // Arrange
+        var options = Factory.CreateOptions();
         var mediatorSerializedObject = _driver.GivenInvalidData().Build();
 
         // Act
-        var success = mediatorSerializedObject.TryDeserializeObject(out var deserializedObject);
+        var success = mediatorSerializedObject.TryDeserializeObject(out var deserializedObject, options);
 
         // Assert
         success.Should().BeFalse();
@@ -85,10 +96,11 @@ public class MediatorSerializedObjectTests
     public void SerializeObject_ShouldReturnMediatorSerializedObject()
     {
         // Arrange
+        var options = Factory.CreateOptions();
         var mediatorSerializedObject = _driver.Build();
 
         // Act
-        var result = MediatorSerializedObject.SerializeObject(_driver.OriginalRequest, _driver.Description);
+        var result = MediatorSerializedObject.SerializeObject(_driver.OriginalRequest, _driver.Description, options);
 
         // Assert
         result.Should().NotBeNull();
@@ -97,17 +109,20 @@ public class MediatorSerializedObjectTests
 
     private class Driver : IDriverOf<MediatorSerializedObject>
     {
+        private readonly Faker<SampleRequest> _faker = new Faker<SampleRequest>()
+            .RuleFor(x => x.Id, faker => (MyId) faker.Random.Guid())
+            .RuleFor(x => x.Property1, faker => faker.Random.Word())
+            .RuleFor(x => x.Property2, faker => faker.Random.Int());
+
         private string _assemblyQualifiedName = typeof(SampleRequest).AssemblyQualifiedName!;
 
         private string _data;
 
-        public Driver()
+        public Driver(JsonSerializerOptionsFactory factory)
         {
-            OriginalRequest = new Faker<SampleRequest>()
-                .RuleFor(x => x.Property1, faker => faker.Random.Word())
-                .RuleFor(x => x.Property2, faker => faker.Random.Int());
+            OriginalRequest = _faker.Generate();
             Description = Fakerizer.Lorem.Sentence();
-            _data = JsonSerializer.Serialize(OriginalRequest);
+            _data = JsonSerializer.Serialize(OriginalRequest, factory.CreateOptions());
         }
 
         public string Description { get; }
@@ -139,9 +154,12 @@ public class MediatorSerializedObjectTests
         }
     }
 
-    private class SampleRequest : IBaseRequest
+    public record MyId : StronglyTypedId<MyId>;
+
+    public class SampleRequest : IBaseRequest
     {
-        public string Property1 { get; } = null!;
-        public int Property2 { get; }
+        public required MyId Id { get; init; }
+        public required string Property1 { get; init; }
+        public int Property2 { get; init; }
     }
 }

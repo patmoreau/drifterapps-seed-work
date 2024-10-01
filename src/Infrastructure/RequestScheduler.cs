@@ -9,6 +9,7 @@ internal sealed class RequestScheduler(
     IRequestExecutor requestExecutor,
     IBackgroundJobClientFactoryV2 backgroundJobClientFactoryV2,
     IRecurringJobManagerFactoryV2 recurringJobManagerFactoryV2,
+    IJsonSerializerOptionsFactory jsonSerializerOptionsFactory,
     ILogger<RequestScheduler> logger)
     : IRequestScheduler
 {
@@ -64,7 +65,8 @@ internal sealed class RequestScheduler(
         string description)
         where TBaseRequest : IBaseRequest
     {
-        var mediatorSerializedObject = MediatorSerializedObject.SerializeObject(request, description);
+        var options = jsonSerializerOptionsFactory.CreateOptions();
+        var mediatorSerializedObject = MediatorSerializedObject.SerializeObject(request, description, options);
 
         logger.LogDebug("{@MediatorSerializedObject}", mediatorSerializedObject);
 

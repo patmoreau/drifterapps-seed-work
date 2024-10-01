@@ -1,16 +1,10 @@
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using MediatR;
 
 namespace DrifterApps.Seeds.Infrastructure;
 
-public class MediatorSerializedObject
+internal class MediatorSerializedObject
 {
-    private static readonly JsonSerializerOptions Options = new()
-    {
-        DefaultIgnoreCondition = JsonIgnoreCondition.Never
-    };
-
     public MediatorSerializedObject(string assemblyQualifiedName, string data, string additionalDescription)
     {
         if (string.IsNullOrWhiteSpace(assemblyQualifiedName))
@@ -43,7 +37,7 @@ public class MediatorSerializedObject
         return $"{requestName} {AdditionalDescription}";
     }
 
-    internal bool TryDeserializeObject(out IBaseRequest? request)
+    internal bool TryDeserializeObject(out IBaseRequest? request, JsonSerializerOptions jsonSerializerOptions)
     {
         request = default;
 
@@ -51,7 +45,7 @@ public class MediatorSerializedObject
 
         try
         {
-            var req = JsonSerializer.Deserialize(Data, type!, Options);
+            var req = JsonSerializer.Deserialize(Data, type!, jsonSerializerOptions);
             switch (req)
             {
                 case IBaseRequest baseRequest:
@@ -68,11 +62,11 @@ public class MediatorSerializedObject
     }
 
     internal static MediatorSerializedObject SerializeObject<TBaseRequest>(TBaseRequest mediatorObject,
-        string description) where TBaseRequest : IBaseRequest
+        string description, JsonSerializerOptions jsonSerializerOptions) where TBaseRequest : IBaseRequest
     {
         var type = mediatorObject.GetType();
         var assemblyName = type.AssemblyQualifiedName!;
-        var data = JsonSerializer.Serialize(mediatorObject, Options);
+        var data = JsonSerializer.Serialize(mediatorObject, jsonSerializerOptions);
 
         return new MediatorSerializedObject(assemblyName, data, description);
     }
