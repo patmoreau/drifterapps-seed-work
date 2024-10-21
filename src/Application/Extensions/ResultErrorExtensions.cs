@@ -11,10 +11,10 @@ public static class ResultErrorExtensions
         return Results.Problem(statusCode: statusCode, detail: error.Description);
     }
 
-    public static IResult ToValidationProblemDetails(this ResultValidationError error)
+    public static IResult ToValidationProblemDetails(this ResultErrorAggregate error)
     {
         ArgumentNullException.ThrowIfNull(error);
-        return Results.ValidationProblem(error.ValidationErrors.ToDictionary(entry => entry.Key, entry => entry.Value),
+        return Results.ValidationProblem(error.Errors.ToDictionary(entry => entry.Key, entry => entry.Value),
             error.Description);
     }
 }

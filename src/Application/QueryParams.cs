@@ -149,25 +149,15 @@ public readonly partial struct QueryParams : IEquatable<QueryParams>
         EnsureSortValidation(result, sort);
         EnsureFilterValidation(result, filter);
 
-        return result.IsFailure
-            ? Result<QueryParams>.Failure(new ResultValidationError(
-                $"{nameof(QueryParams)}.ValidationErrors",
-                "Validation errors occurred",
-                result.Results
-                    .Where(r => r.IsFailure)
-                    .Select(r => r.Error)
-                    .GroupBy(error => error.Code)
-                    .ToDictionary(
-                        entry => entry.Key,
-                        entry => entry.Select(x => x.Description).ToArray()
-                    )))
-            : Result<QueryParams>.Success(new QueryParams
+        return result.Switch(
+            () => Result<QueryParams>.Success(new QueryParams
             {
                 Offset = offset,
                 Limit = limit,
                 Sort = sort,
                 Filter = filter
-            });
+            }),
+            Result<QueryParams>.Failure);
     }
 
     private static void EnsureSortValidation(ResultAggregate aggregate, IEnumerable<string> sorts)

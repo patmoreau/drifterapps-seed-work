@@ -34,12 +34,12 @@ public class QueryParamsTests
 
         // Assert
         result.Should().BeFailure().And
-            .WithError(CreateValidationError(QueryParamsErrors.OffsetCannotBeNegative));
+            .WithError(CreateErrorAggregate(QueryParamsErrors.OffsetCannotBeNegative));
     }
 
-    private static ResultValidationError CreateValidationError(ResultError error) =>
-        new($"{nameof(QueryParams)}.ValidationErrors",
-            "Validation errors occurred",
+    private static ResultErrorAggregate CreateErrorAggregate(ResultError error) =>
+        new($"{nameof(QueryParams)}.Errors",
+            "Errors occurred",
             new Dictionary<string, string[]>
             {
                 {error.Code, [error.Description]}
@@ -56,7 +56,7 @@ public class QueryParamsTests
 
         // Assert
         result.Should().BeFailure()
-            .And.WithError(CreateValidationError(QueryParamsErrors.LimitMustBePositive));
+            .And.WithError(CreateErrorAggregate(QueryParamsErrors.LimitMustBePositive));
     }
 
     [Theory]
@@ -74,7 +74,7 @@ public class QueryParamsTests
 
         // Assert
         result.Should().BeFailure()
-            .And.WithError(CreateValidationError(QueryParamsErrors.SortInvalidPattern(sort)));
+            .And.WithError(CreateErrorAggregate(QueryParamsErrors.SortInvalidPattern(sort)));
     }
 
     [Theory]
@@ -92,7 +92,7 @@ public class QueryParamsTests
 
         // Assert
         result.Should().BeFailure()
-            .And.WithError(CreateValidationError(QueryParamsErrors.FilterInvalidPattern(filter)));
+            .And.WithError(CreateErrorAggregate(QueryParamsErrors.FilterInvalidPattern(filter)));
     }
 
     [Fact]

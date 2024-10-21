@@ -11,15 +11,15 @@ public static class FluentValidationErrors
     public const string CodeValidationErrors = "FluentValidation.ValidationErrors";
 
     /// <summary>
-    ///     Create a <see cref="ResultValidationError" /> from a <see cref="Type" /> and a list of
+    ///     Create a <see cref="ResultErrorAggregate" /> from a <see cref="Type" /> and a list of
     ///     <see cref="ValidationFailure" />.
     /// </summary>
     /// <param name="requestType">Request <see cref="Type" /></param>
     /// <param name="validationFailures">List of <see cref="ValidationFailure" /></param>
     /// <returns>
-    ///     <see cref="ResultValidationError" />
+    ///     <see cref="ResultErrorAggregate" />
     /// </returns>
-    internal static ResultValidationError ValidationErrors(Type requestType,
+    internal static ResultErrorAggregate ValidationErrors(Type requestType,
         IReadOnlyList<ValidationFailure> validationFailures) =>
         new(
             CodeValidationErrors,
