@@ -1,5 +1,5 @@
 using System.Reflection;
-using DrifterApps.Seeds.Domain;
+using DrifterApps.Seeds.FluentResult;
 using FluentValidation;
 using FluentValidation.Results;
 using MediatR;
@@ -83,23 +83,8 @@ public sealed class ValidationBehavior<TRequest, TResponse>(IEnumerable<IValidat
         {
             {IsGenericType: true} t when t.GetGenericTypeDefinition() == typeof(Result<>) =>
                 CreateGenericResultFailureInstance(validationFailures),
-            { } t when t == typeof(Result) => CreateResultFailureInstance(validationFailures),
             _ => throw new ValidationException(validationFailures)
         };
-
-    /// <summary>
-    ///     Creates an instance of a failure result for non-generic Result type.
-    /// </summary>
-    /// <param name="validationFailures">The list of validation failures.</param>
-    /// <returns>The failure result instance.</returns>
-    private static TResponse CreateResultFailureInstance(IReadOnlyList<ValidationFailure> validationFailures)
-    {
-        var failureInstance = typeof(Result)
-            .GetMethod("Failure", BindingFlags.Static | BindingFlags.Public)
-            ?.Invoke(null, [FluentValidationErrors.ValidationErrors(typeof(TRequest), validationFailures)]);
-
-        return (TResponse) failureInstance!;
-    }
 
     /// <summary>
     ///     Creates an instance of a failure result for generic Result type.

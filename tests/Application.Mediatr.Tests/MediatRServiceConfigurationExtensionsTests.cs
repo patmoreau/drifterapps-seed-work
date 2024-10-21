@@ -1,4 +1,5 @@
 using DrifterApps.Seeds.Domain;
+using DrifterApps.Seeds.FluentResult;
 using DrifterApps.Seeds.Testing;
 using DrifterApps.Seeds.Testing.Attributes;
 using FluentAssertions.Execution;
@@ -97,7 +98,7 @@ public class MediatRServiceConfigurationExtensionsTests : IAsyncDisposable
         result.Should().NotBeNull();
         result.IsFailure.Should().BeTrue();
         result.Error.Should().BeOfType<ResultValidationError>();
-        result.Error.As<ResultValidationError>().Errors.Should().HaveCount(1);
+        result.Error.As<ResultValidationError>().ValidationErrors.Should().HaveCount(1);
     }
 
     [Fact]
@@ -116,7 +117,7 @@ public class MediatRServiceConfigurationExtensionsTests : IAsyncDisposable
         result.Should().NotBeNull();
         result.IsFailure.Should().BeTrue();
         result.Error.Should().BeOfType<ResultValidationError>();
-        result.Error.As<ResultValidationError>().Errors.Should().HaveCount(1);
+        result.Error.As<ResultValidationError>().ValidationErrors.Should().HaveCount(1);
     }
 
     [Fact]
@@ -308,7 +309,7 @@ public class MediatRServiceConfigurationExtensionsTests : IAsyncDisposable
 
         internal record PingWithNoResponse(string Message, bool Missed) : IRequest, IUnitOfWorkRequest;
 
-        internal record PingWithResult(string Message, bool Missed) : IRequest<Result>, IUnitOfWorkRequest;
+        internal record PingWithResult(string Message, bool Missed) : IRequest<Result<Nothing>>, IUnitOfWorkRequest;
 
         internal record PingWithPongResult(string Message, bool Missed)
             : IRequest<Result<TestResponses.Pong>>, IUnitOfWorkRequest;
@@ -404,14 +405,14 @@ public class MediatRServiceConfigurationExtensionsTests : IAsyncDisposable
         }
 
         internal class
-            PingWithResultHandler : IRequestHandler<TestRequests.PingWithResult, Result>
+            PingWithResultHandler : IRequestHandler<TestRequests.PingWithResult, Result<Nothing>>
         {
-            public Task<Result> Handle(TestRequests.PingWithResult request,
+            public Task<Result<Nothing>> Handle(TestRequests.PingWithResult request,
                 CancellationToken cancellationToken) =>
                 Task.FromResult(
                     request.Missed
-                        ? Result.Failure(new ResultError("Ping.Pong", "Missed"))
-                        : Result.Success());
+                        ? Result<Nothing>.Failure(new ResultError("Ping.Pong", "Missed"))
+                        : Result<Nothing>.Success());
         }
     }
 

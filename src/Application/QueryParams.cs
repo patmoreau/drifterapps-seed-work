@@ -1,8 +1,6 @@
 using System.Collections.Immutable;
-using System.Globalization;
-using System.Text;
 using System.Text.RegularExpressions;
-using DrifterApps.Seeds.Domain;
+using DrifterApps.Seeds.FluentResult;
 
 namespace DrifterApps.Seeds.Application;
 
@@ -142,13 +140,27 @@ public readonly partial struct QueryParams : IEquatable<QueryParams>
     public static Result<QueryParams> Create(int offset, int limit, IReadOnlyCollection<string> sort,
         IReadOnlyCollection<string> filter)
     {
-        var result = Result.Validate(
-            OffsetValidation(offset),
-            LimitValidation(limit),
-            SortValidation(sort),
-            FilterValidation(filter));
+        ArgumentNullException.ThrowIfNull(sort);
+        ArgumentNullException.ThrowIfNull(filter);
+
+        var result = ResultAggregate.Create()
+            .Ensure(() => offset >= 0, QueryParamsErrors.OffsetCannotBeNegative)
+            .Ensure(() => limit > 0, QueryParamsErrors.LimitMustBePositive);
+        EnsureSortValidation(result, sort);
+        EnsureFilterValidation(result, filter);
+
         return result.IsFailure
-            ? Result<QueryParams>.Failure(result.Error)
+            ? Result<QueryParams>.Failure(new ResultValidationError(
+                $"{nameof(QueryParams)}.ValidationErrors",
+                "Validation errors occurred",
+                result.Results
+                    .Where(r => r.IsFailure)
+                    .Select(r => r.Error)
+                    .GroupBy(error => error.Code)
+                    .ToDictionary(
+                        entry => entry.Key,
+                        entry => entry.Select(x => x.Description).ToArray()
+                    )))
             : Result<QueryParams>.Success(new QueryParams
             {
                 Offset = offset,
@@ -158,76 +170,34 @@ public readonly partial struct QueryParams : IEquatable<QueryParams>
             });
     }
 
-    /// <summary>
-    ///     Validates the offset value.
-    /// </summary>
-    /// <param name="value">The offset value to validate.</param>
-    /// <returns>A <see cref="ResultValidation" /> representing the result of the validation.</returns>
-    private static ResultValidation OffsetValidation(int value) =>
-        ResultValidation.Create(() => value >= 0, QueryParamsErrors.OffsetCannotBeNegative);
-
-    /// <summary>
-    ///     Validates the limit value.
-    /// </summary>
-    /// <param name="value">The limit value to validate.</param>
-    /// <returns>A <see cref="ResultValidation" /> representing the result of the validation.</returns>
-    private static ResultValidation LimitValidation(int value) =>
-        ResultValidation.Create(() => value > 0, QueryParamsErrors.LimitMustBePositive);
-
-    /// <summary>
-    ///     Validates the sort collection.
-    /// </summary>
-    /// <param name="sorts">The sort collection to validate.</param>
-    /// <returns>A <see cref="ResultValidation" /> representing the result of the validation.</returns>
-    private static ResultValidation SortValidation(IEnumerable<string> sorts)
+    private static void EnsureSortValidation(ResultAggregate aggregate, IEnumerable<string> sorts)
     {
-        var errors = new StringBuilder();
-        return ResultValidation.Create(() =>
+        foreach (var sort in sorts)
         {
-            var isValid = true;
-            foreach (var sort in sorts)
+            var match = SortPatternRegex().Match(sort);
+            if (match.Success)
             {
-                var match = SortPatternRegex().Match(sort);
-                if (match.Success)
-                {
-                    continue;
-                }
-
-                isValid = false;
-                errors.Append(CultureInfo.InvariantCulture, $"'{sort}' is invalid");
-                errors.AppendLine();
+                aggregate.AddResult(Result<Nothing>.Success());
+                continue;
             }
 
-            return isValid;
-        }, QueryParamsErrors.SortInvalidPattern(errors.ToString()));
+            aggregate.AddResult(Result<Nothing>.Failure(QueryParamsErrors.SortInvalidPattern(sort)));
+        }
     }
 
-    /// <summary>
-    ///     Validates the filter collection.
-    /// </summary>
-    /// <param name="filters">The filter collection to validate.</param>
-    /// <returns>A <see cref="ResultValidation" /> representing the result of the validation.</returns>
-    private static ResultValidation FilterValidation(IEnumerable<string> filters)
+    private static void EnsureFilterValidation(ResultAggregate aggregate, IEnumerable<string> filters)
     {
-        var errors = new StringBuilder();
-        return ResultValidation.Create(() =>
+        foreach (var filter in filters)
         {
-            var isValid = true;
-            foreach (var filter in filters)
+            var match = FilterPatternRegex().Match(filter);
+            if (match.Success)
             {
-                var match = FilterPatternRegex().Match(filter);
-                if (match.Success)
-                {
-                    continue;
-                }
-
-                isValid = false;
-                errors.Append(CultureInfo.InvariantCulture, $"'{filter}' is invalid");
-                errors.AppendLine();
+                aggregate.AddResult(Result<Nothing>.Success());
+                continue;
             }
 
-            return isValid;
-        }, QueryParamsErrors.FilterInvalidPattern(errors.ToString()));
+            aggregate.AddResult(Result<Nothing>.Failure(QueryParamsErrors.FilterInvalidPattern(filter)));
+        }
     }
 
     /// <summary>
