@@ -55,8 +55,8 @@ public class ValidationBehaviorTests
         // Assert
         result.Should().NotBeNull();
         result.IsFailure.Should().BeTrue();
-        result.Error.Should().BeOfType<ResultValidationError>();
-        result.Error.As<ResultValidationError>().ValidationErrors.Should().HaveCount(2);
+        result.Error.Should().BeOfType<ResultErrorAggregate>();
+        result.Error.As<ResultErrorAggregate>().Errors.Should().HaveCount(2);
     }
 
     private class Driver : IDriverOf<ValidationBehavior<SampleRequest, Result<string>>>

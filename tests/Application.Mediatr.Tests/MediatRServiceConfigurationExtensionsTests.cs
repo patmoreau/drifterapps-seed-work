@@ -97,8 +97,8 @@ public class MediatRServiceConfigurationExtensionsTests : IAsyncDisposable
         using var scope = new AssertionScope();
         result.Should().NotBeNull();
         result.IsFailure.Should().BeTrue();
-        result.Error.Should().BeOfType<ResultValidationError>();
-        result.Error.As<ResultValidationError>().ValidationErrors.Should().HaveCount(1);
+        result.Error.Should().BeOfType<ResultErrorAggregate>();
+        result.Error.As<ResultErrorAggregate>().Errors.Should().HaveCount(1);
     }
 
     [Fact]
@@ -116,8 +116,8 @@ public class MediatRServiceConfigurationExtensionsTests : IAsyncDisposable
         using var scope = new AssertionScope();
         result.Should().NotBeNull();
         result.IsFailure.Should().BeTrue();
-        result.Error.Should().BeOfType<ResultValidationError>();
-        result.Error.As<ResultValidationError>().ValidationErrors.Should().HaveCount(1);
+        result.Error.Should().BeOfType<ResultErrorAggregate>();
+        result.Error.As<ResultErrorAggregate>().Errors.Should().HaveCount(1);
     }
 
     [Fact]
