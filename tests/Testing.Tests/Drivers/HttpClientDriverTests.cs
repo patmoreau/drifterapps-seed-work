@@ -3,7 +3,6 @@ using System.Net.Http.Headers;
 using System.Text.Json;
 using Bogus;
 using DrifterApps.Seeds.Testing.Drivers;
-using DrifterApps.Seeds.Testing.Infrastructure;
 using DrifterApps.Seeds.Testing.Infrastructure.Authentication;
 using DrifterApps.Seeds.Testing.Tests.Builders;
 using Xunit.Abstractions;

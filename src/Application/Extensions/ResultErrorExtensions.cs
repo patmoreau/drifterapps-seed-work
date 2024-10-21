@@ -1,4 +1,4 @@
-using DrifterApps.Seeds.Domain;
+using DrifterApps.Seeds.FluentResult;
 using Microsoft.AspNetCore.Http;
 
 namespace DrifterApps.Seeds.Application.Extensions;
@@ -14,7 +14,7 @@ public static class ResultErrorExtensions
     public static IResult ToValidationProblemDetails(this ResultValidationError error)
     {
         ArgumentNullException.ThrowIfNull(error);
-        return Results.ValidationProblem(error.Errors.ToDictionary(entry => entry.Key, entry => entry.Value),
+        return Results.ValidationProblem(error.ValidationErrors.ToDictionary(entry => entry.Key, entry => entry.Value),
             error.Description);
     }
 }

@@ -1,5 +1,5 @@
 using Bogus;
-using DrifterApps.Seeds.Domain;
+using DrifterApps.Seeds.FluentResult;
 using DrifterApps.Seeds.Testing;
 
 namespace DrifterApps.Seeds.Application.Tests;
@@ -19,7 +19,8 @@ public class QueryParamsTests
         var result = QueryParams.Create(requestQuery);
 
         // Assert
-        result.Should().BeFailure().WithError(QueryParamsErrors.RequestIsRequired);
+        result.Should().BeFailure()
+            .And.WithError(QueryParamsErrors.RequestIsRequired);
     }
 
     [Fact]
@@ -32,9 +33,17 @@ public class QueryParamsTests
         var result = QueryParams.Create(requestQuery);
 
         // Assert
-        result.Should().BeFailure()
-            .WithError(ResultAggregateError.CreateValidationError([QueryParamsErrors.OffsetCannotBeNegative]));
+        result.Should().BeFailure().And
+            .WithError(CreateValidationError(QueryParamsErrors.OffsetCannotBeNegative));
     }
+
+    private static ResultValidationError CreateValidationError(ResultError error) =>
+        new($"{nameof(QueryParams)}.ValidationErrors",
+            "Validation errors occurred",
+            new Dictionary<string, string[]>
+            {
+                {error.Code, [error.Description]}
+            });
 
     [Fact]
     public void GivenCreate_WhenLimitIsNotPositive_ThenReturnFailure()
@@ -47,7 +56,7 @@ public class QueryParamsTests
 
         // Assert
         result.Should().BeFailure()
-            .WithError(ResultAggregateError.CreateValidationError([QueryParamsErrors.LimitMustBePositive]));
+            .And.WithError(CreateValidationError(QueryParamsErrors.LimitMustBePositive));
     }
 
     [Theory]
@@ -65,7 +74,7 @@ public class QueryParamsTests
 
         // Assert
         result.Should().BeFailure()
-            .WithError(ResultAggregateError.CreateValidationError([QueryParamsErrors.SortInvalidPattern("")]));
+            .And.WithError(CreateValidationError(QueryParamsErrors.SortInvalidPattern(sort)));
     }
 
     [Theory]
@@ -83,7 +92,7 @@ public class QueryParamsTests
 
         // Assert
         result.Should().BeFailure()
-            .WithError(ResultAggregateError.CreateValidationError([QueryParamsErrors.FilterInvalidPattern("")]));
+            .And.WithError(CreateValidationError(QueryParamsErrors.FilterInvalidPattern(filter)));
     }
 
     [Fact]
@@ -96,7 +105,7 @@ public class QueryParamsTests
         var result = QueryParams.Create(requestQuery);
 
         // Assert
-        result.Should().BeSuccessful().WithValue(QueryParams.Empty);
+        result.Should().BeSuccessful().And.WithValue(QueryParams.Empty);
     }
 
     [Fact]

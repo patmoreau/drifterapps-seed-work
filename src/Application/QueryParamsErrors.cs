@@ -1,14 +1,14 @@
-using DrifterApps.Seeds.Domain;
+using DrifterApps.Seeds.FluentResult;
 
 namespace DrifterApps.Seeds.Application;
 
 public static class QueryParamsErrors
 {
     public const string CodeRequestIsRequired = $"{nameof(QueryParams)}.{nameof(RequestIsRequired)}";
-    public const string CodeOffsetCannotBeNegative = $"{nameof(QueryParams)}.{nameof(OffsetCannotBeNegative)}";
-    public const string CodeLimitMustBePositive = $"{nameof(QueryParams)}.{nameof(CodeLimitMustBePositive)}";
-    public const string CodeSortInvalidPattern = $"{nameof(QueryParams)}.{nameof(SortInvalidPattern)}";
-    public const string CodeFilterInvalidPattern = $"{nameof(QueryParams)}.{nameof(FilterInvalidPattern)}";
+    public const string CodeOffsetCannotBeNegative = $"{nameof(QueryParams)}.{nameof(QueryParams.Offset)}";
+    public const string CodeLimitMustBePositive = $"{nameof(QueryParams)}.{nameof(QueryParams.Limit)}";
+    public const string CodeSortInvalidPattern = $"{nameof(QueryParams)}.{nameof(QueryParams.Sort)}";
+    public const string CodeFilterInvalidPattern = $"{nameof(QueryParams)}.{nameof(QueryParams.Filter)}";
 
     public static ResultError RequestIsRequired => new(CodeOffsetCannotBeNegative, "request cannot be null");
     public static ResultError OffsetCannotBeNegative => new(CodeOffsetCannotBeNegative, "offset cannot be negative");

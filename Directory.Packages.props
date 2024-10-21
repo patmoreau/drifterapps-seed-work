@@ -9,6 +9,8 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageVersion>
+    <PackageVersion Include="DrifterApps.Seeds.FluentResult" Version="0.1.4" />
+    <PackageVersion Include="DrifterApps.Seeds.FluentResult.FluentAssertions" Version="0.1.4" />
     <PackageVersion Include="FluentAssertions" Version="6.12.1" />
     <PackageVersion Include="FluentAssertions.Analyzers" Version="0.34.1">
       <PrivateAssets>all</PrivateAssets>
@@ -19,7 +21,7 @@
     <PackageVersion Include="MediatR" Version="12.4.1" />
     <PackageVersion Include="MediatR.Contracts" Version="2.0.1" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="7.0.20" Condition="'$(TargetFramework)' == 'net7.0'" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="8.0.10"  Condition="'$(TargetFramework)' == 'net8.0'"/>
+    <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="8.0.10" Condition="'$(TargetFramework)' == 'net8.0'" />
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.2" />
     <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.2" />
     <PackageVersion Include="Microsoft.FeatureManagement.AspNetCore" Version="3.5.0" />

@@ -1,4 +1,4 @@
-using DrifterApps.Seeds.Domain;
+using DrifterApps.Seeds.FluentResult;
 using FluentValidation.Results;
 
 namespace DrifterApps.Seeds.Application.Mediatr;

@@ -1,4 +1,4 @@
-using DrifterApps.Seeds.Domain;
+using DrifterApps.Seeds.FluentResult;
 using DrifterApps.Seeds.Testing;
 using FluentValidation;
 using MediatR;
@@ -56,7 +56,7 @@ public class ValidationBehaviorTests
         result.Should().NotBeNull();
         result.IsFailure.Should().BeTrue();
         result.Error.Should().BeOfType<ResultValidationError>();
-        result.Error.As<ResultValidationError>().Errors.Should().HaveCount(2);
+        result.Error.As<ResultValidationError>().ValidationErrors.Should().HaveCount(2);
     }
 
     private class Driver : IDriverOf<ValidationBehavior<SampleRequest, Result<string>>>
