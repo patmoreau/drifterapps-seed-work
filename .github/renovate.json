@@ -1,8 +1,6 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "github>patmoreau/workflow-config#main"
-  ],
+  "extends": ["github>patmoreau/workflow-config#main"],
   "packageRules": [
     {
       "matchUpdateTypes": ["minor", "patch"],
@@ -18,12 +16,25 @@
     },
     {
       "matchUpdateTypes": ["major"],
-      "matchPackageNames": ["Microsoft.EntityFrameworkCore", "Pomelo.EntityFrameworkCore.MySql"],
+      "matchPackageNames": [
+        "Microsoft.EntityFrameworkCore",
+        "Pomelo.EntityFrameworkCore.MySql"
+      ],
       "enabled": false
     },
     {
+      "matchManagers": ["nuget"],
       "matchUpdateTypes": ["major"],
-      "excludePackageNames": ["Microsoft.EntityFrameworkCore", "Pomelo.EntityFrameworkCore.MySql"],
+      "excludePackageNames": [
+        "Microsoft.EntityFrameworkCore",
+        "Pomelo.EntityFrameworkCore.MySql"
+      ],
+      "dependencyDashboardApproval": true,
+      "groupName": "Nuget major updates",
+      "groupSlug": "nuger-major-updates"
+    },
+    {
+      "matchUpdateTypes": ["major"],
       "dependencyDashboardApproval": true
     }
   ]
