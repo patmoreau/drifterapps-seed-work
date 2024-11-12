@@ -15,8 +15,10 @@ public sealed class ValidationBehavior<TRequest, TResponse>(IEnumerable<IValidat
     : IPipelineBehavior<TRequest, TResponse>
     where TRequest : IBaseRequest
 {
+#pragma warning disable CA1859
     private readonly IReadOnlyCollection<IValidator<TRequest>> _validators =
         validators.ToList() ?? throw new ArgumentNullException(nameof(validators));
+#pragma warning restore CA1859
 
     /// <summary>
     ///     Handles the request and performs validation.
@@ -44,12 +46,9 @@ public sealed class ValidationBehavior<TRequest, TResponse>(IEnumerable<IValidat
         RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
     {
         var validationFailures = await Validate(request, cancellationToken).ConfigureAwait(false);
-        if (validationFailures.Count != 0)
-        {
-            return ReturnValidationErrors(validationFailures);
-        }
-
-        return await next().ConfigureAwait(false);
+        return validationFailures.Count != 0
+            ? ReturnValidationErrors(validationFailures)
+            : await next().ConfigureAwait(false);
     }
 
     /// <summary>

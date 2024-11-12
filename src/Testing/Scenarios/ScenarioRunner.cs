@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using DrifterApps.Seeds.Testing.Attributes;
 using FluentAssertions;
 using FluentAssertions.Execution;
@@ -5,10 +6,11 @@ using Xunit.Abstractions;
 
 namespace DrifterApps.Seeds.Testing.Scenarios;
 
+[SuppressMessage("Style", "IDE0042:Deconstruct variable declaration")]
 internal sealed class ScenarioRunner : IScenarioRunner, IStepRunner
 {
     private readonly Dictionary<string, object> _context = [];
-    private readonly List<(string Command, string Description, Func<Task> Step)> _steps = new();
+    private readonly List<(string Command, string Description, Func<Task> Step)> _steps = [];
     private readonly ITestOutputHelper _testOutputHelper;
     private string _stepCommand = string.Empty;
 
@@ -126,12 +128,9 @@ internal sealed class ScenarioRunner : IScenarioRunner, IStepRunner
     {
         var previousCommand = _steps.LastOrDefault();
 
-        if (string.IsNullOrWhiteSpace(previousCommand.Command))
-        {
-            return Given(description, step);
-        }
-
-        return previousCommand.Command switch
+        return string.IsNullOrWhiteSpace(previousCommand.Command)
+            ? Given(description, step)
+            : previousCommand.Command switch
         {
             nameof(Given) => Given(description, step),
             nameof(When) => When(description, step),

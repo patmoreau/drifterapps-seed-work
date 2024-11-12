@@ -354,43 +354,24 @@ public class MediatRServiceConfigurationExtensionsTests : IAsyncDisposable
             PingWithPongResponseHandler : IRequestHandler<TestRequests.PingWithPongResponse, TestResponses.Pong>
         {
             public Task<TestResponses.Pong> Handle(TestRequests.PingWithPongResponse request,
-                CancellationToken cancellationToken)
-            {
-                if (request.Missed)
-                {
-                    throw new TestExceptions.PingException();
-                }
-
-                return Task.FromResult(new TestResponses.Pong($"{request.Message} Pong"));
-            }
+                CancellationToken cancellationToken) =>
+                request.Missed
+                    ? throw new TestExceptions.PingException()
+                    : Task.FromResult(new TestResponses.Pong($"{request.Message} Pong"));
         }
 
         internal class
             PingWithIntResponseHandler : IRequestHandler<TestRequests.PingWithIntResponse, int>
         {
             public Task<int> Handle(TestRequests.PingWithIntResponse request,
-                CancellationToken cancellationToken)
-            {
-                if (request.Missed)
-                {
-                    throw new TestExceptions.PingException();
-                }
-
-                return Task.FromResult(1);
-            }
+                CancellationToken cancellationToken) =>
+                request.Missed ? throw new TestExceptions.PingException() : Task.FromResult(1);
         }
 
         internal class PingWithNoResultHandler : IRequestHandler<TestRequests.PingWithNoResponse>
         {
-            public Task Handle(TestRequests.PingWithNoResponse request, CancellationToken cancellationToken)
-            {
-                if (request.Missed)
-                {
-                    throw new TestExceptions.PingException();
-                }
-
-                return Task.CompletedTask;
-            }
+            public Task Handle(TestRequests.PingWithNoResponse request, CancellationToken cancellationToken) =>
+                request.Missed ? throw new TestExceptions.PingException() : Task.CompletedTask;
         }
 
         internal class

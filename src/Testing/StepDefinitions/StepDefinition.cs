@@ -3,10 +3,9 @@ using FluentAssertions;
 
 namespace DrifterApps.Seeds.Testing.StepDefinitions;
 
-public abstract class StepDefinition
+public abstract class StepDefinition(IHttpClientDriver httpClientDriver)
 {
-    protected StepDefinition(IHttpClientDriver httpClientDriver) => HttpClientDriver = httpClientDriver;
-    protected IHttpClientDriver HttpClientDriver { get; }
+    protected IHttpClientDriver HttpClientDriver { get; } = httpClientDriver;
 
     public Guid WithCreatedId()
     {

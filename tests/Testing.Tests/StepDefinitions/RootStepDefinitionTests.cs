@@ -29,7 +29,7 @@ public class RootStepDefinitionTests
         var sut = _driver.WithNoCreatedId().Build();
 
         // Act
-        var action = () => sut.WithCreatedId();
+        var action = sut.WithCreatedId;
 
         // Assert
         action.Should().Throw<XunitException>();

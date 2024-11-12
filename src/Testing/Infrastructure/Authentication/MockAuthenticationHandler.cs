@@ -14,7 +14,7 @@ public sealed class MockAuthenticationHandler(
     UrlEncoder encoder,
     ISystemClock clock)
     : AuthenticationHandler<MockAuthenticationSchemeOptions>(options, logger, encoder, clock)
-#elif NET8_0
+#else
 public sealed class MockAuthenticationHandler(
     IOptionsMonitor<MockAuthenticationSchemeOptions> options,
     ILoggerFactory logger,
@@ -49,7 +49,7 @@ public sealed class MockAuthenticationHandler(
 
         var userId = headerValue.Parameter;
 
-        List<Claim> claims = [new Claim(ClaimTypes.Name, userId), new Claim(ClaimTypes.NameIdentifier, userId)];
+        List<Claim> claims = [new(ClaimTypes.Name, userId), new(ClaimTypes.NameIdentifier, userId)];
 
         claims.AddRange(Options.ConfigureUserClaims(userId));
 
