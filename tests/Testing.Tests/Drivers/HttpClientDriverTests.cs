@@ -1,9 +1,7 @@
 using System.Net;
-using System.Net.Http.Headers;
 using System.Text.Json;
 using Bogus;
 using DrifterApps.Seeds.Testing.Drivers;
-using DrifterApps.Seeds.Testing.Infrastructure.Authentication;
 using DrifterApps.Seeds.Testing.Tests.Builders;
 using Xunit.Abstractions;
 
@@ -59,35 +57,6 @@ public sealed class HttpClientDriverTests : IDisposable, IAsyncDisposable
 
         // Assert
         result.Should().NotBeNull().And.BeEquivalentTo(data);
-    }
-
-    [Fact]
-    public void GivenAuthenticateUser_WhenInvoked_ThenAuthorizationSet()
-    {
-        // Arrange
-        var userId = Faker.Internet.UserName();
-        var sut = _driver.Build();
-
-        // Act
-        sut.AuthenticateUser(userId);
-
-        // Assert
-        _driver.ShouldHaveAuthenticatedUser(userId);
-    }
-
-    [Fact]
-    public void GivenUnAuthenticate_WhenInvoked_ThenAuthorizationIsNull()
-    {
-        // Arrange
-        var userId = Faker.Internet.UserName();
-        var sut = _driver.Build();
-        sut.AuthenticateUser(userId);
-
-        // Act
-        sut.UnAuthenticate();
-
-        // Assert
-        _driver.ShouldHaveNoAuthenticatedUser();
     }
 
     [Fact]
@@ -258,13 +227,6 @@ public sealed class HttpClientDriverTests : IDisposable, IAsyncDisposable
 
             return this;
         }
-
-        public void ShouldHaveAuthenticatedUser(string userId) =>
-            _httpClient!.DefaultRequestHeaders.Authorization.Should().NotBeNull().And.BeEquivalentTo(
-                new AuthenticationHeaderValue(MockAuthenticationHandler.AuthenticationScheme, userId));
-
-        public void ShouldHaveNoAuthenticatedUser() =>
-            _httpClient!.DefaultRequestHeaders.Authorization.Should().BeNull();
 
         public void ShouldHaveSentHttpRequestMessage(HttpMethod httpMethod, string endpoint)
         {

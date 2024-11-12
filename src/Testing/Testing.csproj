@@ -13,6 +13,7 @@
         <PackageReference Include="Microsoft.FeatureManagement.AspNetCore"/>
         <PackageReference Include="MySqlConnector" />
         <PackageReference Include="Nito.AsyncEx"/>
+        <PackageReference Include="Refit"/>
         <PackageReference Include="Respawn"/>
         <PackageReference Include="System.Linq.Async"/>
         <PackageReference Include="Testcontainers"/>
@@ -22,6 +23,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Domain\Domain.csproj"/>
+        <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
     </ItemGroup>
 
 </Project>

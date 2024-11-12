@@ -1,8 +1,11 @@
 using System.Net;
+using DrifterApps.Seeds.Infrastructure;
 using DrifterApps.Seeds.Testing.Attributes;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using Microsoft.AspNetCore.Mvc;
+using Refit;
+using ProblemDetails = Microsoft.AspNetCore.Mvc.ProblemDetails;
 
 namespace DrifterApps.Seeds.Testing.Scenarios;
 
@@ -10,28 +13,28 @@ public abstract partial class Scenario
 {
     [AssertionMethod]
     protected void ShouldNotHaveInternalServerError() =>
-        ShouldHaveResponseWithStatus(statusCode => statusCode != HttpStatusCode.InternalServerError);
+        _runner?.GetContextData<IApiResponse>(ContextHttpResponse)
+            .Should().NotBeNull()
+            .And.NotHaveStatusCode(HttpStatusCode.InternalServerError);
 
     [AssertionMethod]
     protected void ShouldBeAuthorizedToAccessEndpoint() =>
-        HttpClientDriver.ResponseStatusCode.Should().NotBe(HttpStatusCode.Forbidden).And
-            .NotBe(HttpStatusCode.Unauthorized);
+        _runner?.GetContextData<IApiResponse>(ContextHttpResponse)
+            .Should().NotBeNull()
+            .And.NotHaveStatusCode(HttpStatusCode.Forbidden)
+            .And.NotHaveStatusCode(HttpStatusCode.Unauthorized);
 
     [AssertionMethod]
     protected void ShouldBeForbiddenToAccessEndpoint() =>
-        HttpClientDriver.ResponseStatusCode.Should().Be(HttpStatusCode.Forbidden);
+        _runner?.GetContextData<IApiResponse>(ContextHttpResponse)
+            .Should().NotBeNull()
+            .And.HaveStatusCode(HttpStatusCode.Forbidden);
 
     [AssertionMethod]
     protected void ShouldNotBeAuthorizedToAccessEndpoint() =>
-        HttpClientDriver.ResponseStatusCode.Should().Be(HttpStatusCode.Unauthorized);
-
-    [AssertionMethod]
-    protected TContent ShouldHaveReceived<TContent>()
-    {
-        var result = HttpClientDriver.DeserializeContent<TContent>();
-        result.Should().NotBeNull();
-        return result!;
-    }
+        _runner?.GetContextData<IApiResponse>(ContextHttpResponse)
+            .Should().NotBeNull()
+            .And.HaveStatusCode(HttpStatusCode.Unauthorized);
 
     [AssertionMethod]
     protected void ShouldExpectStatusCode(HttpStatusCode expectedStatusCode) =>
@@ -42,10 +45,10 @@ public abstract partial class Scenario
     {
         ShouldExpectStatusCode(expectedStatusCode);
 
-        var problemDetails = HttpClientDriver.DeserializeContent<ProblemDetails>();
-        problemDetails.Should()
-            .NotBeNull()
-            .And.BeAssignableTo<ProblemDetails>()
+        _runner?.GetContextData<IApiResponse>(ContextHttpResponse)
+            .Should().NotBeNull()
+            .And.Subject.Error.ToProblemDetails()
+            .Should().NotBeNull().And.BeAssignableTo<ProblemDetails>()
             .Subject.Detail.Should().Be(errorMessage);
     }
 
@@ -73,6 +76,10 @@ public abstract partial class Scenario
 
     private void ShouldHaveResponseWithStatus(HttpStatusCode httpStatus)
     {
+        _runner?.GetContextData<IApiResponse>(ContextHttpResponse)
+            .Should().NotBeNull()
+            .And.HaveStatusCode(httpStatus);
+
         if (HttpClientDriver.ResponseStatusCode != httpStatus)
         {
             var content = string.IsNullOrWhiteSpace(HttpClientDriver.ResponseContent)
@@ -84,9 +91,6 @@ public abstract partial class Scenario
 
         HttpClientDriver.ResponseStatusCode.Should().Be(httpStatus);
     }
-
-    private void ShouldHaveResponseWithStatus(Func<HttpStatusCode?, bool> httpStatusPredicate) =>
-        httpStatusPredicate(HttpClientDriver.ResponseStatusCode).Should().BeTrue();
 
 #pragma warning disable CA1822
     [AssertionMethod]

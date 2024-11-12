@@ -1,6 +1,7 @@
 using DrifterApps.Seeds.Testing.Drivers;
 using Microsoft.Extensions.DependencyInjection;
 using Nito.AsyncEx;
+using Refit;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -13,7 +14,10 @@ namespace DrifterApps.Seeds.Testing.Scenarios;
 /// </summary>
 public abstract partial class Scenario : IAsyncLifetime
 {
+    protected const string ContextHttpResponse = $"{nameof(Scenario)}_HttpResponse";
+
     private static readonly AsyncLock Mutex = new();
+    private ScenarioRunner? _runner;
 
     protected Scenario(IApplicationDriver applicationDriver, ITestOutputHelper testOutputHelper)
     {
@@ -24,8 +28,6 @@ public abstract partial class Scenario : IAsyncLifetime
         TestOutputHelper = testOutputHelper;
 
         Scope = applicationDriver.Services.CreateScope();
-
-        HttpClientDriver = applicationDriver.CreateHttpClientDriver(testOutputHelper);
     }
 
     /// <inheritdoc cref="IApplicationDriver" />
@@ -33,9 +35,6 @@ public abstract partial class Scenario : IAsyncLifetime
 
     /// <inheritdoc cref="ITestOutputHelper" />
     protected ITestOutputHelper TestOutputHelper { get; }
-
-    /// <inheritdoc cref="IHttpClientDriver" />
-    protected IHttpClientDriver HttpClientDriver { get; }
 
     protected IServiceScope Scope { get; }
 
@@ -58,10 +57,27 @@ public abstract partial class Scenario : IAsyncLifetime
     {
         ArgumentNullException.ThrowIfNull(scenario);
 
-        var runner = ScenarioRunner.Create(description, TestOutputHelper);
+        _runner = ScenarioRunner.Create(description, TestOutputHelper);
 
-        scenario(runner);
+        scenario(_runner);
 
-        await runner.PlayAsync().ConfigureAwait(false);
+        await _runner.PlayAsync().ConfigureAwait(false);
+    }
+
+    protected async Task<TApiResponse> HttpCall<TApiResponse>(Func<Task<TApiResponse>> httpCall)
+        where TApiResponse : IApiResponse
+    {
+        ArgumentNullException.ThrowIfNull(httpCall);
+
+        if (_runner is null)
+        {
+            throw new InvalidOperationException("ScenarioRunner is not initialized.");
+        }
+
+        var response = await httpCall().ConfigureAwait(false);
+
+        _runner.SetContextData(ContextHttpResponse, response);
+
+        return response;
     }
 }
