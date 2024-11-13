@@ -18,6 +18,8 @@
       "matchUpdateTypes": ["major"],
       "matchPackageNames": [
         "Microsoft.EntityFrameworkCore",
+        "Microsoft.Extensions.DependencyInjection.Abstractions",
+        "Microsoft.Extensions.Logging.Abstractions",
         "Pomelo.EntityFrameworkCore.MySql"
       ],
       "enabled": false
@@ -27,6 +29,8 @@
       "matchUpdateTypes": ["major"],
       "excludePackageNames": [
         "Microsoft.EntityFrameworkCore",
+        "Microsoft.Extensions.DependencyInjection.Abstractions",
+        "Microsoft.Extensions.Logging.Abstractions",
         "Pomelo.EntityFrameworkCore.MySql"
       ],
       "dependencyDashboardApproval": true,
