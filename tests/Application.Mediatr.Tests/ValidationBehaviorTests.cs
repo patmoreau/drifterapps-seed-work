@@ -83,13 +83,13 @@ public class ValidationBehaviorTests
         }
     }
 
-    public class SampleRequest : IRequest<Result<string>>
+    internal class SampleRequest : IRequest<Result<string>>
     {
         public string Name { get; set; } = null!;
         public int Age { get; set; }
     }
 
-    public class SampleRequestValidator : AbstractValidator<SampleRequest>
+    internal class SampleRequestValidator : AbstractValidator<SampleRequest>
     {
         public SampleRequestValidator()
         {

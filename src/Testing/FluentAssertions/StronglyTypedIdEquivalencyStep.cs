@@ -1,9 +1,10 @@
 using DrifterApps.Seeds.Domain;
 using FluentAssertions.Equivalency;
 
+#pragma warning disable IDE0130
 // ReSharper disable once CheckNamespace
-
 namespace FluentAssertions;
+#pragma warning restore IDE0130
 
 /// <summary>
 ///     Implements a custom equivalency step for comparing strongly-typed IDs.

@@ -1,8 +1,9 @@
-// ReSharper disable once CheckNamespace
-
 using DrifterApps.Seeds.Domain;
 
+#pragma warning disable IDE0130
+// ReSharper disable once CheckNamespace
 namespace Microsoft.EntityFrameworkCore;
+#pragma warning restore IDE0130
 
 public static class DbContextExtensions
 {
@@ -19,12 +20,9 @@ public static class DbContextExtensions
         ArgumentNullException.ThrowIfNull(dbContext);
 
         RefreshAll(dbContext);
-        if (id is IStronglyTypedId stronglyTypedId)
-        {
-            return await dbContext.FindAsync<T>(stronglyTypedId.Value).ConfigureAwait(false);
-        }
-
-        return await dbContext.FindAsync<T>(id).ConfigureAwait(false);
+        return id is IStronglyTypedId stronglyTypedId
+            ? await dbContext.FindAsync<T>(stronglyTypedId.Value).ConfigureAwait(false)
+            : await dbContext.FindAsync<T>(id).ConfigureAwait(false);
     }
 
     private static void RefreshAll(DbContext dbContext)

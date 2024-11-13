@@ -1,7 +1,6 @@
 // ReSharper disable UnusedAutoPropertyAccessor.Local
 // ReSharper disable AutoPropertyCanBeMadeGetOnly.Local
 
-using System.Collections.Immutable;
 using Bogus;
 using FluentAssertions.Execution;
 
@@ -80,7 +79,7 @@ public class FakerPrivateBuilderTests
     {
         private readonly IReadOnlyCollection<string> _readOnlyCollection = [];
 
-        public IReadOnlyCollection<string> ReadOnlyCollection => _readOnlyCollection.ToImmutableList();
+        public IReadOnlyCollection<string> ReadOnlyCollection => [.. _readOnlyCollection];
     }
 
     private class FakePrivateClass : FakeBasePrivateClass

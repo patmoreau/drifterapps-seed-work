@@ -1,4 +1,3 @@
-using System.Collections.Immutable;
 using System.Text.RegularExpressions;
 using DrifterApps.Seeds.FluentResult;
 
@@ -22,12 +21,12 @@ public readonly partial struct QueryParams : IEquatable<QueryParams>
     /// <summary>
     ///     Default empty sort collection.
     /// </summary>
-    public static readonly IReadOnlyCollection<string> DefaultSort = ImmutableArray.Create<string>();
+    public static readonly IReadOnlyCollection<string> DefaultSort = [];
 
     /// <summary>
     ///     Default empty filter collection.
     /// </summary>
-    public static readonly IReadOnlyCollection<string> DefaultFilter = ImmutableArray.Create<string>();
+    public static readonly IReadOnlyCollection<string> DefaultFilter = [];
 
     /// <summary>
     ///     Gets the offset value.

@@ -269,7 +269,7 @@ public class StronglyTypedIdTests
         var result = (MyId) id;
 
         // assert
-        result.Should().BeOfType(typeof(MyId));
+        result.Should().BeOfType<MyId>();
         result.Value.Should().Be(id);
     }
 
@@ -357,9 +357,11 @@ public class StronglyTypedIdTests
         result.Should().BeTrue();
     }
 
+#pragma warning disable CA1515
     public record MyId : StronglyTypedId<MyId>;
+#pragma warning restore CA1515
 
-    public class EqualityComparerEqualsData : TheoryData<MyId?, MyId?, bool>
+    internal class EqualityComparerEqualsData : TheoryData<MyId?, MyId?, bool>
     {
         public EqualityComparerEqualsData()
         {
@@ -371,7 +373,7 @@ public class StronglyTypedIdTests
         }
     }
 
-    public class EqualsData : TheoryData<MyId?, bool>
+    internal class EqualsData : TheoryData<MyId?, bool>
     {
         public EqualsData()
         {
@@ -381,7 +383,7 @@ public class StronglyTypedIdTests
         }
     }
 
-    public class OperatorEqualData : TheoryData<MyId?, MyId?, bool>
+    internal class OperatorEqualData : TheoryData<MyId?, MyId?, bool>
     {
         public OperatorEqualData()
         {
@@ -393,7 +395,7 @@ public class StronglyTypedIdTests
         }
     }
 
-    public class OperatorNotEqualData : TheoryData<MyId?, MyId?, bool>
+    internal class OperatorNotEqualData : TheoryData<MyId?, MyId?, bool>
     {
         public OperatorNotEqualData()
         {
@@ -405,7 +407,7 @@ public class StronglyTypedIdTests
         }
     }
 
-    public class OperatorGreaterThanData : TheoryData<MyId?, MyId?, bool>
+    internal class OperatorGreaterThanData : TheoryData<MyId?, MyId?, bool>
     {
         public OperatorGreaterThanData()
         {
@@ -418,7 +420,7 @@ public class StronglyTypedIdTests
         }
     }
 
-    public class OperatorLowerThanData : TheoryData<MyId?, MyId?, bool>
+    internal class OperatorLowerThanData : TheoryData<MyId?, MyId?, bool>
     {
         public OperatorLowerThanData()
         {
@@ -431,7 +433,7 @@ public class StronglyTypedIdTests
         }
     }
 
-    public class OperatorGreaterEqualThanData : TheoryData<MyId?, MyId?, bool>
+    internal class OperatorGreaterEqualThanData : TheoryData<MyId?, MyId?, bool>
     {
         public OperatorGreaterEqualThanData()
         {
@@ -444,7 +446,7 @@ public class StronglyTypedIdTests
         }
     }
 
-    public class OperatorLowerEqualThanData : TheoryData<MyId?, MyId?, bool>
+    internal class OperatorLowerEqualThanData : TheoryData<MyId?, MyId?, bool>
     {
         public OperatorLowerEqualThanData()
         {

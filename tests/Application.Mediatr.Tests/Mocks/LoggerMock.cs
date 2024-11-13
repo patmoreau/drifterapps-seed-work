@@ -2,7 +2,7 @@ using Microsoft.Extensions.Logging;
 
 namespace DrifterApps.Seeds.Application.Mediatr.Tests.Mocks;
 
-public abstract class LoggerMock<T> : ILogger<T>
+internal abstract class LoggerMock<T> : ILogger<T>
 {
     public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception,
         Func<TState, Exception?, string> formatter)

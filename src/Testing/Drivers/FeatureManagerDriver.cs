@@ -5,7 +5,7 @@ namespace DrifterApps.Seeds.Testing.Drivers;
 /// <inheritdoc cref="IFeatureManagerDriver" />
 public class FeatureManagerDriver : IFeatureManagerDriver, IFeatureManager
 {
-    private readonly Dictionary<string, bool> _featureFlags = new();
+    private readonly Dictionary<string, bool> _featureFlags = [];
 
     /// <inheritdoc />
     public IAsyncEnumerable<string> GetFeatureNamesAsync() => _featureFlags.Keys.ToAsyncEnumerable();

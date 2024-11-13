@@ -37,20 +37,7 @@ public abstract record StronglyTypedId<T> : IStronglyTypedId, IEqualityComparer<
     /// <param name="y">The second strongly-typed identifier to compare.</param>
     /// <returns>true if the specified strongly-typed identifiers are equal; otherwise, false.</returns>
     [SuppressMessage("Minor Code Smell", "S4136:Method overloads should be grouped together")]
-    public bool Equals(T? x, T? y)
-    {
-        if (x is null && y is null)
-        {
-            return true;
-        }
-
-        if (x is null || y is null)
-        {
-            return false;
-        }
-
-        return x.Equals(y);
-    }
+    public bool Equals(T? x, T? y) => (x is null && y is null) || (x is not null && y is not null && x.Equals(y));
 
     /// <summary>
     ///     Returns a hash code for the specified strongly-typed identifier.

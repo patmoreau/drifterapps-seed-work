@@ -56,12 +56,9 @@ public partial class ApiResource
     [GeneratedRegex("\\{\\d+\\}")]
     private static partial Regex ParametersRegex();
 
-    private sealed class OpenApiResource : ApiResource
+    private sealed class OpenApiResource(string endpointTemplate, HttpMethod httpMethod)
+        : ApiResource(endpointTemplate, httpMethod)
     {
-        public OpenApiResource(string endpointTemplate, HttpMethod httpMethod) : base(endpointTemplate, httpMethod)
-        {
-        }
-
         public override bool IsOpen => true;
     }
 }

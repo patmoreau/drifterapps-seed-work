@@ -154,9 +154,11 @@ public class MediatorSerializedObjectTests
         }
     }
 
+#pragma warning disable CA1515
     public record MyId : StronglyTypedId<MyId>;
+#pragma warning restore CA1515
 
-    public class SampleRequest : IBaseRequest
+    internal class SampleRequest : IBaseRequest
     {
         public required MyId Id { get; init; }
         public required string Property1 { get; init; }

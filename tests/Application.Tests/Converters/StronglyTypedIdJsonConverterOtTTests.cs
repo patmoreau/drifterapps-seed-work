@@ -48,7 +48,7 @@ public class StronglyTypedIdJsonConverterOfTTests
         var result = JsonSerializer.Deserialize<SampleStronglyTypedId>(json, _options);
 
         // assert
-        result.Should().NotBeNull().And.BeOfType(typeof(SampleStronglyTypedId));
+        result.Should().NotBeNull().And.BeOfType<SampleStronglyTypedId>();
         result!.Value.Should().Be(Guid.Parse("d2719b2e-4b8b-4c8b-9b2e-4b8b4c8b9b2e"));
     }
 
@@ -78,5 +78,5 @@ public class StronglyTypedIdJsonConverterOfTTests
         json.Should().Be("\"d2719b2e-4b8b-4c8b-9b2e-4b8b4c8b9b2e\"");
     }
 
-    public record SampleStronglyTypedId : StronglyTypedId<SampleStronglyTypedId>;
+    internal record SampleStronglyTypedId : StronglyTypedId<SampleStronglyTypedId>;
 }
