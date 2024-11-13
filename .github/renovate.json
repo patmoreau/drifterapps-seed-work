@@ -1,21 +1,37 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["github>patmoreau/workflow-config#main"],
+  "extends": [
+    "github>patmoreau/workflow-config#main"
+  ],
   "packageRules": [
     {
-      "matchUpdateTypes": ["minor", "patch"],
-      "matchPackagePatterns": ["^Microsoft.", "^System."],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
       "groupName": "Microsoft minor and patch updates",
-      "groupSlug": "microsoft-minor-patch-updates"
+      "groupSlug": "microsoft-minor-patch-updates",
+      "matchPackageNames": [
+        "/^Microsoft./",
+        "/^System./"
+      ]
     },
     {
-      "matchUpdateTypes": ["minor", "patch"],
-      "excludePackagePatterns": ["^Microsoft.", "^System."],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
       "groupName": "3rd parties .NET packages updates",
-      "groupSlug": "other-dotnet-updates"
+      "groupSlug": "other-dotnet-updates",
+      "matchPackageNames": [
+        "!/^Microsoft./",
+        "!/^System./"
+      ]
     },
     {
-      "matchUpdateTypes": ["major"],
+      "matchUpdateTypes": [
+        "major"
+      ],
       "matchPackageNames": [
         "Microsoft.EntityFrameworkCore",
         "Microsoft.Extensions.DependencyInjection.Abstractions",
@@ -25,20 +41,26 @@
       "enabled": false
     },
     {
-      "matchManagers": ["nuget"],
-      "matchUpdateTypes": ["major"],
-      "excludePackageNames": [
-        "Microsoft.EntityFrameworkCore",
-        "Microsoft.Extensions.DependencyInjection.Abstractions",
-        "Microsoft.Extensions.Logging.Abstractions",
-        "Pomelo.EntityFrameworkCore.MySql"
+      "matchManagers": [
+        "nuget"
+      ],
+      "matchUpdateTypes": [
+        "major"
       ],
       "dependencyDashboardApproval": true,
       "groupName": "Nuget major updates",
-      "groupSlug": "nuger-major-updates"
+      "groupSlug": "nuger-major-updates",
+      "matchPackageNames": [
+        "!Microsoft.EntityFrameworkCore",
+        "!Microsoft.Extensions.DependencyInjection.Abstractions",
+        "!Microsoft.Extensions.Logging.Abstractions",
+        "!Pomelo.EntityFrameworkCore.MySql"
+      ]
     },
     {
-      "matchUpdateTypes": ["major"],
+      "matchUpdateTypes": [
+        "major"
+      ],
       "dependencyDashboardApproval": true
     }
   ]
