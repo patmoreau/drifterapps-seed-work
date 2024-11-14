@@ -24,8 +24,4 @@
         <ProjectReference Include="..\Domain\Domain.csproj"/>
     </ItemGroup>
 
-    <ItemGroup>
-      <PackageVersion Remove="Pomelo.EntityFrameworkCore.MySql" />
-    </ItemGroup>
-
 </Project>
