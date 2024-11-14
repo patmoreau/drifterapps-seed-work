@@ -11,8 +11,8 @@
         <PackageReference Include="FluentAssertions"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore"/>
         <PackageReference Include="Microsoft.FeatureManagement.AspNetCore"/>
+        <PackageReference Include="MySqlConnector" />
         <PackageReference Include="Nito.AsyncEx"/>
-        <PackageReference Include="Pomelo.EntityFrameworkCore.MySql"/>
         <PackageReference Include="Respawn"/>
         <PackageReference Include="System.Linq.Async"/>
         <PackageReference Include="Testcontainers"/>
@@ -22,6 +22,10 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Domain\Domain.csproj"/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageVersion Remove="Pomelo.EntityFrameworkCore.MySql" />
     </ItemGroup>
 
 </Project>
