@@ -38,10 +38,8 @@ dotnet_diagnostic.IDE0023.severity = none
 dotnet_diagnostic.IDE0024.severity = none
 dotnet_diagnostic.IDE0055.severity = none
 dotnet_diagnostic.IDE0058.severity = none
+dotnet_diagnostic.IDE0130.severity = silent
 dotnet_diagnostic.IDE0160.severity = none
 dotnet_diagnostic.IDE0161.severity = warning
 dotnet_diagnostic.S3459.severity = none
 dotnet_diagnostic.S4136.severity = warning
-
-[*.{yml,yaml,xaml,json}]
-indent_size = 2

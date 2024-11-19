@@ -1,8 +1,6 @@
 using DrifterApps.Seeds.Testing.Drivers;
 using Microsoft.Extensions.DependencyInjection;
 using Nito.AsyncEx;
-using Refit;
-using Xunit;
 using Xunit.Abstractions;
 
 namespace DrifterApps.Seeds.Testing.Scenarios;
@@ -17,6 +15,7 @@ public abstract partial class Scenario : IAsyncLifetime
     protected const string ContextHttpResponse = $"{nameof(Scenario)}_HttpResponse";
 
     private static readonly AsyncLock Mutex = new();
+
     private ScenarioRunner? _runner;
 
     protected Scenario(IApplicationDriver applicationDriver, ITestOutputHelper testOutputHelper)
@@ -29,6 +28,9 @@ public abstract partial class Scenario : IAsyncLifetime
 
         Scope = applicationDriver.Services.CreateScope();
     }
+
+    private ScenarioRunner Runner =>
+        _runner ?? throw new InvalidOperationException("ScenarioRunner is not initialized.");
 
     /// <inheritdoc cref="IApplicationDriver" />
     protected IApplicationDriver ApplicationDriver { get; }
@@ -59,25 +61,8 @@ public abstract partial class Scenario : IAsyncLifetime
 
         _runner = ScenarioRunner.Create(description, TestOutputHelper);
 
-        scenario(_runner);
+        scenario(Runner);
 
-        await _runner.PlayAsync().ConfigureAwait(false);
-    }
-
-    protected async Task<TApiResponse> HttpCall<TApiResponse>(Func<Task<TApiResponse>> httpCall)
-        where TApiResponse : IApiResponse
-    {
-        ArgumentNullException.ThrowIfNull(httpCall);
-
-        if (_runner is null)
-        {
-            throw new InvalidOperationException("ScenarioRunner is not initialized.");
-        }
-
-        var response = await httpCall().ConfigureAwait(false);
-
-        _runner.SetContextData(ContextHttpResponse, response);
-
-        return response;
+        await Runner.PlayAsync().ConfigureAwait(false);
     }
 }

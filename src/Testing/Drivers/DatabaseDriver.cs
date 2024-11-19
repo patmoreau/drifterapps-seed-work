@@ -1,6 +1,5 @@
 using DrifterApps.Seeds.Testing.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
-using Xunit;
 
 namespace DrifterApps.Seeds.Testing.Drivers;
 

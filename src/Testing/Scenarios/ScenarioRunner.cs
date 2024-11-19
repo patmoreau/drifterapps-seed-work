@@ -1,6 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
 using DrifterApps.Seeds.Testing.Attributes;
-using FluentAssertions;
 using FluentAssertions.Execution;
 using Xunit.Abstractions;
 
@@ -131,12 +130,12 @@ internal sealed class ScenarioRunner : IScenarioRunner, IStepRunner
         return string.IsNullOrWhiteSpace(previousCommand.Command)
             ? Given(description, step)
             : previousCommand.Command switch
-        {
-            nameof(Given) => Given(description, step),
-            nameof(When) => When(description, step),
-            nameof(Then) => Then(description, step),
-            _ => Given(description, step)
-        };
+            {
+                nameof(Given) => Given(description, step),
+                nameof(When) => When(description, step),
+                nameof(Then) => Then(description, step),
+                _ => Given(description, step)
+            };
     }
 
     public IScenarioRunner And(Action<IStepRunner> step)

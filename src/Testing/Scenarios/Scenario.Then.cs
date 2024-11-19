@@ -1,7 +1,7 @@
 using System.Net;
-using DrifterApps.Seeds.Infrastructure;
+using System.Text.Json;
 using DrifterApps.Seeds.Testing.Attributes;
-using FluentAssertions;
+using DrifterApps.Seeds.Testing.Extensions;
 using FluentAssertions.Execution;
 using Microsoft.AspNetCore.Mvc;
 using Refit;
@@ -13,28 +13,24 @@ public abstract partial class Scenario
 {
     [AssertionMethod]
     protected void ShouldNotHaveInternalServerError() =>
-        _runner?.GetContextData<IApiResponse>(ContextHttpResponse)
-            .Should().NotBeNull()
-            .And.NotHaveStatusCode(HttpStatusCode.InternalServerError);
+        Runner.ApiResponse<IApiResponse>()
+            .Should().NotHaveStatusCode(HttpStatusCode.InternalServerError);
 
     [AssertionMethod]
     protected void ShouldBeAuthorizedToAccessEndpoint() =>
-        _runner?.GetContextData<IApiResponse>(ContextHttpResponse)
-            .Should().NotBeNull()
-            .And.NotHaveStatusCode(HttpStatusCode.Forbidden)
+        Runner.ApiResponse<IApiResponse>()
+            .Should().NotHaveStatusCode(HttpStatusCode.Forbidden)
             .And.NotHaveStatusCode(HttpStatusCode.Unauthorized);
 
     [AssertionMethod]
     protected void ShouldBeForbiddenToAccessEndpoint() =>
-        _runner?.GetContextData<IApiResponse>(ContextHttpResponse)
-            .Should().NotBeNull()
-            .And.HaveStatusCode(HttpStatusCode.Forbidden);
+        Runner.ApiResponse<IApiResponse>()
+            .Should().HaveStatusCode(HttpStatusCode.Forbidden);
 
     [AssertionMethod]
     protected void ShouldNotBeAuthorizedToAccessEndpoint() =>
-        _runner?.GetContextData<IApiResponse>(ContextHttpResponse)
-            .Should().NotBeNull()
-            .And.HaveStatusCode(HttpStatusCode.Unauthorized);
+        Runner.ApiResponse<IApiResponse>()
+            .Should().HaveStatusCode(HttpStatusCode.Unauthorized);
 
     [AssertionMethod]
     protected void ShouldExpectStatusCode(HttpStatusCode expectedStatusCode) =>
@@ -45,11 +41,19 @@ public abstract partial class Scenario
     {
         ShouldExpectStatusCode(expectedStatusCode);
 
-        _runner?.GetContextData<IApiResponse>(ContextHttpResponse)
-            .Should().NotBeNull()
-            .And.Subject.Error.ToProblemDetails()
-            .Should().NotBeNull().And.BeAssignableTo<ProblemDetails>()
-            .Subject.Detail.Should().Be(errorMessage);
+        var response = Runner.ApiResponse<IApiResponse>();
+        response
+            .Error.Should().NotBeNull()
+            .And.BeAssignableTo<ApiException>()
+            .And.As<ApiException>()
+            .Content.Should().NotBeNull();
+
+        var problemDetails = JsonSerializer.Deserialize<ProblemDetails>(response.Error!.Content!);
+        problemDetails.Should()
+            .NotBeNull()
+            .And.BeAssignableTo<ProblemDetails>()
+            .Subject.Detail.Should()
+            .Be(errorMessage);
     }
 
     [AssertionMethod]
@@ -58,10 +62,17 @@ public abstract partial class Scenario
     {
         ShouldExpectStatusCode(expectedStatusCode);
 
-        var problemDetails = HttpClientDriver.DeserializeContent<ValidationProblemDetails>();
+        var response = Runner.ApiResponse<IApiResponse>();
+        response
+            .Error.Should().NotBeNull()
+            .And.BeAssignableTo<ApiException>()
+            .And.As<ApiException>()
+            .Content.Should().NotBeNull();
+
+        var problemDetails = JsonSerializer.Deserialize<ValidationProblemDetails>(response.Error!.Content!);
         problemDetails.Should()
             .NotBeNull()
-            .And.BeAssignableTo<ValidationProblemDetails>()
+            .And.BeAssignableTo<ProblemDetails>()
             .Subject.Title.Should()
             .Be(errorMessage);
     }
@@ -69,28 +80,19 @@ public abstract partial class Scenario
     [AssertionMethod]
     protected Uri ShouldGetTheRouteOfTheNewResourceInTheHeader()
     {
-        HttpClientDriver.ResponseLocation.Should().NotBeNull();
+        var response = Runner.ApiResponse<IApiResponse>();
+        response
+            .Should()
+            .HaveStatusCode(HttpStatusCode.Created)
+            .And.HaveLocation();
 
-        return HttpClientDriver.ResponseLocation!;
+        return response.Headers.Location!;
     }
 
-    private void ShouldHaveResponseWithStatus(HttpStatusCode httpStatus)
-    {
-        _runner?.GetContextData<IApiResponse>(ContextHttpResponse)
+    private void ShouldHaveResponseWithStatus(HttpStatusCode httpStatus) =>
+        Runner.ApiResponse<IApiResponse>()
             .Should().NotBeNull()
             .And.HaveStatusCode(httpStatus);
-
-        if (HttpClientDriver.ResponseStatusCode != httpStatus)
-        {
-            var content = string.IsNullOrWhiteSpace(HttpClientDriver.ResponseContent)
-                ? "<empty response>"
-                : HttpClientDriver.ResponseContent;
-            TestOutputHelper.WriteLine(
-                $"Unexpected HTTP {HttpClientDriver.ResponseStatusCode} Code with Response: {content}");
-        }
-
-        HttpClientDriver.ResponseStatusCode.Should().Be(httpStatus);
-    }
 
 #pragma warning disable CA1822
     [AssertionMethod]

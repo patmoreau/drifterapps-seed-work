@@ -1,14 +1,14 @@
 <Project>
-    <ItemGroup>
-        <PackageVersion Include="Bogus" Version="35.6.1" />
-        <PackageVersion Include="coverlet.collector" Version="6.0.2">
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-            <PrivateAssets>all</PrivateAssets>
-        </PackageVersion>
-        <PackageVersion Include="coverlet.msbuild" Version="6.0.2">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageVersion>
+  <ItemGroup>
+    <PackageVersion Include="Bogus" Version="35.6.1" />
+    <PackageVersion Include="coverlet.collector" Version="6.0.2">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageVersion>
+    <PackageVersion Include="coverlet.msbuild" Version="6.0.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageVersion>
         <PackageVersion Include="DrifterApps.Seeds.FluentResult" Version="0.1.10" />
         <PackageVersion Include="DrifterApps.Seeds.FluentResult.FluentAssertions" Version="0.1.10" />
         <PackageVersion Include="FluentAssertions" Version="6.12.2" />
@@ -35,6 +35,7 @@
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageVersion>
+    <PackageVersion Include="Refit" Version="8.0.0" />
         <PackageVersion Include="Respawn" Version="6.2.1" />
         <PackageVersion Include="SonarAnalyzer.CSharp" Version="9.32.0.97167">
             <PrivateAssets>all</PrivateAssets>
@@ -44,6 +45,7 @@
         <PackageVersion Include="System.Linq.Dynamic.Core" Version="1.4.9" />
         <PackageVersion Include="Testcontainers" Version="4.0.0" />
         <PackageVersion Include="Testcontainers.MariaDb" Version="4.0.0" />
+    <PackageVersion Include="WireMock.Net" Version="1.6.7" />
         <PackageVersion Include="xunit" Version="2.9.2" />
         <PackageVersion Include="xunit.analyzers" Version="1.17.0" />
         <PackageVersion Include="xunit.categories" Version="2.0.8" />

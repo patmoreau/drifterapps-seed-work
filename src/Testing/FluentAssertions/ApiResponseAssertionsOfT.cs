@@ -1,6 +1,9 @@
+using DrifterApps.Seeds.Testing.FluentAssertions;
 using FluentAssertions.Execution;
-using FluentAssertions.Primitives;
 using Refit;
+
+#pragma warning disable CS1587 // XML comment is not placed on a valid language element
+#pragma warning disable S125 // Sections of code should not be commented out
 
 // ReSharper disable CheckNamespace
 namespace FluentAssertions;
@@ -9,7 +12,7 @@ namespace FluentAssertions;
 ///     Provides assertion methods for <see cref="IApiResponse{TValue}" /> instances.
 /// </summary>
 public class ApiResponseAssertions<TValue>(IApiResponse<TValue> instance)
-    : ReferenceTypeAssertions<IApiResponse<TValue>, ApiResponseAssertions<TValue>>(instance)
+    : BaseApiResponseAssertions<IApiResponse<TValue>, ApiResponseAssertions<TValue>>(instance)
 {
     /// <summary>
     ///     Gets the identifier for the assertion.
@@ -17,7 +20,7 @@ public class ApiResponseAssertions<TValue>(IApiResponse<TValue> instance)
     protected override string Identifier => "ApiResponse";
 
     /// <summary>
-    ///     Asserts that the api response is successful.
+    ///     Asserts that the api response has the specified value.
     /// </summary>
     /// <param name="because">A formatted phrase explaining why the assertion is needed.</param>
     /// <param name="becauseArgs">Zero or more objects to format using the placeholders in <paramref name="because" />.</param>
@@ -25,30 +28,12 @@ public class ApiResponseAssertions<TValue>(IApiResponse<TValue> instance)
     ///     <see cref="ApiResponseAssertions{TValue}" />
     /// </returns>
     [CustomAssertion]
-    public AndConstraint<ApiResponseAssertions<TValue>> BeSuccessful(string because = "",
-        params object[] becauseArgs)
+    public AndConstraint<ApiResponseAssertions<TValue>> HaveContent(string because = "", params object[] becauseArgs)
     {
         var assertion = Execute.Assertion.BecauseOf(because, becauseArgs).UsingLineBreaks;
 
-        assertion.IsSuccessfulAssertion(Subject);
-
-        return new AndConstraint<ApiResponseAssertions<TValue>>(this);
-    }
-
-    /// <summary>
-    ///     Asserts that the api response is a failure.
-    /// </summary>
-    /// <param name="because">A formatted phrase explaining why the assertion is needed.</param>
-    /// <param name="becauseArgs">Zero or more objects to format using the placeholders in <paramref name="because" />.</param>
-    /// <returns>
-    ///     <see cref="ApiResponseAssertions{TValue}" />
-    /// </returns>
-    [CustomAssertion]
-    public AndConstraint<ApiResponseAssertions<TValue>> BeFailure(string because = "", params object[] becauseArgs)
-    {
-        var assertion = Execute.Assertion.BecauseOf(because, becauseArgs).UsingLineBreaks;
-
-        assertion.IsFailureAssertion(Subject);
+        assertion.ForCondition(Subject.Content is not null)
+            .FailWith("Expected {context:response} to have content{reason}, but found nothing.");
 
         return new AndConstraint<ApiResponseAssertions<TValue>>(this);
     }
@@ -68,32 +53,9 @@ public class ApiResponseAssertions<TValue>(IApiResponse<TValue> instance)
     {
         var assertion = Execute.Assertion.BecauseOf(because, becauseArgs).UsingLineBreaks;
 
-        assertion.IsSuccessfulAssertion(Subject)
-            .Then
-            .ForCondition(Subject.Content!.Equals(expectedValue))
-            .BecauseOf(because, becauseArgs)
-            .FailWith("Expected {context:api response} to have value {0}{reason}, but found {1}.", expectedValue,
+        assertion.ForCondition(Subject.Content!.Equals(expectedValue))
+            .FailWith("Expected {context:response} to have value {0}{reason}, but found {1}.", expectedValue,
                 Subject.Content);
-
-        return new AndConstraint<ApiResponseAssertions<TValue>>(this);
-    }
-
-    /// <summary>
-    ///     Asserts that the api response error is as expected.
-    /// </summary>
-    /// <param name="error">The expected <see cref="ApiException" /></param>
-    /// <param name="because">A formatted phrase explaining why the assertion is needed.</param>
-    /// <param name="becauseArgs">Zero or more objects to format using the placeholders in <paramref name="because" />.</param>
-    /// <returns>
-    ///     <see cref="ApiResponseAssertions{TValue}" />
-    /// </returns>
-    [CustomAssertion]
-    public AndConstraint<ApiResponseAssertions<TValue>> WithError(ApiException error, string because = "",
-        params object[] becauseArgs)
-    {
-        var assertion = Execute.Assertion.BecauseOf(because, becauseArgs).UsingLineBreaks;
-
-        assertion.WithErrorAssertion(Subject, error);
 
         return new AndConstraint<ApiResponseAssertions<TValue>>(this);
     }
