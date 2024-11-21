@@ -1,52 +1,35 @@
 using System.Globalization;
 using System.Net;
 using System.Text;
-using System.Text.Json;
 using Bogus;
-using Refit;
-using WireMock.RequestBuilders;
-using WireMock.ResponseBuilders;
-using WireMock.Server;
+using DrifterApps.Seeds.Testing.Tests.Drivers;
 using Xunit.Sdk;
-using ProblemDetails = Microsoft.AspNetCore.Mvc.ProblemDetails;
 
 namespace DrifterApps.Seeds.Testing.Tests.FluentAssertions;
 
 [UnitTest]
-public class ApiResponseAssertionsTests : IAsyncLifetime
+public class ApiResponseAssertionsTests(ApiResponseDriver driver) : IClassFixture<ApiResponseDriver>
 {
-    private readonly Driver _driver = new();
     private readonly Faker _faker = new();
 
-    public Task InitializeAsync()
-    {
-        _driver.StartServer();
-        return Task.CompletedTask;
-    }
-
-    public Task DisposeAsync()
-    {
-        _driver.StopServer();
-        return Task.CompletedTask;
-    }
+    private IApiResponseWireMock Api => driver.Api.Value;
 
     [Fact]
     public async Task GivenMonitoringMessage_WhenContainsCorrelationId_ShouldBeIncludedInMessage()
     {
         // Arrange
-        var api = _driver.WithCorrelationIdInResponse().Build();
-        var response = await api.GetWithMonitoringHeadersAsync(_driver.CorrelationId);
+        var response = await Api.GetWithCorrelationIdAsync(driver.CorrelationId);
         var expectedMessage = new StringBuilder("Expected response to be successful, but it was not.")
             .Append('*')
             .Append("Request")
             .Append('*')
             .Append("RequestUri")
             .Append('*')
-            .Append(CultureInfo.InvariantCulture, $"XCorrelationId = \"{_driver.CorrelationId}\"")
+            .Append(CultureInfo.InvariantCulture, $"XCorrelationId = \"{driver.CorrelationId}\"")
             .Append('*')
             .Append("Response")
             .Append('*')
-            .Append(CultureInfo.InvariantCulture, $"XCorrelationId = \"{_driver.CorrelationId}\"")
+            .Append(CultureInfo.InvariantCulture, $"XCorrelationId = \"{driver.CorrelationId}\"")
             .Append('*');
 
         // Act
@@ -60,8 +43,7 @@ public class ApiResponseAssertionsTests : IAsyncLifetime
     public async Task GivenMonitoringMessage_WhenDoesNotContainCorrelationId_ShouldBeIncludedInMessage()
     {
         // Arrange
-        var api = _driver.WithoutCorrelationIdInResponse().Build();
-        var response = await api.GetAsync();
+        var response = await Api.GetWithoutCorrelationIdAsync();
         var expectedMessage = "Expected response to be successful, but it was not.";
 
         // Act
@@ -75,8 +57,7 @@ public class ApiResponseAssertionsTests : IAsyncLifetime
     public async Task GivenBeSuccessful_WhenResponseIsSuccessful_ShouldNotThrow()
     {
         // Arrange
-        var api = _driver.IsSuccessful().Build();
-        var response = await api.GetAsync();
+        var response = await Api.GetIsSuccessfulAsync();
 
         // Act
         Action act = () => response.Should().BeSuccessful();
@@ -90,8 +71,7 @@ public class ApiResponseAssertionsTests : IAsyncLifetime
     public async Task GivenBeSuccessful_WhenResponseIsNotSuccessful_ShouldThrow(string because, object[] becauseArgs)
     {
         // Arrange
-        var api = _driver.IsNotSuccessful().Build();
-        var response = await api.GetAsync();
+        var response = await Api.GetIsNotSuccessfulAsync();
         var expectedMessage = GetExpectedMessage("Expected response to be successful{0}, but it was not.*",
             because, becauseArgs);
 
@@ -106,8 +86,7 @@ public class ApiResponseAssertionsTests : IAsyncLifetime
     public async Task GivenBeFailure_WhenResponseIsFailure_ShouldNotThrow()
     {
         // Arrange
-        var api = _driver.IsNotSuccessful().Build();
-        var response = await api.GetAsync();
+        var response = await Api.GetIsFailureAsync();
 
         // Act
         Action act = () => response.Should().BeFailure();
@@ -118,11 +97,10 @@ public class ApiResponseAssertionsTests : IAsyncLifetime
 
     [Theory]
     [ClassData(typeof(BecauseData))]
-    public async Task GivenBeFailure_WhenResponseIsSuccessful_ShouldThrow(string because, object[] becauseArgs)
+    public async Task GivenBeFailure_WhenResponseIsNotFailure_ShouldThrow(string because, object[] becauseArgs)
     {
         // Arrange
-        var api = _driver.IsSuccessful().Build();
-        var response = await api.GetAsync();
+        var response = await Api.GetIsNotFailureAsync();
         var expectedMessage = GetExpectedMessage("Expected response to be a failure{0}, but it was not.",
             because, becauseArgs);
 
@@ -137,10 +115,7 @@ public class ApiResponseAssertionsTests : IAsyncLifetime
     public async Task GivenBeAuthorized_WhenResponseNotForbiddenNorUnauthorized_ShouldNotThrow()
     {
         // Arrange
-        var statusCode = _faker.PickRandom(Enum.GetValues<HttpStatusCode>()
-            .Where(x => x is not HttpStatusCode.Forbidden and not HttpStatusCode.Unauthorized));
-        var api = _driver.IsWithStatusCode(statusCode).Build();
-        var response = await api.GetAsync();
+        var response = await Api.GetIsAuthorizedAsync();
 
         // Act
         Action act = () => response.Should().BeAuthorized();
@@ -155,27 +130,23 @@ public class ApiResponseAssertionsTests : IAsyncLifetime
         object[] becauseArgs)
     {
         // Arrange
-        var expectedStatusCode = _faker.PickRandom(HttpStatusCode.Forbidden, HttpStatusCode.Unauthorized);
-        var api = _driver.IsWithStatusCode(expectedStatusCode).Build();
-        var response = await api.GetAsync();
+        var response = await Api.GetIsNotAuthorizedAsync();
         var expectedMessage = GetExpectedMessage(
-            $"Expected response to be authorized{{0}}, but {FormatHttpCodeMessage(expectedStatusCode)} was not.*",
+            $"Expected response to be authorized{{0}}, but {FormatHttpCodeMessage(driver.NotAuthorizedStatusCode)} was not.*",
             because, becauseArgs);
 
         // Act
-        Action act = () => response.Should().BeAuthorized();
+        Action act = () => response.Should().BeAuthorized(because, becauseArgs);
 
         // Assert
         act.Should().Throw<XunitException>().WithMessage(expectedMessage);
     }
 
     [Fact]
-    public async Task GivenBeForbidden_WhenResponseForbidden_ShouldNotThrow()
+    public async Task GivenBeForbidden_WhenResponseIsForbidden_ShouldNotThrow()
     {
         // Arrange
-        var statusCode = HttpStatusCode.Forbidden;
-        var api = _driver.IsWithStatusCode(statusCode).Build();
-        var response = await api.GetAsync();
+        var response = await Api.GetIsForbiddenAsync();
 
         // Act
         Action act = () => response.Should().BeForbidden();
@@ -189,28 +160,23 @@ public class ApiResponseAssertionsTests : IAsyncLifetime
     public async Task GivenBeForbidden_WhenResponseIsNotForbidden_ShouldThrow(string because, object[] becauseArgs)
     {
         // Arrange
-        var expectedStatusCode = _faker.PickRandom(Enum.GetValues<HttpStatusCode>()
-            .Where(x => x is not HttpStatusCode.Forbidden));
-        var api = _driver.IsWithStatusCode(expectedStatusCode).Build();
-        var response = await api.GetAsync();
+        var response = await Api.GetIsNotForbiddenAsync();
         var expectedMessage = GetExpectedMessage(
-            $"Expected response to be forbidden{{0}}, but {FormatHttpCodeMessage(expectedStatusCode)} was not.*",
+            $"Expected response to be forbidden{{0}}, but {FormatHttpCodeMessage(driver.NotForbiddenStatusCode)} was not.*",
             because, becauseArgs);
 
         // Act
-        Action act = () => response.Should().BeForbidden();
+        Action act = () => response.Should().BeForbidden(because, becauseArgs);
 
         // Assert
         act.Should().Throw<XunitException>().WithMessage(expectedMessage);
     }
 
     [Fact]
-    public async Task GivenNotBeAuthorized_WhenResponseUnauthorized_ShouldNotThrow()
+    public async Task GivenNotBeAuthorized_WhenResponseIsUnauthorized_ShouldNotThrow()
     {
         // Arrange
-        var statusCode = HttpStatusCode.Unauthorized;
-        var api = _driver.IsWithStatusCode(statusCode).Build();
-        var response = await api.GetAsync();
+        var response = await Api.GetIsUnauthorizedAsync();
 
         // Act
         Action act = () => response.Should().NotBeAuthorized();
@@ -225,16 +191,13 @@ public class ApiResponseAssertionsTests : IAsyncLifetime
         object[] becauseArgs)
     {
         // Arrange
-        var statusCode = _faker.PickRandom(Enum.GetValues<HttpStatusCode>()
-            .Where(x => x is not HttpStatusCode.Unauthorized));
-        var api = _driver.IsWithStatusCode(statusCode).Build();
-        var response = await api.GetAsync();
+        var response = await Api.GetIsNotUnauthorizedAsync();
         var expectedMessage = GetExpectedMessage(
-            $"Expected response not to be authorized{{0}}, but it was {FormatHttpCodeMessage(statusCode)}.*",
+            $"Expected response not to be authorized{{0}}, but it was {FormatHttpCodeMessage(driver.SuccessStatusCode)}.*",
             because, becauseArgs);
 
         // Act
-        Action act = () => response.Should().NotBeAuthorized();
+        Action act = () => response.Should().NotBeAuthorized(because, becauseArgs);
 
         // Assert
         act.Should().Throw<XunitException>().WithMessage(expectedMessage);
@@ -244,12 +207,10 @@ public class ApiResponseAssertionsTests : IAsyncLifetime
     public async Task GivenHaveStatusCode_WhenResponseHave_ShouldNotThrow()
     {
         // Arrange
-        var expectedStatusCode = _faker.PickRandom<HttpStatusCode>();
-        var api = _driver.IsWithStatusCode(expectedStatusCode).Build();
-        var response = await api.GetAsync();
+        var response = await Api.GetIsWithStatusCodeAsync();
 
         // Act
-        Action act = () => response.Should().HaveStatusCode(expectedStatusCode);
+        Action act = () => response.Should().HaveStatusCode(driver.StatusCode);
 
         // Assert
         act.Should().NotThrow();
@@ -260,16 +221,13 @@ public class ApiResponseAssertionsTests : IAsyncLifetime
     public async Task GivenHaveStatusCode_WhenResponseHaveNot_ShouldThrow(string because, object[] becauseArgs)
     {
         // Arrange
-        var expectedStatusCode = _faker.PickRandom<HttpStatusCode>();
-        var statusCode = _faker.PickRandom(Enum.GetValues<HttpStatusCode>().Where(x => x != expectedStatusCode));
-        var api = _driver.IsWithStatusCode(statusCode).Build();
-        var response = await api.GetAsync();
+        var response = await Api.GetIsWithStatusCodeAsync();
         var expectedMessage = GetExpectedMessage(
-            $"Expected response to have status code {FormatHttpCodeMessage(expectedStatusCode)}{{0}}, but it was {FormatHttpCodeMessage(statusCode)}.*",
+            $"Expected response to have status code {FormatHttpCodeMessage(driver.NotStatusCode)}{{0}}, but it was {FormatHttpCodeMessage(driver.StatusCode)}.*",
             because, becauseArgs);
 
         // Act
-        Action act = () => response.Should().HaveStatusCode(expectedStatusCode, because, becauseArgs);
+        Action act = () => response.Should().HaveStatusCode(driver.NotStatusCode, because, becauseArgs);
 
         // Assert
         act.Should().Throw<XunitException>().WithMessage(expectedMessage);
@@ -279,13 +237,10 @@ public class ApiResponseAssertionsTests : IAsyncLifetime
     public async Task GivenNotHaveStatusCode_WhenResponseNotHave_ShouldNotThrow()
     {
         // Arrange
-        var expectedStatusCode = _faker.PickRandom<HttpStatusCode>();
-        var statusCode = _faker.PickRandom(Enum.GetValues<HttpStatusCode>().Where(x => x != expectedStatusCode));
-        var api = _driver.IsWithStatusCode(statusCode).Build();
-        var response = await api.GetAsync();
+        var response = await Api.GetIsNotWithStatusCodeAsync();
 
         // Act
-        Action act = () => response.Should().NotHaveStatusCode(expectedStatusCode);
+        Action act = () => response.Should().NotHaveStatusCode(driver.StatusCode);
 
         // Assert
         act.Should().NotThrow();
@@ -296,16 +251,13 @@ public class ApiResponseAssertionsTests : IAsyncLifetime
     public async Task GivenNotHaveStatusCode_WhenResponseHave_ShouldThrow(string because, object[] becauseArgs)
     {
         // Arrange
-        var expectedStatusCode = _faker.PickRandom<HttpStatusCode>();
-        var api = _driver.IsWithStatusCode(expectedStatusCode).Build();
-        var response = await api.GetAsync();
-
+        var response = await Api.GetIsNotWithStatusCodeAsync();
         var expectedMessage = GetExpectedMessage(
-            $"Expected response to not have status code {FormatHttpCodeMessage(expectedStatusCode)}{{0}}, but it was.*",
+            $"Expected response to not have status code {FormatHttpCodeMessage(driver.NotStatusCode)}{{0}}, but it was.*",
             because, becauseArgs);
 
         // Act
-        Action act = () => response.Should().NotHaveStatusCode(expectedStatusCode, because, becauseArgs);
+        Action act = () => response.Should().NotHaveStatusCode(driver.NotStatusCode, because, becauseArgs);
 
         // Assert
         act.Should().Throw<XunitException>().WithMessage(expectedMessage);
@@ -315,12 +267,10 @@ public class ApiResponseAssertionsTests : IAsyncLifetime
     public async Task GivenWithError_WhenResponseHaveTheError_ShouldNotThrow()
     {
         // Arrange
-        var expectedError = _faker.Lorem.Sentence();
-        var api = _driver.IsWithError(expectedError).Build();
-        var response = await api.GetAsync();
+        var response = await Api.GetIsWithErrorAsync();
 
         // Act
-        Action act = () => response.Should().WithError(expectedError);
+        Action act = () => response.Should().WithError(driver.ErrorMessage);
 
         // Assert
         act.Should().NotThrow();
@@ -331,16 +281,14 @@ public class ApiResponseAssertionsTests : IAsyncLifetime
     public async Task GivenWithError_WhenResponseHaveNot_ShouldThrow(string because, object[] becauseArgs)
     {
         // Arrange
-        var expectedError = _faker.Lorem.Sentence();
         var error = _faker.Lorem.Sentence();
-        var api = _driver.IsWithError(error).Build();
-        var response = await api.GetAsync();
+        var response = await Api.GetIsWithErrorAsync();
         var expectedMessage = GetExpectedMessage(
-            $"Expected response to have error \"{expectedError}\"{{0}}, but found *",
+            $"Expected response to have error \"{error}\"{{0}}, but found *",
             because, becauseArgs);
 
         // Act
-        Action act = () => response.Should().WithError(expectedError, because, becauseArgs);
+        Action act = () => response.Should().WithError(error, because, becauseArgs);
 
         // Assert
         act.Should().Throw<XunitException>().WithMessage(expectedMessage);
@@ -356,7 +304,7 @@ public class ApiResponseAssertionsTests : IAsyncLifetime
     private static string FormatHttpCodeMessage(HttpStatusCode statusCode) =>
         string.Format(CultureInfo.InvariantCulture, "HttpStatusCode.{0} {{{{value: {1}}}}}",
             Enum.GetName(statusCode) ?? "Unknown",
-            (int)statusCode);
+            (int) statusCode);
 
     internal class BecauseData : TheoryData<string, string[]>
     {
@@ -367,96 +315,6 @@ public class ApiResponseAssertionsTests : IAsyncLifetime
             var because = faker.Lorem.Sentence();
             Add(because, faker.Lorem.Words(2));
             Add(because + "'{0};{1}'", faker.Lorem.Words(2));
-        }
-    }
-
-    private class Driver : IDriverOf<IWireMock>
-    {
-        private readonly Faker _faker = new();
-        private WireMockServer? _server;
-
-        public Driver() => CorrelationId = _faker.Random.Guid();
-
-        public Guid CorrelationId { get; }
-
-        public IWireMock Build() => RestService.For<IWireMock>($"{_server?.Urls[0]}");
-
-        public void StartServer() => _server = WireMockServer.Start();
-
-        public void StopServer() => _server?.Stop();
-
-        public Driver WithoutCorrelationIdInResponse()
-        {
-            _server?
-                .Given(Request.Create().UsingGet())
-                .RespondWith(
-                    Response.Create()
-                        .WithStatusCode(HttpStatusCode.BadRequest)
-                );
-            return this;
-        }
-
-        public Driver WithCorrelationIdInResponse()
-        {
-            _server?
-                .Given(Request.Create().UsingGet())
-                .RespondWith(
-                    Response.Create()
-                        .WithStatusCode(HttpStatusCode.BadRequest)
-                        .WithHeader("X-Correlation-Id", CorrelationId.ToString())
-                );
-            return this;
-        }
-
-        public Driver IsNotSuccessful()
-        {
-            var responseCode = _faker.PickRandom(Enum.GetValues<HttpStatusCode>().Where(x => (int)x is >= 300));
-            _server?
-                .Given(Request.Create().UsingGet())
-                .RespondWith(
-                    Response.Create()
-                        .WithStatusCode(responseCode)
-                );
-            return this;
-        }
-
-        public Driver IsSuccessful()
-        {
-            var responseCode =
-                _faker.PickRandom(Enum.GetValues<HttpStatusCode>().Where(x => (int)x is >= 200 and < 300));
-            _server?
-                .Given(Request.Create().UsingGet())
-                .RespondWith(
-                    Response.Create()
-                        .WithStatusCode(responseCode)
-                );
-            return this;
-        }
-
-        public Driver IsWithStatusCode(HttpStatusCode statusCode)
-        {
-            _server?
-                .Given(Request.Create().UsingGet())
-                .RespondWith(
-                    Response.Create()
-                        .WithStatusCode(statusCode)
-                );
-            return this;
-        }
-
-        public Driver IsWithError(string message)
-        {
-            _server?
-                .Given(Request.Create().UsingGet())
-                .RespondWith(
-                    Response.Create()
-                        .WithStatusCode(HttpStatusCode.BadRequest)
-                        .WithBody(JsonSerializer.Serialize(new ProblemDetails
-                        {
-                            Detail = message
-                        }))
-                );
-            return this;
         }
     }
 }

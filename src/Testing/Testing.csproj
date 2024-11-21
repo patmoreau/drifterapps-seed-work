@@ -34,6 +34,12 @@
         <Compile Update="FakerBuilder.Factories.cs">
             <DependentUpon>FakerBuilder.cs</DependentUpon>
         </Compile>
+        <Compile Update="Scenarios\ScenarioRunner.Given.cs">
+            <DependentUpon>ScenarioRunner.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Scenarios\ScenarioRunner.And.cs">
+            <DependentUpon>ScenarioRunner.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
 </Project>

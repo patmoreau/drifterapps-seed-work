@@ -35,6 +35,7 @@ public abstract class WireMockDriver : IAsyncLifetime
     public virtual Task DisposeAsync()
     {
         _server?.Stop();
+        _server?.Dispose();
         return Task.CompletedTask;
     }
 
