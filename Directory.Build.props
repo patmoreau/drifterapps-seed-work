@@ -61,10 +61,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="SonarAnalyzer.CSharp"/>
-    </ItemGroup>
-
-    <ItemGroup>
         <AssemblyAttribute Include="System.CLSCompliantAttribute">
             <_Parameter1>false</_Parameter1>
         </AssemblyAttribute>

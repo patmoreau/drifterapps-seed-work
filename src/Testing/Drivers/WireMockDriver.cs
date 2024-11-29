@@ -23,7 +23,9 @@ public abstract class WireMockDriver : IAsyncLifetime
     /// <returns>A completed task.</returns>
     public virtual Task InitializeAsync()
     {
-        _server = WireMockServer.Start();
+        _server = CreateServer();
+
+        Configure();
 
         return Task.CompletedTask;
     }
@@ -38,6 +40,12 @@ public abstract class WireMockDriver : IAsyncLifetime
         _server?.Dispose();
         return Task.CompletedTask;
     }
+
+    /// <summary>
+    ///     Creates and starts a new instance of the WireMock server.
+    /// </summary>
+    /// <returns>A new instance of the WireMockServer.</returns>
+    protected virtual WireMockServer CreateServer() => WireMockServer.Start();
 
     /// <summary>
     ///     Configures the WireMock server.
