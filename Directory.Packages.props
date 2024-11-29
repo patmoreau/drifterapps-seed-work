@@ -1,6 +1,6 @@
 <Project>
     <ItemGroup>
-        <PackageVersion Include="Bogus" Version="35.6.1" />
+        <PackageVersion Include="Bogus" Version="35.6.1"/>
         <PackageVersion Include="coverlet.collector" Version="6.0.2">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
@@ -9,44 +9,43 @@
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageVersion>
-        <PackageVersion Include="DrifterApps.Seeds.FluentResult" Version="0.1.10" />
-        <PackageVersion Include="DrifterApps.Seeds.FluentResult.FluentAssertions" Version="0.1.10" />
-        <PackageVersion Include="FluentAssertions" Version="6.12.2" />
+        <PackageVersion Include="DrifterApps.Seeds.FluentResult" Version="0.1.10"/>
+        <PackageVersion Include="DrifterApps.Seeds.FluentResult.FluentAssertions" Version="0.1.10"/>
+        <PackageVersion Include="DrifterApps.Seeds.FluentScenario" Version="0.1.2"/>
+        <PackageVersion Include="FluentAssertions" Version="6.12.2"/>
         <PackageVersion Include="FluentAssertions.Analyzers" Version="0.34.1">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageVersion>
-        <PackageVersion Include="FluentValidation" Version="11.11.0" />
-        <PackageVersion Include="Hangfire" Version="1.8.16" />
-        <PackageVersion Include="MediatR" Version="12.4.1" />
-        <PackageVersion Include="MediatR.Contracts" Version="2.0.1" />
-        <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="7.0.20" Condition="'$(TargetFramework)' == 'net7.0'" />
-        <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="9.0.0" Condition="'$(TargetFramework)' != 'net7.0'" />
-        <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.2" Condition="'$(TargetFramework)' == 'net7.0'" />
-        <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.0" Condition="'$(TargetFramework)' != 'net7.0'" />
-        <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.2" Condition="'$(TargetFramework)' == 'net7.0'" />
-        <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.0" Condition="'$(TargetFramework)' != 'net7.0'" />
-        <PackageVersion Include="Microsoft.FeatureManagement.AspNetCore" Version="4.0.0" />
-        <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
-        <PackageVersion Include="MySqlConnector" Version="2.4.0" />
-        <PackageVersion Include="Nito.AsyncEx" Version="5.1.2" />
-        <PackageVersion Include="NSubstitute" Version="5.3.0" />
+        <PackageVersion Include="FluentValidation" Version="11.11.0"/>
+        <PackageVersion Include="Hangfire" Version="1.8.16"/>
+        <PackageVersion Include="MediatR" Version="12.4.1"/>
+        <PackageVersion Include="MediatR.Contracts" Version="2.0.1"/>
+        <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="7.0.20" Condition="'$(TargetFramework)' == 'net7.0'"/>
+        <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="9.0.0" Condition="'$(TargetFramework)' != 'net7.0'"/>
+        <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.2" Condition="'$(TargetFramework)' == 'net7.0'"/>
+        <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.0" Condition="'$(TargetFramework)' != 'net7.0'"/>
+        <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.2" Condition="'$(TargetFramework)' == 'net7.0'"/>
+        <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.0" Condition="'$(TargetFramework)' != 'net7.0'"/>
+        <PackageVersion Include="Microsoft.FeatureManagement.AspNetCore" Version="4.0.0"/>
+        <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.12.0"/>
+        <PackageVersion Include="MySqlConnector" Version="2.4.0"/>
+        <PackageVersion Include="Nito.AsyncEx" Version="5.1.2"/>
+        <PackageVersion Include="NSubstitute" Version="5.3.0"/>
         <PackageVersion Include="NSubstitute.Analyzers.CSharp" Version="1.0.17">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageVersion>
-        <PackageVersion Include="Respawn" Version="6.2.1" />
-        <PackageVersion Include="SonarAnalyzer.CSharp" Version="9.32.0.97167">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageVersion>
-        <PackageVersion Include="System.Linq.Async" Version="6.0.1" />
-        <PackageVersion Include="System.Linq.Dynamic.Core" Version="1.4.9" />
-        <PackageVersion Include="Testcontainers" Version="4.0.0" />
-        <PackageVersion Include="Testcontainers.MariaDb" Version="4.0.0" />
-        <PackageVersion Include="xunit" Version="2.9.2" />
-        <PackageVersion Include="xunit.analyzers" Version="1.17.0" />
-        <PackageVersion Include="xunit.categories" Version="2.0.8" />
+        <PackageVersion Include="Refit" Version="8.0.0"/>
+        <PackageVersion Include="Respawn" Version="6.2.1"/>
+        <PackageVersion Include="System.Linq.Async" Version="6.0.1"/>
+        <PackageVersion Include="System.Linq.Dynamic.Core" Version="1.4.9"/>
+        <PackageVersion Include="Testcontainers" Version="4.0.0"/>
+        <PackageVersion Include="Testcontainers.MariaDb" Version="4.0.0"/>
+        <PackageVersion Include="WireMock.Net" Version="1.6.8"/>
+        <PackageVersion Include="xunit" Version="2.9.2"/>
+        <PackageVersion Include="xunit.analyzers" Version="1.17.0"/>
+        <PackageVersion Include="xunit.categories" Version="2.0.8"/>
         <PackageVersion Include="xunit.runner.visualstudio" Version="2.8.2">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>

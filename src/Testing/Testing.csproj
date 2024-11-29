@@ -8,20 +8,42 @@
 
     <ItemGroup>
         <PackageReference Include="Bogus"/>
+        <PackageReference Include="DrifterApps.Seeds.FluentScenario"/>
         <PackageReference Include="FluentAssertions"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore"/>
         <PackageReference Include="Microsoft.FeatureManagement.AspNetCore"/>
-        <PackageReference Include="MySqlConnector" />
+        <PackageReference Include="MySqlConnector"/>
         <PackageReference Include="Nito.AsyncEx"/>
+        <PackageReference Include="Refit"/>
         <PackageReference Include="Respawn"/>
         <PackageReference Include="System.Linq.Async"/>
         <PackageReference Include="Testcontainers"/>
         <PackageReference Include="Testcontainers.MariaDb"/>
+        <PackageReference Include="WireMock.Net"/>
         <PackageReference Include="xunit.categories"/>
     </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\Domain\Domain.csproj"/>
+        <ProjectReference Include="..\Infrastructure\Infrastructure.csproj"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Compile Update="FakerBuilder.Database.cs">
+            <DependentUpon>FakerBuilder.cs</DependentUpon>
+        </Compile>
+        <Compile Update="FakerBuilder.Factories.cs">
+            <DependentUpon>FakerBuilder.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Scenarios\ScenarioRunner.Given.cs">
+            <DependentUpon>ScenarioRunner.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Scenarios\ScenarioRunner.And.cs">
+            <DependentUpon>ScenarioRunner.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Infrastructure\Authentication\JwtTokenBuilder.Static.cs">
+            <DependentUpon>JwtTokenBuilder.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
 </Project>

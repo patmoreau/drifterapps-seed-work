@@ -2,7 +2,6 @@ using System.Globalization;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
-using Bogus;
 
 namespace DrifterApps.Seeds.Testing;
 
@@ -15,7 +14,7 @@ public abstract partial class FakerBuilder<TFaked>
             RuntimeHelpers.GetUninitializedObject(typeof(TFaked)) as TFaked ??
             throw new InvalidOperationException());
 
-    public static Faker<TFaked>  CreatePrivateFaker() =>
+    public static Faker<TFaked> CreatePrivateFaker() =>
         new Faker<TFaked>(binder: new BackingFieldBinder()).CustomInstantiator(_ =>
             RuntimeHelpers.GetUninitializedObject(typeof(TFaked)) as TFaked ??
             throw new InvalidOperationException());
@@ -29,7 +28,7 @@ public abstract partial class FakerBuilder<TFaked>
             var availableFieldsForFakerOfT = new Dictionary<string, MemberInfo>();
             var bindingFlags = BindingFlags.Instance | BindingFlags.NonPublic;
 
-            Type? recursiveType = t;
+            var recursiveType = t;
             while (recursiveType is not null && recursiveType != typeof(object))
             {
                 var allMembers = recursiveType.GetMembers(bindingFlags);
