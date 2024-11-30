@@ -1,18 +1,14 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using DrifterApps.Seeds.Testing.Drivers;
 
 namespace DrifterApps.Seeds.Testing.Infrastructure.Authentication;
 
 /// <summary>
 ///     A builder class for creating JWT tokens with customizable parameters.
 /// </summary>
-public sealed partial class JwtTokenBuilder
+public sealed class JwtTokenBuilder
 {
-    /// <summary>
-    ///     The authority domain for the JWT token issuer.
-    /// </summary>
-    public const string AuthorityDomain = "localhost:9096";
-
     private readonly List<Claim> _claims = [];
     private string _audience = "default-audience";
     private TimeSpan _expiry = TimeSpan.FromHours(1);
@@ -63,17 +59,28 @@ public sealed partial class JwtTokenBuilder
     }
 
     /// <summary>
+    ///     Adds a scope claim to the JWT token.
+    /// </summary>
+    /// <param name="scopes">The scopes to add seperated by a space.</param>
+    /// <returns>The current instance of <see cref="JwtTokenBuilder" />.</returns>
+    public JwtTokenBuilder WithScopes(string scopes)
+    {
+        _claims.Add(new Claim("scope", scopes));
+        return this;
+    }
+
+    /// <summary>
     ///     Builds the JWT token with the specified parameters.
     /// </summary>
     /// <returns>The generated JWT token as a string.</returns>
     public string Build()
     {
         var token = new JwtSecurityToken(
-            $"{Authority}/",
+            $"{AuthorityDriver.Authority}/",
             _audience,
             _claims,
             expires: DateTime.UtcNow.Add(_expiry),
-            signingCredentials: SigningCredentials
+            signingCredentials: JwtSigningCredentials.SigningCredentials
         );
 
         return new JwtSecurityTokenHandler().WriteToken(token);

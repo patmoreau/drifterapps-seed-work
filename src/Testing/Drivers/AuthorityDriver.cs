@@ -9,8 +9,17 @@ namespace DrifterApps.Seeds.Testing.Drivers;
 [SuppressMessage("Performance", "CA1861:Avoid constant arrays as arguments")]
 public sealed class AuthorityDriver : WireMockDriver
 {
-    protected override WireMockServer CreateServer() =>
-        WireMockServer.StartWithAdminInterface(JwtTokenBuilder.Authority);
+    /// <summary>
+    ///     The authority domain for the JWT token issuer.
+    /// </summary>
+    public const string AuthorityDomain = "localhost:9096";
+
+    /// <summary>
+    ///     Gets the authority URL for the token issuer.
+    /// </summary>
+    public static string Authority => $"https://{AuthorityDomain}";
+
+    protected override WireMockServer CreateServer() => WireMockServer.StartWithAdminInterface(Authority);
 
     protected override void Configure()
     {
@@ -29,15 +38,15 @@ public sealed class AuthorityDriver : WireMockDriver
                 .WithHeader("Content-Type", "application/json; charset=utf-8")
                 .WithBodyAsJson(new
                 {
-                    issuer = $"{JwtTokenBuilder.Authority}/",
-                    authorization_endpoint = $"{JwtTokenBuilder.Authority}/authorize",
-                    token_endpoint = $"{JwtTokenBuilder.Authority}/oauth/token",
-                    device_authorization_endpoint = $"{JwtTokenBuilder.Authority}/oauth/device/code",
-                    userinfo_endpoint = $"{JwtTokenBuilder.Authority}/userinfo",
-                    mfa_challenge_endpoint = $"{JwtTokenBuilder.Authority}/mfa/challenge",
-                    jwks_uri = $"{JwtTokenBuilder.Authority}/.well-known/jwks.json",
-                    registration_endpoint = $"{JwtTokenBuilder.Authority}/oidc/register",
-                    revocation_endpoint = $"{JwtTokenBuilder.Authority}/oauth/revoke",
+                    issuer = $"{Authority}/",
+                    authorization_endpoint = $"{Authority}/authorize",
+                    token_endpoint = $"{Authority}/oauth/token",
+                    device_authorization_endpoint = $"{Authority}/oauth/device/code",
+                    userinfo_endpoint = $"{Authority}/userinfo",
+                    mfa_challenge_endpoint = $"{Authority}/mfa/challenge",
+                    jwks_uri = $"{Authority}/.well-known/jwks.json",
+                    registration_endpoint = $"{Authority}/oidc/register",
+                    revocation_endpoint = $"{Authority}/oauth/revoke",
                     scopes_supported = new[]
                     {
                         "openid", "profile", "offline_access", "name", "given_name", "family_name", "nickname", "email",
@@ -64,13 +73,13 @@ public sealed class AuthorityDriver : WireMockDriver
                     token_endpoint_auth_signing_alg_values_supported = new[] {"RS256", "RS384", "PS256"},
                     backchannel_logout_supported = true,
                     backchannel_logout_session_supported = true,
-                    end_session_endpoint = $"{JwtTokenBuilder.Authority}/oidc/logout"
+                    end_session_endpoint = $"{Authority}/oidc/logout"
                 })
             );
 
     private void ConfigureJwks()
     {
-        var signingKeyInfo = JwtTokenBuilder.GetSigningKeyInfo;
+        var signingKeyInfo = JwtSigningCredentials.GetSigningKeyInfo;
         Server
             .Given(Request.Create()
                 .UsingMethod("GET")

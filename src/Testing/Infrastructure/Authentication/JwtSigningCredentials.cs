@@ -3,13 +3,13 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace DrifterApps.Seeds.Testing.Infrastructure.Authentication;
 
-public sealed partial class JwtTokenBuilder
+internal static class JwtSigningCredentials
 {
     private const string SignatureAlgorithm = SecurityAlgorithms.RsaSha256;
     private static readonly string Kid = Guid.NewGuid().ToString("N");
     private static readonly RSA Rsa = RSA.Create(2048);
 
-    static JwtTokenBuilder()
+    static JwtSigningCredentials()
     {
         var keyParameters = Rsa.ExportParameters(false);
         var modulus = Base64UrlEncode(keyParameters.Modulus!);
@@ -18,22 +18,15 @@ public sealed partial class JwtTokenBuilder
     }
 
     /// <summary>
-    ///     Gets the authority URL for the token issuer.
-    /// </summary>
-    public static string Authority => $"https://{AuthorityDomain}";
-
-    /// <summary>
     ///     Gets the signing key information.
     /// </summary>
-    public static SigningKeyInfo GetSigningKeyInfo { get; }
+    internal static SigningKeyInfo GetSigningKeyInfo { get; }
 
     /// <summary>
     ///     Gets the signing credentials for the JWT token.
     /// </summary>
-    private static SigningCredentials SigningCredentials { get; } =
+    internal static SigningCredentials SigningCredentials { get; } =
         new(new RsaSecurityKey(Rsa) {KeyId = Kid}, SignatureAlgorithm);
-
-    ~JwtTokenBuilder() => Rsa.Dispose();
 
     private static string Base64UrlEncode(byte[] arg)
     {
