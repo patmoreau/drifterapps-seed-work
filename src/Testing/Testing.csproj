@@ -41,9 +41,6 @@
         <Compile Update="Scenarios\ScenarioRunner.And.cs">
             <DependentUpon>ScenarioRunner.cs</DependentUpon>
         </Compile>
-        <Compile Update="Infrastructure\Authentication\JwtTokenBuilder.Static.cs">
-            <DependentUpon>JwtTokenBuilder.cs</DependentUpon>
-        </Compile>
     </ItemGroup>
 
 </Project>
