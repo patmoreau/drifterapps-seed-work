@@ -27,10 +27,10 @@ public class ApiResponseDriver : WireMockDriver
     {
         lock (PadLock)
         {
-            if(_client is null)
+            if (_client is null)
             {
                 _client = Server.CreateClient();
-                _client.Timeout = TimeSpan.FromSeconds(5);
+                _client.Timeout = TimeSpan.FromSeconds(20);
             }
         }
 
