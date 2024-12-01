@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using DrifterApps.Seeds.Testing.Infrastructure.Authentication;
 using WireMock.RequestBuilders;
 using WireMock.ResponseBuilders;
@@ -5,6 +6,7 @@ using WireMock.Server;
 
 namespace DrifterApps.Seeds.Testing.Drivers;
 
+[SuppressMessage("Performance", "CA1861:Avoid constant arrays as arguments")]
 public sealed partial class AuthorityDriver
 {
     protected override WireMockServer CreateServer() => WireMockServer.StartWithAdminInterface(Authority);

@@ -1,8 +1,5 @@
-using System.Diagnostics.CodeAnalysis;
-
 namespace DrifterApps.Seeds.Testing.Drivers;
 
-[SuppressMessage("Performance", "CA1861:Avoid constant arrays as arguments")]
 public sealed partial class AuthorityDriver : WireMockDriver
 {
     /// <summary>
@@ -15,9 +12,22 @@ public sealed partial class AuthorityDriver : WireMockDriver
     private static AuthorityDriver? _instance;
 
     /// <summary>
-    ///     Constructor handling the singleton instance creation.
+    ///     Constructor used by test framework.
     /// </summary>
     public AuthorityDriver() => GetInstance();
+
+    /// <summary>
+    ///     Constructor used by singleton instance.
+    /// </summary>
+    /// <param name="isInstance"></param>
+    /// <exception cref="InvalidOperationException"></exception>
+    private AuthorityDriver(bool isInstance)
+    {
+        if (!isInstance)
+        {
+            throw new InvalidOperationException("Use GetInstance method to create a singleton instance.");
+        }
+    }
 
     /// <summary>
     ///     Gets the authority URL for the token issuer.
@@ -40,7 +50,7 @@ public sealed partial class AuthorityDriver : WireMockDriver
         Semaphore.Wait();
         try
         {
-            _instance = new AuthorityDriver();
+            _instance = new AuthorityDriver(true);
             return _instance;
         }
         finally
