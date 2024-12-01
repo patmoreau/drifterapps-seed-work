@@ -14,15 +14,24 @@ public class ApiResponseDriver : WireMockDriver
 {
     private static readonly Faker Fake = new();
 
-    private HttpClient? _client;
+#if NET9_0_OR_GREATER
+    private static readonly Lock PadLock = new();
+#else
+    private static readonly object PadLock = new();
+#endif
+
+    private static HttpClient? _client;
     private HttpStatusCode? _notStatusCode;
 
     internal Lazy<IApiResponseWireMock> Api => new(() =>
     {
-        if (_client is null)
+        lock (PadLock)
         {
-            _client = Server.CreateClient();
-            _client.Timeout = TimeSpan.FromSeconds(5);
+            if(_client is null)
+            {
+                _client = Server.CreateClient();
+                _client.Timeout = TimeSpan.FromSeconds(5);
+            }
         }
 
         return RestService.For<IApiResponseWireMock>(_client);

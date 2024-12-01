@@ -67,7 +67,7 @@ public sealed partial class AuthorityDriver : WireMockDriver
         {
             if (_usageCount == 0 && _instance is not null)
             {
-                await _instance.InitializeAsync().ConfigureAwait(false);
+                await base.InitializeAsync().ConfigureAwait(false);
             }
 
             _usageCount++;
@@ -87,7 +87,7 @@ public sealed partial class AuthorityDriver : WireMockDriver
             _usageCount--;
             if (_usageCount == 0 && _instance is not null)
             {
-                await _instance.DisposeAsync().ConfigureAwait(false);
+                await base.DisposeAsync().ConfigureAwait(false);
             }
         }
         finally
