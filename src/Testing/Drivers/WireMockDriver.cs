@@ -14,7 +14,7 @@ public abstract class WireMockDriver : IAsyncLifetime
     ///     Gets the initialized WireMock server instance.
     ///     Throws an InvalidOperationException if the server is not initialized.
     /// </summary>
-    protected WireMockServer Server =>
+    internal WireMockServer Server =>
         _server ?? throw new InvalidOperationException("WireMockServer is not initialized.");
 
     /// <summary>
