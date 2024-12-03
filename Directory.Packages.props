@@ -22,7 +22,7 @@
         <PackageVersion Include="MediatR" Version="12.4.1"/>
         <PackageVersion Include="MediatR.Contracts" Version="2.0.1"/>
         <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="7.0.20" Condition="'$(TargetFramework)' == 'net7.0'"/>
-        <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="9.0.0" Condition="'$(TargetFramework)' != 'net7.0'"/>
+        <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="8.0.11" Condition="'$(TargetFramework)' != 'net7.0'"/>
         <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.2" Condition="'$(TargetFramework)' == 'net7.0'"/>
         <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.0" Condition="'$(TargetFramework)' != 'net7.0'"/>
         <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.2" Condition="'$(TargetFramework)' == 'net7.0'"/>
