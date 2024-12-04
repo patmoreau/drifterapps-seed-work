@@ -78,8 +78,10 @@ jobs:
         needs: set-version
 
         strategy:
+            fail-fast: false
             matrix:
                 dotnet-version: [7.0.x, 8.0.x, 9.0.x]
+                framework: [net7.0, net8.0, net9.0]
 
         env:
             VERSION: ${{ needs.set-version.outputs.version }}
@@ -107,14 +109,21 @@ jobs:
               run: dotnet build --no-restore --configuration Release /property:Version=${{ env.ASSEMBLY_VERSION }}
 
             - name: Tests
-              run: dotnet test --no-restore --no-build --configuration Release --logger 'trx;verbosity=normal' --results-directory ./tests-results --collect 'XPlat Code Coverage'
+              run: dotnet test --no-restore --no-build --configuration Release --framework ${{ matrix.framework }} --logger 'trx;verbosity=normal' --results-directory ./tests-results --collect 'XPlat Code Coverage'
+
+            - name: Upload Test Results
+              if: always()
+              uses: actions/upload-artifact@v4
+              with:
+                  name: Test Results for .NET ${{ matrix.framework }}
+                  path: ./tests-results/**/*.trx
 
             - name: Test Report
               uses: dorny/test-reporter@v1
               id: test-results
               if: always()
               with:
-                  name: .Net Tests
+                  name: Tests on .NET ${{ matrix.framework }}
                   path: ./tests-results/**/*.trx
                   reporter: dotnet-trx
 
@@ -133,18 +142,17 @@ jobs:
             - name: Create badge
               uses: emibcn/badge-action@v2.0.3
               with:
-                  label: Tests
+                  label: Tests on .NET ${{ matrix.framework }}
                   status: "${{ steps.test-results.outputs.passed }} passed, ${{ steps.test-results.outputs.failed }} failed, ${{ steps.test-results.outputs.skipped }} skipped: ${{ steps.test-results.outputs.conclusion }}"
                   color: ${{ env.BADGE_COLOR }}
-                  path: seeds-tests-badge.svg
+                  path: seeds-tests-badge-${{ matrix.framework }}.svg
 
             - name: Upload badge to artifacts
               if: always()
               uses: actions/upload-artifact@v4
               with:
-                  name: Test Results Badge
-                  path: |
-                      seeds-tests-badge.svg
+                  name: Test Badge .NET ${{ matrix.framework }}
+                  path: seeds-tests-badge-${{ matrix.framework }}.svg
 
             - name: Upload badge to Gist
               if: >
@@ -154,7 +162,7 @@ jobs:
               with:
                   token: ${{ secrets.GIST_TOKEN }}
                   gist_id: 51a2fc9fd8b7ed500ed3b6aabe0fc2d6
-                  file_path: seeds-tests-badge.svg
+                  file_path: seeds-tests-badge-${{ matrix.framework }}.svg
                   file_type: text
 
     tagging:
