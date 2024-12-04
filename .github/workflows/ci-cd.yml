@@ -213,7 +213,7 @@ jobs:
     create_check:
         needs: [check_changes, build]
         uses: patmoreau/workflow-config/.github/workflows/create-check.yml@main
-        if: always() && needs.check_changes.result == 'success'
+        if: always() && needs.check_changes.result == 'success' && needs.build.result == 'success'
         with:
             code_was_changed: ${{ needs.check_changes.outputs.code_was_changed }}
             check_name: "build-completed"
