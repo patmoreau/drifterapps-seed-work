@@ -12,6 +12,7 @@
         <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
         <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
         <EnablePackageManagement>true</EnablePackageManagement>
+        <NoWarn>$(NoWarn);CA1848</NoWarn>
 
         <NuGetAuditMode>direct</NuGetAuditMode>
     </PropertyGroup>
