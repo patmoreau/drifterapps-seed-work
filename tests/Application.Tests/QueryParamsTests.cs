@@ -152,7 +152,7 @@ public class QueryParamsTests
 
     private class FakeRequestBuilder : FakerBuilder<FakeRequest>
     {
-        protected override Faker<FakeRequest> Faker { get; } = CreateUninitializedFaker()
+        protected override Faker<FakeRequest> Faker { get; } = CreateUninitializedFaker<FakeRequest>()
             .RuleFor(x => x.Offset, faker => faker.Random.Int(0))
             .RuleFor(x => x.Limit, faker => faker.Random.Int(1))
             .RuleFor(x => x.Sort, faker => faker.Random.ArrayElements(["-field", "field"], 1))

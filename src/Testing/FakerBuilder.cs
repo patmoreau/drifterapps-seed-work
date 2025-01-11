@@ -5,7 +5,7 @@ namespace DrifterApps.Seeds.Testing;
 ///     ///     Abstract base class for building instances of <typeparamref name="TFaked" /> using Faker.
 /// </summary>
 /// <typeparam name="TFaked">The type of class to generate instances for.</typeparam>
-public abstract partial class FakerBuilder<TFaked> where TFaked : class
+public abstract partial class FakerBuilder<TFaked> : FakerBuilder where TFaked : class
 {
     /// <summary>
     ///     Gets an instance of the <see cref="Faker{T}" /> class,
