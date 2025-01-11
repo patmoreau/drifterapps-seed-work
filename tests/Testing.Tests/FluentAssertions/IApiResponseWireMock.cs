@@ -1,3 +1,4 @@
+using DrifterApps.Seeds.Testing.Tests.Fakes;
 using Refit;
 
 namespace DrifterApps.Seeds.Testing.Tests.FluentAssertions;
@@ -19,6 +20,10 @@ internal interface IApiResponseWireMock
     internal const string IsWithStatusCode = $"/{nameof(IsWithStatusCode)}";
     internal const string IsNotWithStatusCode = $"/{nameof(IsNotWithStatusCode)}";
     internal const string IsWithError = $"/{nameof(IsWithError)}";
+    internal const string IsWithContent = $"/{nameof(IsWithContent)}";
+    internal const string IsWithNoContent = $"/{nameof(IsWithNoContent)}";
+    internal const string IsWithEquivalentContent = $"/{nameof(IsWithEquivalentContent)}";
+    internal const string IsWithNoEquivalentContent = $"/{nameof(IsWithNoEquivalentContent)}";
 
     [Get(WithCorrelationId)]
     Task<IApiResponse> GetWithCorrelationIdAsync([Header("X-Correlation-Id")] Guid correlationId);
@@ -64,4 +69,16 @@ internal interface IApiResponseWireMock
 
     [Get(IsWithError)]
     Task<IApiResponse> GetIsWithErrorAsync();
+
+    [Get(IsWithContent)]
+    Task<IApiResponse<Guid>> GetIsWithContentAsync();
+
+    [Get(IsWithNoContent)]
+    Task<IApiResponse<Guid>> GetIsWithNoContentAsync();
+
+    [Get(IsWithEquivalentContent)]
+    Task<IApiResponse<IEnumerable<FakeClass>>> GetIsWithEquivalentContentAsync();
+
+    [Get(IsWithNoEquivalentContent)]
+    Task<IApiResponse<IEnumerable<FakeClass>>> GetIsWithNoEquivalentContentAsync();
 }
