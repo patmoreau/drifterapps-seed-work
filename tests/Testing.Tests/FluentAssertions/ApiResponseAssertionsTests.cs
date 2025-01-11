@@ -3,6 +3,7 @@ using System.Net;
 using System.Text;
 using Bogus;
 using DrifterApps.Seeds.Testing.Tests.Drivers;
+using DrifterApps.Seeds.Testing.Tests.Fakes;
 using Xunit.Sdk;
 
 namespace DrifterApps.Seeds.Testing.Tests.FluentAssertions;
@@ -72,7 +73,7 @@ public class ApiResponseAssertionsTests(ApiResponseDriver driver) : IClassFixtur
     {
         // Arrange
         var response = await Api.GetIsNotSuccessfulAsync();
-        var expectedMessage = GetExpectedMessage("Expected response to be successful{0}, but it was not.*",
+        var expectedMessage = BuildExpectedMessage("Expected response to be successful{0}, but it was not.*",
             because, becauseArgs);
 
         // Act
@@ -101,7 +102,7 @@ public class ApiResponseAssertionsTests(ApiResponseDriver driver) : IClassFixtur
     {
         // Arrange
         var response = await Api.GetIsNotFailureAsync();
-        var expectedMessage = GetExpectedMessage("Expected response to be a failure{0}, but it was not.",
+        var expectedMessage = BuildExpectedMessage("Expected response to be a failure{0}, but it was not.",
             because, becauseArgs);
 
         // Act
@@ -131,7 +132,7 @@ public class ApiResponseAssertionsTests(ApiResponseDriver driver) : IClassFixtur
     {
         // Arrange
         var response = await Api.GetIsNotAuthorizedAsync();
-        var expectedMessage = GetExpectedMessage(
+        var expectedMessage = BuildExpectedMessage(
             $"Expected response to be authorized{{0}}, but {FormatHttpCodeMessage(driver.NotAuthorizedStatusCode)} was not.*",
             because, becauseArgs);
 
@@ -161,7 +162,7 @@ public class ApiResponseAssertionsTests(ApiResponseDriver driver) : IClassFixtur
     {
         // Arrange
         var response = await Api.GetIsNotForbiddenAsync();
-        var expectedMessage = GetExpectedMessage(
+        var expectedMessage = BuildExpectedMessage(
             $"Expected response to be forbidden{{0}}, but {FormatHttpCodeMessage(driver.NotForbiddenStatusCode)} was not.*",
             because, becauseArgs);
 
@@ -192,7 +193,7 @@ public class ApiResponseAssertionsTests(ApiResponseDriver driver) : IClassFixtur
     {
         // Arrange
         var response = await Api.GetIsNotUnauthorizedAsync();
-        var expectedMessage = GetExpectedMessage(
+        var expectedMessage = BuildExpectedMessage(
             $"Expected response not to be authorized{{0}}, but it was {FormatHttpCodeMessage(driver.SuccessStatusCode)}.*",
             because, becauseArgs);
 
@@ -222,7 +223,7 @@ public class ApiResponseAssertionsTests(ApiResponseDriver driver) : IClassFixtur
     {
         // Arrange
         var response = await Api.GetIsWithStatusCodeAsync();
-        var expectedMessage = GetExpectedMessage(
+        var expectedMessage = BuildExpectedMessage(
             $"Expected response to have status code {FormatHttpCodeMessage(driver.NotStatusCode)}{{0}}, but it was {FormatHttpCodeMessage(driver.StatusCode)}.*",
             because, becauseArgs);
 
@@ -252,7 +253,7 @@ public class ApiResponseAssertionsTests(ApiResponseDriver driver) : IClassFixtur
     {
         // Arrange
         var response = await Api.GetIsNotWithStatusCodeAsync();
-        var expectedMessage = GetExpectedMessage(
+        var expectedMessage = BuildExpectedMessage(
             $"Expected response to not have status code {FormatHttpCodeMessage(driver.NotStatusCode)}{{0}}, but it was.*",
             because, becauseArgs);
 
@@ -264,13 +265,13 @@ public class ApiResponseAssertionsTests(ApiResponseDriver driver) : IClassFixtur
     }
 
     [Fact]
-    public async Task GivenWithError_WhenResponseHaveTheError_ShouldNotThrow()
+    public async Task GivenHaveError_WhenResponseHaveTheError_ShouldNotThrow()
     {
         // Arrange
         var response = await Api.GetIsWithErrorAsync();
 
         // Act
-        Action act = () => response.Should().WithError(driver.ErrorMessage);
+        Action act = () => response.Should().HaveError(driver.ErrorMessage);
 
         // Assert
         act.Should().NotThrow();
@@ -278,23 +279,103 @@ public class ApiResponseAssertionsTests(ApiResponseDriver driver) : IClassFixtur
 
     [Theory]
     [ClassData(typeof(BecauseData))]
-    public async Task GivenWithError_WhenResponseHaveNot_ShouldThrow(string because, object[] becauseArgs)
+    public async Task GivenHaveError_WhenResponseHaveNot_ShouldThrow(string because, object[] becauseArgs)
     {
         // Arrange
         var error = _faker.Lorem.Sentence();
         var response = await Api.GetIsWithErrorAsync();
-        var expectedMessage = GetExpectedMessage(
-            $"Expected response to have error \"{error}\"{{0}}, but found *",
-            because, becauseArgs);
+        var expectedMessage = BuildExpectedMessage(because, becauseArgs);
 
         // Act
-        Action act = () => response.Should().WithError(error, because, becauseArgs);
+        Action act = () => response.Should().HaveError(error, because, becauseArgs);
 
         // Assert
         act.Should().Throw<XunitException>().WithMessage(expectedMessage);
     }
 
-    private static string GetExpectedMessage(string messageFormat, string because, params object[] becauseArgs)
+    [Fact]
+    public async Task GivenHaveContent_WhenResponseHaveSameContent_ShouldNotThrow()
+    {
+        // Arrange
+        var response = await Api.GetIsWithContentAsync();
+
+        // Act
+        Action act = () => response.Should().HaveContent(driver.Content);
+
+        // Assert
+        act.Should().NotThrow();
+    }
+
+    [Theory]
+    [ClassData(typeof(BecauseData))]
+    public async Task GivenHaveContent_WhenResponseDoesNotHaveSameContent_ShouldThrow(string because,
+        object[] becauseArgs)
+    {
+        // Arrange
+        var content = _faker.Random.Guid();
+        var response = await Api.GetIsWithContentAsync();
+        var expectedMessage = BuildExpectedMessage(because, becauseArgs);
+
+        // Act
+        Action act = () => response.Should().HaveContent(content, because, becauseArgs);
+
+        // Assert
+        act.Should().Throw<XunitException>().WithMessage(expectedMessage);
+    }
+
+    [Theory]
+    [ClassData(typeof(BecauseData))]
+    public async Task GivenHaveContent_WhenResponseDoesNotHaveContent_ShouldThrow(string because,
+        object[] becauseArgs)
+    {
+        // Arrange
+        var content = _faker.Random.Guid();
+        var response = await Api.GetIsWithNoContentAsync();
+        var expectedMessage = BuildExpectedMessage(
+            "Expected response to have content{0}, but found nothing.",
+            because, becauseArgs);
+
+        // Act
+        Action act = () => response.Should().HaveContent(content, because, becauseArgs);
+
+        // Assert
+        act.Should().Throw<XunitException>().WithMessage(expectedMessage);
+    }
+
+    [Fact]
+    public async Task GivenHaveEquivalentContent_WhenResponseHaveSameContent_ShouldNotThrow()
+    {
+        // Arrange
+        var response = await Api.GetIsWithEquivalentContentAsync();
+
+        // Act
+        Action act = () => response.Should().HaveEquivalentContent(driver.EquivalentContent);
+
+        // Assert
+        act.Should().NotThrow();
+    }
+
+    [Theory]
+    [ClassData(typeof(BecauseData))]
+    public async Task GivenHaveEquivalentContent_WhenResponseDoesNotHaveSameContent_ShouldThrow(string because,
+        object[] becauseArgs)
+    {
+        // Arrange
+        var content = new FakeClassBuilder().BuildCollection();
+        var response = await Api.GetIsWithEquivalentContentAsync();
+        var expectedMessage = BuildExpectedMessage(because, becauseArgs);
+
+        // Act
+        Action act = () => response.Should().HaveEquivalentContent(content, options => options, because, becauseArgs);
+
+        // Assert
+        act.Should().Throw<XunitException>().WithMessage(expectedMessage);
+    }
+
+    private static string BuildExpectedMessage(string because, params object[] becauseArgs)
+        => BuildExpectedMessage("*{0}*", because, becauseArgs);
+
+    private static string BuildExpectedMessage(string messageFormat, string because, params object[] becauseArgs)
     {
         var expectedBecause = string.Format(CultureInfo.InvariantCulture, because, becauseArgs);
         return string.Format(CultureInfo.InvariantCulture, messageFormat,
@@ -313,7 +394,6 @@ public class ApiResponseAssertionsTests(ApiResponseDriver driver) : IClassFixtur
             Add("", []);
             var faker = new Faker();
             var because = faker.Lorem.Sentence();
-            Add(because, faker.Lorem.Words(2));
             Add(because + "'{0};{1}'", faker.Lorem.Words(2));
         }
     }

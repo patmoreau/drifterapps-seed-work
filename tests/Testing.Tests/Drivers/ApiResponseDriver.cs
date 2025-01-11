@@ -2,6 +2,7 @@ using System.Net;
 using System.Text.Json;
 using Bogus;
 using DrifterApps.Seeds.Testing.Drivers;
+using DrifterApps.Seeds.Testing.Tests.Fakes;
 using DrifterApps.Seeds.Testing.Tests.FluentAssertions;
 using Refit;
 using WireMock.RequestBuilders;
@@ -10,7 +11,7 @@ using static DrifterApps.Seeds.Testing.Tests.FluentAssertions.IApiResponseWireMo
 
 namespace DrifterApps.Seeds.Testing.Tests.Drivers;
 
-public class ApiResponseDriver : WireMockDriver
+public sealed class ApiResponseDriver : WireMockDriver
 {
     private static readonly Faker Fake = new();
 
@@ -23,6 +24,15 @@ public class ApiResponseDriver : WireMockDriver
     private static HttpClient? _client;
     private HttpStatusCode? _notStatusCode;
 
+    private readonly RefitSettings? _refitSettings = new()
+    {
+        ContentSerializer = new SystemTextJsonContentSerializer(new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            PropertyNameCaseInsensitive = true
+        })
+    };
+
     internal Lazy<IApiResponseWireMock> Api => new(() =>
     {
         lock (PadLock)
@@ -34,7 +44,7 @@ public class ApiResponseDriver : WireMockDriver
             }
         }
 
-        return RestService.For<IApiResponseWireMock>(_client);
+        return RestService.For<IApiResponseWireMock>(_client, _refitSettings);
     });
 
     internal Guid CorrelationId { get; } = Fake.Random.Guid();
@@ -57,6 +67,10 @@ public class ApiResponseDriver : WireMockDriver
         Fake.PickRandom(Enum.GetValues<HttpStatusCode>().Where(x => x is not HttpStatusCode.Forbidden));
 
     internal string ErrorMessage { get; } = Fake.Lorem.Sentence();
+
+    internal Guid Content { get; } = Fake.Random.Guid();
+
+    internal IList<FakeClass> EquivalentContent { get; } = [.. new FakeClassBuilder().BuildCollection()];
 
     public override async Task InitializeAsync()
     {
@@ -182,6 +196,36 @@ public class ApiResponseDriver : WireMockDriver
                     {
                         Detail = ErrorMessage
                     }))
+            );
+
+        Server
+            .Given(Request.Create().WithPath(IsWithContent))
+            .RespondWith(
+                Response.Create()
+                    .WithStatusCode(HttpStatusCode.OK)
+                    .WithBody(JsonSerializer.Serialize(Content))
+            );
+
+        Server
+            .Given(Request.Create().WithPath(IsWithNoContent))
+            .RespondWith(
+                Response.Create()
+                    .WithStatusCode(HttpStatusCode.OK)
+            );
+
+        Server
+            .Given(Request.Create().WithPath(IsWithEquivalentContent))
+            .RespondWith(
+                Response.Create()
+                    .WithStatusCode(HttpStatusCode.OK)
+                    .WithBody(JsonSerializer.Serialize(EquivalentContent))
+            );
+
+        Server
+            .Given(Request.Create().WithPath(IsWithNoEquivalentContent))
+            .RespondWith(
+                Response.Create()
+                    .WithStatusCode(HttpStatusCode.OK)
             );
     }
 }

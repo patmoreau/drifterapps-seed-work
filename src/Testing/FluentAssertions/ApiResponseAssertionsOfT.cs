@@ -1,4 +1,5 @@
 using DrifterApps.Seeds.Testing.FluentAssertions;
+using FluentAssertions.Equivalency;
 using FluentAssertions.Execution;
 using Refit;
 
@@ -30,9 +31,10 @@ public class ApiResponseAssertions<TValue>(IApiResponse<TValue> instance)
     [CustomAssertion]
     public AndConstraint<ApiResponseAssertions<TValue>> HaveContent(string because = "", params object[] becauseArgs)
     {
-        var assertion = Execute.Assertion.BecauseOf(because, becauseArgs).UsingLineBreaks;
-
-        assertion.ForCondition(Subject.Content is not null)
+        Execute.Assertion
+            .BecauseOf(because, becauseArgs)
+            .UsingLineBreaks
+            .ForCondition(HasContentCondition())
             .FailWith("Expected {context:response} to have content{reason}, but found nothing.");
 
         return new AndConstraint<ApiResponseAssertions<TValue>>(this);
@@ -48,15 +50,48 @@ public class ApiResponseAssertions<TValue>(IApiResponse<TValue> instance)
     ///     <see cref="ApiResponseAssertions{TValue}" />
     /// </returns>
     [CustomAssertion]
-    public AndConstraint<ApiResponseAssertions<TValue>> WithContent(TValue expectedValue,
+    public AndConstraint<ApiResponseAssertions<TValue>> HaveContent(TValue expectedValue,
         string because = "", params object[] becauseArgs)
     {
-        var assertion = Execute.Assertion.BecauseOf(because, becauseArgs).UsingLineBreaks;
+        Execute.Assertion
+            .BecauseOf(because, becauseArgs)
+            .UsingLineBreaks
+            .ForCondition(HasContentCondition())
+            .FailWith("Expected {context:response} to have content{reason}, but found nothing.");
 
-        assertion.ForCondition(Subject.Content!.Equals(expectedValue))
-            .FailWith("Expected {context:response} to have value {0}{reason}, but found {1}.", expectedValue,
-                Subject.Content);
+        Subject.Content.Should().Be(expectedValue, because, becauseArgs);
 
         return new AndConstraint<ApiResponseAssertions<TValue>>(this);
     }
+
+    /// <summary>
+    ///     Asserts that the api response has the equivalent value.
+    /// </summary>
+    /// <param name="expectedValue">The expected value.</param>
+    /// <param name="config">A function to configure the equivalency assertion options.</param>
+    /// <param name="because">A formatted phrase explaining why the assertion is needed.</param>
+    /// <param name="becauseArgs">Zero or more objects to format using the placeholders in <paramref name="because" />.</param>
+    /// <returns>
+    ///     <see cref="ApiResponseAssertions{TValue}" />
+    /// </returns>
+    [CustomAssertion]
+    public AndConstraint<ApiResponseAssertions<TValue>> HaveEquivalentContent(
+        TValue expectedValue,
+        Func<EquivalencyAssertionOptions<TValue>, EquivalencyAssertionOptions<TValue>>? config = null,
+        string because = "", params object[] becauseArgs)
+    {
+        Execute.Assertion
+            .BecauseOf(because, becauseArgs)
+            .UsingLineBreaks
+            .ForCondition(HasContentCondition())
+            .FailWith("Expected {context:response} to have content{reason}, but found nothing.");
+
+        Subject.Content.Should().BeEquivalentTo(expectedValue, config ?? (options => options), because, becauseArgs);
+
+        return new AndConstraint<ApiResponseAssertions<TValue>>(this);
+    }
+
+    private bool HasContentCondition() => !(Subject.Content is null ||
+                                          (Subject.ContentHeaders!.Contains("Content-Length") &&
+                                           Subject.ContentHeaders!.ContentLength == 0));
 }

@@ -14,11 +14,13 @@
         <PackageReference Include="Microsoft.FeatureManagement.AspNetCore"/>
         <PackageReference Include="MySqlConnector"/>
         <PackageReference Include="Nito.AsyncEx"/>
+        <PackageReference Include="Npgsql"/>
         <PackageReference Include="Refit"/>
         <PackageReference Include="Respawn"/>
         <PackageReference Include="System.Linq.Async"/>
         <PackageReference Include="Testcontainers"/>
         <PackageReference Include="Testcontainers.MariaDb"/>
+        <PackageReference Include="Testcontainers.PostgreSql"/>
         <PackageReference Include="WireMock.Net"/>
         <PackageReference Include="xunit.categories"/>
     </ItemGroup>

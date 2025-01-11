@@ -91,7 +91,7 @@ public class FakerBuilderTests
 
     private class FakeClassBuilder : FakerBuilder<FakeClass>
     {
-        protected override Faker<FakeClass> Faker { get; } = CreateFaker()
+        protected override Faker<FakeClass> Faker { get; } = CreateFaker<FakeClass>()
                 .RuleFor(x => x.Id, DefaultId)
                 .RuleFor(x => x.PrivateInitProperty, DefaultPrivateInitProperty)
                 .RuleFor(x => x.NormalProperty, DefaultNormalProperty)

@@ -21,9 +21,10 @@ public abstract class BaseApiResponseAssertions<TValue, TAssertions>(TValue inst
     [CustomAssertion]
     public AndConstraint<TAssertions> BeSuccessful(string because = "", params object[] becauseArgs)
     {
-        var assertion = Execute.Assertion.BecauseOf(because, becauseArgs).UsingLineBreaks;
-
-        assertion.ForCondition(Subject.IsSuccessful)
+        Execute.Assertion
+            .BecauseOf(because, becauseArgs)
+            .UsingLineBreaks
+            .ForCondition(Subject.IsSuccessful)
             .FailWith(Reason("Expected {context:response} to be successful{reason}, but it was not."));
 
         return new AndConstraint<TAssertions>((TAssertions)(object)this);
@@ -40,9 +41,10 @@ public abstract class BaseApiResponseAssertions<TValue, TAssertions>(TValue inst
     [CustomAssertion]
     public AndConstraint<TAssertions> BeFailure(string because = "", params object[] becauseArgs)
     {
-        var assertion = Execute.Assertion.BecauseOf(because, becauseArgs).UsingLineBreaks;
-
-        assertion.ForCondition(!Subject.IsSuccessful)
+        Execute.Assertion
+            .BecauseOf(because, becauseArgs)
+            .UsingLineBreaks
+            .ForCondition(!Subject.IsSuccessful)
             .FailWith(Reason("Expected {context:response} to be a failure{reason}, but it was not."));
 
         return new AndConstraint<TAssertions>((TAssertions)(object)this);
@@ -59,9 +61,9 @@ public abstract class BaseApiResponseAssertions<TValue, TAssertions>(TValue inst
     [CustomAssertion]
     public AndConstraint<TAssertions> BeAuthorized(string because = "", params object[] becauseArgs)
     {
-        var assertion = Execute.Assertion.BecauseOf(because, becauseArgs).UsingLineBreaks;
-
-        assertion
+        Execute.Assertion
+            .BecauseOf(because, becauseArgs)
+            .UsingLineBreaks
             .ForCondition(Subject.StatusCode is not HttpStatusCode.Forbidden and not HttpStatusCode.Unauthorized)
             .FailWith(Reason("Expected {context:response} to be authorized{reason}, but {0} was not.",
                 Subject.StatusCode));
@@ -80,9 +82,9 @@ public abstract class BaseApiResponseAssertions<TValue, TAssertions>(TValue inst
     [CustomAssertion]
     public AndConstraint<TAssertions> BeForbidden(string because = "", params object[] becauseArgs)
     {
-        var assertion = Execute.Assertion.BecauseOf(because, becauseArgs).UsingLineBreaks;
-
-        assertion
+        Execute.Assertion
+            .BecauseOf(because, becauseArgs)
+            .UsingLineBreaks
             .ForCondition(Subject.StatusCode is HttpStatusCode.Forbidden)
             .FailWith(Reason("Expected {context:response} to be forbidden{reason}, but {0} was not.",
                 Subject.StatusCode));
@@ -101,9 +103,9 @@ public abstract class BaseApiResponseAssertions<TValue, TAssertions>(TValue inst
     [CustomAssertion]
     public AndConstraint<TAssertions> NotBeAuthorized(string because = "", params object[] becauseArgs)
     {
-        var assertion = Execute.Assertion.BecauseOf(because, becauseArgs).UsingLineBreaks;
-
-        assertion
+        Execute.Assertion
+            .BecauseOf(because, becauseArgs)
+            .UsingLineBreaks
             .ForCondition(Subject.StatusCode is HttpStatusCode.Unauthorized)
             .FailWith(Reason("Expected {context:response} not to be authorized{reason}, but it was {0}.", Subject.StatusCode));
 
@@ -123,9 +125,9 @@ public abstract class BaseApiResponseAssertions<TValue, TAssertions>(TValue inst
     public AndConstraint<TAssertions> HaveStatusCode(HttpStatusCode statusCode, string because = "",
         params object[] becauseArgs)
     {
-        var assertion = Execute.Assertion.BecauseOf(because, becauseArgs).UsingLineBreaks;
-
-        assertion
+        Execute.Assertion
+            .BecauseOf(because, becauseArgs)
+            .UsingLineBreaks
             .ForCondition(Subject.StatusCode == statusCode)
             .FailWith(Reason("Expected {context:response} to have status code {0}{reason}, but it was {1}.", statusCode,
                 Subject.StatusCode));
@@ -146,9 +148,9 @@ public abstract class BaseApiResponseAssertions<TValue, TAssertions>(TValue inst
     public AndConstraint<TAssertions> NotHaveStatusCode(HttpStatusCode statusCode, string because = "",
         params object[] becauseArgs)
     {
-        var assertion = Execute.Assertion.BecauseOf(because, becauseArgs).UsingLineBreaks;
-
-        assertion
+        Execute.Assertion
+            .BecauseOf(because, becauseArgs)
+            .UsingLineBreaks
             .ForCondition(Subject.StatusCode != statusCode)
             .FailWith(Reason("Expected {context:response} to not have status code {0}{reason}, but it was.", statusCode,
                 Subject.StatusCode));
@@ -166,12 +168,12 @@ public abstract class BaseApiResponseAssertions<TValue, TAssertions>(TValue inst
     ///     <see cref="AndConstraint{TAssertions}" />
     /// </returns>
     [CustomAssertion]
-    public AndConstraint<TAssertions> WithError(string error, string because = "",
+    public AndConstraint<TAssertions> HaveError(string error, string because = "",
         params object[] becauseArgs)
     {
-        var assertion = Execute.Assertion.BecauseOf(because, becauseArgs).UsingLineBreaks;
-
-        assertion
+        Execute.Assertion
+            .BecauseOf(because, becauseArgs)
+            .UsingLineBreaks
             .ForCondition(Subject.Error is not null &&
                           (Subject.Error.Content?.Contains(error, StringComparison.InvariantCulture) ?? false))
             .FailWith(Reason("Expected {context:response} to have error {0}{reason}, but found {1}.", error,
@@ -192,9 +194,9 @@ public abstract class BaseApiResponseAssertions<TValue, TAssertions>(TValue inst
     public AndConstraint<TAssertions> HaveLocation(string because = "",
         params object[] becauseArgs)
     {
-        var assertion = Execute.Assertion.BecauseOf(because, becauseArgs).UsingLineBreaks;
-
-        assertion
+        Execute.Assertion
+            .BecauseOf(because, becauseArgs)
+            .UsingLineBreaks
             .ForCondition(Subject.Headers.Location is not null)
             .FailWith(Reason("Expected {context:response} to have Location header{reason}, but it did not."));
 

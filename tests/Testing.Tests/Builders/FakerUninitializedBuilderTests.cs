@@ -81,7 +81,7 @@ public class FakerUninitializedBuilderTests
 
     private class FakeUninitializedRecordBuilder : FakerBuilder<FakeUninitializedRecord>
     {
-        protected override Faker<FakeUninitializedRecord> Faker { get; } = CreateUninitializedFaker()
+        protected override Faker<FakeUninitializedRecord> Faker { get; } = CreateUninitializedFaker<FakeUninitializedRecord>()
                 .RuleFor(x => x.Id, DefaultId)
                 .RuleFor(x => x.PrivateInitProperty, DefaultPrivateInitProperty)
                 .RuleFor(x => x.NormalProperty, DefaultNormalProperty)
