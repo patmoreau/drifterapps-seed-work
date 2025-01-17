@@ -1,3 +1,4 @@
+using FluentAssertions.Execution;
 using Refit;
 
 // ReSharper disable once CheckNamespace
@@ -14,7 +15,8 @@ public static class ApiResponseAssertionsExtensions
     /// <typeparam name="TValue">The type of the value contained in the api response.</typeparam>
     /// <param name="instance">The api response instance to assert.</param>
     /// <returns>An assertion object for the specified api response instance.</returns>
-    public static ApiResponseAssertions<TValue> Should<TValue>(this ApiResponse<TValue> instance) => new(instance);
+    public static ApiResponseAssertions<TValue> Should<TValue>(this ApiResponse<TValue> instance) =>
+        new(instance, AssertionChain.GetOrCreate());
 
     /// <summary>
     ///     Returns an assertion object for the specified <see cref="ApiResponse{TValue}" /> instance.
@@ -22,12 +24,14 @@ public static class ApiResponseAssertionsExtensions
     /// <typeparam name="TValue">The type of the value contained in the api response.</typeparam>
     /// <param name="instance">The api response instance to assert.</param>
     /// <returns>An assertion object for the specified api response instance.</returns>
-    public static ApiResponseAssertions<TValue> Should<TValue>(this IApiResponse<TValue> instance) => new(instance);
+    public static ApiResponseAssertions<TValue> Should<TValue>(this IApiResponse<TValue> instance) =>
+        new(instance, AssertionChain.GetOrCreate());
 
     /// <summary>
     ///     Returns an assertion object for the specified <see cref="ApiResponse{TValue}" /> instance.
     /// </summary>
     /// <param name="instance">The api response instance to assert.</param>
     /// <returns>An assertion object for the specified api response instance.</returns>
-    public static ApiResponseAssertions Should(this IApiResponse instance) => new(instance);
+    public static ApiResponseAssertions Should(this IApiResponse instance) =>
+        new(instance, AssertionChain.GetOrCreate());
 }

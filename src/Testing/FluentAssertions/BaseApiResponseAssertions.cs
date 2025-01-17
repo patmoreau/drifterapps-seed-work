@@ -5,8 +5,8 @@ using Refit;
 
 namespace DrifterApps.Seeds.Testing.FluentAssertions;
 
-public abstract class BaseApiResponseAssertions<TValue, TAssertions>(TValue instance) :
-    ReferenceTypeAssertions<TValue, TAssertions>(instance)
+public abstract class BaseApiResponseAssertions<TValue, TAssertions>(TValue instance, AssertionChain assertionChain) :
+    ReferenceTypeAssertions<TValue, TAssertions>(instance, assertionChain)
     where TAssertions : ReferenceTypeAssertions<TValue, TAssertions>
     where TValue : IApiResponse
 {
@@ -21,7 +21,7 @@ public abstract class BaseApiResponseAssertions<TValue, TAssertions>(TValue inst
     [CustomAssertion]
     public AndConstraint<TAssertions> BeSuccessful(string because = "", params object[] becauseArgs)
     {
-        Execute.Assertion
+        CurrentAssertionChain
             .BecauseOf(because, becauseArgs)
             .UsingLineBreaks
             .ForCondition(Subject.IsSuccessful)
@@ -41,7 +41,7 @@ public abstract class BaseApiResponseAssertions<TValue, TAssertions>(TValue inst
     [CustomAssertion]
     public AndConstraint<TAssertions> BeFailure(string because = "", params object[] becauseArgs)
     {
-        Execute.Assertion
+        CurrentAssertionChain
             .BecauseOf(because, becauseArgs)
             .UsingLineBreaks
             .ForCondition(!Subject.IsSuccessful)
@@ -61,7 +61,7 @@ public abstract class BaseApiResponseAssertions<TValue, TAssertions>(TValue inst
     [CustomAssertion]
     public AndConstraint<TAssertions> BeAuthorized(string because = "", params object[] becauseArgs)
     {
-        Execute.Assertion
+        CurrentAssertionChain
             .BecauseOf(because, becauseArgs)
             .UsingLineBreaks
             .ForCondition(Subject.StatusCode is not HttpStatusCode.Forbidden and not HttpStatusCode.Unauthorized)
@@ -82,7 +82,7 @@ public abstract class BaseApiResponseAssertions<TValue, TAssertions>(TValue inst
     [CustomAssertion]
     public AndConstraint<TAssertions> BeForbidden(string because = "", params object[] becauseArgs)
     {
-        Execute.Assertion
+        CurrentAssertionChain
             .BecauseOf(because, becauseArgs)
             .UsingLineBreaks
             .ForCondition(Subject.StatusCode is HttpStatusCode.Forbidden)
@@ -103,7 +103,7 @@ public abstract class BaseApiResponseAssertions<TValue, TAssertions>(TValue inst
     [CustomAssertion]
     public AndConstraint<TAssertions> NotBeAuthorized(string because = "", params object[] becauseArgs)
     {
-        Execute.Assertion
+        CurrentAssertionChain
             .BecauseOf(because, becauseArgs)
             .UsingLineBreaks
             .ForCondition(Subject.StatusCode is HttpStatusCode.Unauthorized)
@@ -125,7 +125,7 @@ public abstract class BaseApiResponseAssertions<TValue, TAssertions>(TValue inst
     public AndConstraint<TAssertions> HaveStatusCode(HttpStatusCode statusCode, string because = "",
         params object[] becauseArgs)
     {
-        Execute.Assertion
+        CurrentAssertionChain
             .BecauseOf(because, becauseArgs)
             .UsingLineBreaks
             .ForCondition(Subject.StatusCode == statusCode)
@@ -148,7 +148,7 @@ public abstract class BaseApiResponseAssertions<TValue, TAssertions>(TValue inst
     public AndConstraint<TAssertions> NotHaveStatusCode(HttpStatusCode statusCode, string because = "",
         params object[] becauseArgs)
     {
-        Execute.Assertion
+        CurrentAssertionChain
             .BecauseOf(because, becauseArgs)
             .UsingLineBreaks
             .ForCondition(Subject.StatusCode != statusCode)
@@ -171,7 +171,7 @@ public abstract class BaseApiResponseAssertions<TValue, TAssertions>(TValue inst
     public AndConstraint<TAssertions> HaveError(string error, string because = "",
         params object[] becauseArgs)
     {
-        Execute.Assertion
+        CurrentAssertionChain
             .BecauseOf(because, becauseArgs)
             .UsingLineBreaks
             .ForCondition(Subject.Error is not null &&
@@ -194,7 +194,7 @@ public abstract class BaseApiResponseAssertions<TValue, TAssertions>(TValue inst
     public AndConstraint<TAssertions> HaveLocation(string because = "",
         params object[] becauseArgs)
     {
-        Execute.Assertion
+        CurrentAssertionChain
             .BecauseOf(because, becauseArgs)
             .UsingLineBreaks
             .ForCondition(Subject.Headers.Location is not null)
