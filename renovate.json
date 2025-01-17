@@ -1,0 +1,15 @@
+{
+    "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+    "extends": ["local>patmoreau/renovate-config"],
+    "packageRules": [
+        {
+            "matchUpdateTypes": ["major"],
+            "matchPackageNames": [
+                "Microsoft.EntityFrameworkCore",
+                "Microsoft.Extensions.DependencyInjection.Abstractions",
+                "Microsoft.Extensions.Logging.Abstractions"
+            ],
+            "enabled": false
+        }
+    ]
+}
