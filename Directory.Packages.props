@@ -9,9 +9,9 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageVersion>
-    <PackageVersion Include="DrifterApps.Seeds.FluentResult" Version="0.1.12" />
-    <PackageVersion Include="DrifterApps.Seeds.FluentResult.FluentAssertions" Version="0.1.12" />
-    <PackageVersion Include="DrifterApps.Seeds.FluentScenario" Version="0.1.4" />
+    <PackageVersion Include="DrifterApps.Seeds.FluentResult" Version="0.1.19" />
+    <PackageVersion Include="DrifterApps.Seeds.FluentResult.FluentAssertions" Version="0.1.19" />
+    <PackageVersion Include="DrifterApps.Seeds.FluentScenario" Version="0.1.11" />
     <PackageVersion Include="FluentAssertions" Version="7.0.0" />
     <PackageVersion Include="FluentAssertions.Analyzers" Version="0.34.1">
       <PrivateAssets>all</PrivateAssets>
