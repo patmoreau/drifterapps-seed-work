@@ -40,7 +40,7 @@ public sealed class ApiResponseDriver : WireMockDriver
             if (_client is null)
             {
                 _client = Server.CreateClient();
-                _client.Timeout = TimeSpan.FromSeconds(20);
+                _client.Timeout = TimeSpan.FromSeconds(30);
             }
         }
 
