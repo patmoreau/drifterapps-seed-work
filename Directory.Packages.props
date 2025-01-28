@@ -1,11 +1,11 @@
 <Project>
   <ItemGroup>
     <PackageVersion Include="Bogus" Version="35.6.1" />
-    <PackageVersion Include="coverlet.collector" Version="6.0.3">
+    <PackageVersion Include="coverlet.collector" Version="6.0.4">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageVersion>
-    <PackageVersion Include="coverlet.msbuild" Version="6.0.3">
+    <PackageVersion Include="coverlet.msbuild" Version="6.0.4">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageVersion>
@@ -44,7 +44,7 @@
     <PackageVersion Include="Testcontainers" Version="4.1.0" />
     <PackageVersion Include="Testcontainers.MariaDb" Version="4.1.0" />
     <PackageVersion Include="Testcontainers.PostgreSql" Version="4.1.0" />
-    <PackageVersion Include="WireMock.Net" Version="1.6.11" />
+    <PackageVersion Include="WireMock.Net" Version="1.7.1" />
     <PackageVersion Include="xunit" Version="2.9.3" />
     <PackageVersion Include="xunit.analyzers" Version="1.19.0" />
     <PackageVersion Include="xunit.categories" Version="2.0.8" />
