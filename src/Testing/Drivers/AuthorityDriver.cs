@@ -1,6 +1,6 @@
 namespace DrifterApps.Seeds.Testing.Drivers;
 
-public sealed partial class AuthorityDriver : WireMockDriver
+public sealed partial class AuthorityDriver
 {
     /// <summary>
     ///     The authority domain for the JWT token issuer.
@@ -32,7 +32,8 @@ public sealed partial class AuthorityDriver : WireMockDriver
     /// <summary>
     ///     Gets the authority URL for the token issuer.
     /// </summary>
-    public static string Authority => $"https://{AuthorityDomain}";
+    /// <exception cref="InvalidOperationException">Thrown when server has not been initialized.</exception>
+    public string Authority => Server.Url ?? throw new InvalidOperationException("Server has not been initialized.");
 
     /// <summary>
     ///     Method to create a singleton instance of the AuthorityDriver.
