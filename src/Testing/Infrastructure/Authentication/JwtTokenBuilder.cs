@@ -1,6 +1,5 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using DrifterApps.Seeds.Testing.Drivers;
 
 namespace DrifterApps.Seeds.Testing.Infrastructure.Authentication;
 
@@ -10,17 +9,41 @@ namespace DrifterApps.Seeds.Testing.Infrastructure.Authentication;
 public sealed class JwtTokenBuilder
 {
     private readonly List<Claim> _claims = [];
-    private string _audience = "default-audience";
+    private string? _audience;
     private TimeSpan _expiry = TimeSpan.FromHours(1);
+    private string? _issuer;
+    private DateTime _notBefore = DateTime.UtcNow;
 
     /// <summary>
     ///     Sets the audience of the JWT token.
     /// </summary>
     /// <param name="audience">The audience to set.</param>
     /// <returns>The current instance of <see cref="JwtTokenBuilder" />.</returns>
-    public JwtTokenBuilder WithAudience(string audience)
+    public JwtTokenBuilder ForAudience(string audience)
     {
         _audience = audience;
+        return this;
+    }
+
+    /// <summary>
+    ///     Sets the issuer of the JWT token.
+    /// </summary>
+    /// <param name="issuer">The issuer to set.</param>
+    /// <returns>The current instance of <see cref="JwtTokenBuilder" />.</returns>
+    public JwtTokenBuilder IssuedBy(string issuer)
+    {
+        _issuer = issuer;
+        return this;
+    }
+
+    /// <summary>
+    ///     Sets the date time validity of the JWT token.
+    /// </summary>
+    /// <param name="notBefore">DateTime at which the token will be valid.</param>
+    /// <returns>The current instance of <see cref="JwtTokenBuilder" />.</returns>
+    public JwtTokenBuilder ValidOn(DateTime notBefore)
+    {
+        _notBefore = notBefore;
         return this;
     }
 
@@ -29,7 +52,7 @@ public sealed class JwtTokenBuilder
     /// </summary>
     /// <param name="expiry">The expiry duration to set.</param>
     /// <returns>The current instance of <see cref="JwtTokenBuilder" />.</returns>
-    public JwtTokenBuilder WithExpiry(TimeSpan expiry)
+    public JwtTokenBuilder ExpireIn(TimeSpan expiry)
     {
         _expiry = expiry;
         return this;
@@ -59,13 +82,19 @@ public sealed class JwtTokenBuilder
     }
 
     /// <summary>
-    ///     Adds a scope claim to the JWT token.
+    ///     Adds a scope claims to the JWT token.
     /// </summary>
-    /// <param name="scopes">The scopes to add seperated by a space.</param>
+    /// <param name="scopes">The scopes to add.</param>
     /// <returns>The current instance of <see cref="JwtTokenBuilder" />.</returns>
-    public JwtTokenBuilder WithScopes(string scopes)
+    public JwtTokenBuilder WithScopes(params string[] scopes)
     {
-        _claims.Add(new Claim("scope", scopes));
+        ArgumentNullException.ThrowIfNull(scopes);
+
+        foreach (var scope in scopes)
+        {
+            _claims.Add(new Claim("scope", scope));
+        }
+
         return this;
     }
 
@@ -75,12 +104,18 @@ public sealed class JwtTokenBuilder
     /// <returns>The generated JWT token as a string.</returns>
     public string Build()
     {
+        ArgumentNullException.ThrowIfNull(_issuer);
+        ArgumentNullException.ThrowIfNull(_audience);
+
+        var expires = _notBefore.Add(_expiry);
+
         var token = new JwtSecurityToken(
-            $"{AuthorityDriver.Authority}/",
+            _issuer,
             _audience,
             _claims,
-            expires: DateTime.UtcNow.Add(_expiry),
-            signingCredentials: JwtSigningCredentials.SigningCredentials
+            _notBefore,
+            expires,
+            JwtSigningCredentials.SigningCredentials
         );
 
         return new JwtSecurityTokenHandler().WriteToken(token);

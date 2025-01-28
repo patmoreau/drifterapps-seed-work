@@ -7,9 +7,9 @@ using WireMock.Server;
 namespace DrifterApps.Seeds.Testing.Drivers;
 
 [SuppressMessage("Performance", "CA1861:Avoid constant arrays as arguments")]
-public sealed partial class AuthorityDriver
+public sealed partial class AuthorityDriver : WireMockDriver
 {
-    protected override WireMockServer CreateServer() => WireMockServer.StartWithAdminInterface(Authority);
+    protected override WireMockServer CreateServer() => WireMockServer.StartWithAdminInterface();
 
     protected override void Configure()
     {
