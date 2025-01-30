@@ -33,14 +33,15 @@ public sealed class AuthorityDriver : WireMockDriver
                 .WithBodyAsJson(new
                 {
                     issuer = $"{Authority}",
-                    authorization_endpoint = $"{Authority}/authorize",
-                    token_endpoint = $"{Authority}/oauth/token",
-                    device_authorization_endpoint = $"{Authority}/oauth/device/code",
-                    userinfo_endpoint = $"{Authority}/userinfo",
-                    mfa_challenge_endpoint = $"{Authority}/mfa/challenge",
-                    jwks_uri = $"{Authority}/.well-known/jwks.json",
-                    registration_endpoint = $"{Authority}/oidc/register",
-                    revocation_endpoint = $"{Authority}/oauth/revoke",
+                    authorization_endpoint = $"{Authority}authorize",
+                    token_endpoint = $"{Authority}oauth/token",
+                    device_authorization_endpoint = $"{Authority}oauth/device/code",
+                    userinfo_endpoint = $"{Authority}userinfo",
+                    mfa_challenge_endpoint = $"{Authority}mfa/challenge",
+                    jwks_uri = $"{Authority}.well-known/jwks.json",
+                    registration_endpoint = $"{Authority}oidc/register",
+                    revocation_endpoint = $"{Authority}oauth/revoke",
+                    end_session_endpoint = $"{Authority}oidc/logout",
                     scopes_supported = (string[])
                     [
                         "openid", "profile", "offline_access", "name", "given_name", "family_name", "nickname", "email",
@@ -66,8 +67,7 @@ public sealed class AuthorityDriver : WireMockDriver
                     request_parameter_supported = false,
                     token_endpoint_auth_signing_alg_values_supported = (string[]) ["RS256", "RS384", "PS256"],
                     backchannel_logout_supported = true,
-                    backchannel_logout_session_supported = true,
-                    end_session_endpoint = $"{Authority}/oidc/logout"
+                    backchannel_logout_session_supported = true
                 })
             );
 
