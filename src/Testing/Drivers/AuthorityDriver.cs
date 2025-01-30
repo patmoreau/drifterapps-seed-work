@@ -1,99 +1,101 @@
+using DrifterApps.Seeds.Testing.Infrastructure.Authentication;
+using WireMock.RequestBuilders;
+using WireMock.ResponseBuilders;
+using WireMock.Server;
+
 namespace DrifterApps.Seeds.Testing.Drivers;
 
-public sealed partial class AuthorityDriver
+public sealed class AuthorityDriver : WireMockDriver
 {
-    /// <summary>
-    ///     The authority domain for the JWT token issuer.
-    /// </summary>
-    public const string AuthorityDomain = "localhost:9096";
-
-    private static readonly SemaphoreSlim Semaphore = new(1, 1);
-    private static int _usageCount;
-    private static AuthorityDriver? _instance;
-
-    /// <summary>
-    ///     Constructor used by test framework.
-    /// </summary>
-    public AuthorityDriver() => GetInstance();
-
-    /// <summary>
-    ///     Constructor used by singleton instance.
-    /// </summary>
-    /// <param name="isInstance"></param>
-    /// <exception cref="InvalidOperationException"></exception>
-    private AuthorityDriver(bool isInstance)
-    {
-        if (!isInstance)
-        {
-            throw new InvalidOperationException("Use GetInstance method to create a singleton instance.");
-        }
-    }
-
     /// <summary>
     ///     Gets the authority URL for the token issuer.
     /// </summary>
     /// <exception cref="InvalidOperationException">Thrown when server has not been initialized.</exception>
-    public string Authority => Server.Url ?? throw new InvalidOperationException("Server has not been initialized.");
+    public Uri Authority => new(Server.Url ?? throw new InvalidOperationException("Server is not initialized"));
 
-    /// <summary>
-    ///     Method to create a singleton instance of the AuthorityDriver.
-    /// </summary>
-    /// <returns>
-    ///     <see cref="AuthorityDriver" />
-    /// </returns>
-    public static AuthorityDriver GetInstance()
+    protected override WireMockServer CreateServer() => WireMockServer.StartWithAdminInterface(useSSL: true);
+
+    protected override void Configure()
     {
-        if (_instance is not null)
-        {
-            return _instance;
-        }
-
-        Semaphore.Wait();
-        try
-        {
-            _instance = new AuthorityDriver(true);
-            return _instance;
-        }
-        finally
-        {
-            Semaphore.Release();
-        }
+        ConfigureOpenIdConfiguration();
+        ConfigureJwks();
     }
 
-    /// <inheritdoc />
-    public override async Task InitializeAsync()
-    {
-        await Semaphore.WaitAsync().ConfigureAwait(false);
-        try
-        {
-            if (_usageCount == 0 && _instance is not null)
-            {
-                await base.InitializeAsync().ConfigureAwait(false);
-            }
+    private void ConfigureOpenIdConfiguration() =>
+        Server
+            .Given(Request.Create()
+                .UsingMethod("GET")
+                .WithPath("/.well-known/openid-configuration"))
+            .AtPriority(1)
+            .RespondWith(Response.Create()
+                .WithStatusCode(200)
+                .WithHeader("Content-Type", "application/json; charset=utf-8")
+                .WithBodyAsJson(new
+                {
+                    issuer = $"{Authority}",
+                    authorization_endpoint = $"{Authority}/authorize",
+                    token_endpoint = $"{Authority}/oauth/token",
+                    device_authorization_endpoint = $"{Authority}/oauth/device/code",
+                    userinfo_endpoint = $"{Authority}/userinfo",
+                    mfa_challenge_endpoint = $"{Authority}/mfa/challenge",
+                    jwks_uri = $"{Authority}/.well-known/jwks.json",
+                    registration_endpoint = $"{Authority}/oidc/register",
+                    revocation_endpoint = $"{Authority}/oauth/revoke",
+                    scopes_supported = (string[])
+                    [
+                        "openid", "profile", "offline_access", "name", "given_name", "family_name", "nickname", "email",
+                        "email_verified", "picture", "created_at", "identities", "phone", "address"
+                    ],
+                    response_types_supported = (string[])
+                    [
+                        "code", "token", "id_token", "code token", "code id_token", "token id_token",
+                        "code token id_token"
+                    ],
+                    code_challenge_methods_supported = (string[]) ["S256", "plain"],
+                    response_modes_supported = (string[]) ["query", "fragment", "form_post"],
+                    subject_types_supported = (string[]) ["public"],
+                    id_token_signing_alg_values_supported = (string[]) ["HS256", "RS256", "PS256"],
+                    token_endpoint_auth_methods_supported = (string[])
+                        ["client_secret_basic", "client_secret_post", "private_key_jwt"],
+                    claims_supported = (string[])
+                    [
+                        "aud", "auth_time", "created_at", "email", "email_verified", "exp", "family_name", "given_name",
+                        "iat", "identities", "iss", "name", "nickname", "phone_number", "picture", "sub"
+                    ],
+                    request_uri_parameter_supported = false,
+                    request_parameter_supported = false,
+                    token_endpoint_auth_signing_alg_values_supported = (string[]) ["RS256", "RS384", "PS256"],
+                    backchannel_logout_supported = true,
+                    backchannel_logout_session_supported = true,
+                    end_session_endpoint = $"{Authority}/oidc/logout"
+                })
+            );
 
-            _usageCount++;
-        }
-        finally
-        {
-            Semaphore.Release();
-        }
-    }
-
-    /// <inheritdoc />
-    public override async Task DisposeAsync()
+    private void ConfigureJwks()
     {
-        await Semaphore.WaitAsync().ConfigureAwait(false);
-        try
-        {
-            _usageCount--;
-            if (_usageCount == 0 && _instance is not null)
-            {
-                await base.DisposeAsync().ConfigureAwait(false);
-            }
-        }
-        finally
-        {
-            Semaphore.Release();
-        }
+        var signingKeyInfo = JwtSigningCredentials.GetSigningKeyInfo;
+        Server
+            .Given(Request.Create()
+                .UsingMethod("GET")
+                .WithPath("/.well-known/jwks.json"))
+            .RespondWith(Response.Create()
+                .WithStatusCode(200)
+                .WithHeader("Content-Type", "application/json; charset=utf-8")
+                .WithBodyAsJson(new
+                {
+                    keys = new[]
+                    {
+                        new
+                        {
+                            kty = "RSA",
+                            use = "sig",
+                            n = signingKeyInfo.Modulus,
+                            e = signingKeyInfo.Exponent,
+                            kid = signingKeyInfo.Kid,
+                            alg = signingKeyInfo.Algorithm
+                        }
+                    }
+                })
+            );
     }
 }
