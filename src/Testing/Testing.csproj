@@ -43,14 +43,11 @@
         <Compile Update="Scenarios\ScenarioRunner.And.cs">
             <DependentUpon>ScenarioRunner.cs</DependentUpon>
         </Compile>
-        <Compile Update="Drivers\AuthorityDriver.WireMock.cs">
-            <DependentUpon>AuthorityDriver.cs</DependentUpon>
-        </Compile>
         <Compile Update="Drivers\DatabaseDriver.Context.cs">
-          <DependentUpon>DatabaseDriver.cs</DependentUpon>
+            <DependentUpon>DatabaseDriver.cs</DependentUpon>
         </Compile>
         <Compile Update="Drivers\DatabaseDriver.Respawn.cs">
-          <DependentUpon>DatabaseDriver.cs</DependentUpon>
+            <DependentUpon>DatabaseDriver.cs</DependentUpon>
         </Compile>
     </ItemGroup>
 
