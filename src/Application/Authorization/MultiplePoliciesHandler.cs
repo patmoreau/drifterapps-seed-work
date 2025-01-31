@@ -1,17 +1,18 @@
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace DrifterApps.Seeds.Application.Authorization;
 
 /// <summary>
 ///     Handles multiple authorization policies for a given requirement.
 /// </summary>
-/// <param name="authorizationService">The authorization service to use for policy checks.</param>
+/// <param name="serviceProvider"><see cref="IServiceProvider"/></param>
 /// <remarks>
 ///     This handler checks multiple policies and determines if the requirement is met based on the specified conditions.
 /// </remarks>
 [SuppressMessage("Design", "CA1062:Validate arguments of public methods")]
-public class MultiplePoliciesHandler(IAuthorizationService authorizationService)
+public class MultiplePoliciesHandler(IServiceProvider serviceProvider)
     : AuthorizationHandler<MultiplePoliciesRequirement>
 {
     /// <summary>
@@ -23,6 +24,7 @@ public class MultiplePoliciesHandler(IAuthorizationService authorizationService)
     protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context,
         MultiplePoliciesRequirement requirement)
     {
+        var authorizationService = serviceProvider.GetRequiredService<IAuthorizationService>();
         foreach (var policyName in requirement.Policies)
         {
             var authorizationResult = await authorizationService.AuthorizeAsync(context.User, policyName)
