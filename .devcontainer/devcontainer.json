@@ -1,0 +1,45 @@
+{
+    "name": "seedwork-devcontainer",
+    "dockerComposeFile": [
+        "docker-compose.yml"
+    ],
+    "service": "devcontainer",
+    "workspaceFolder": "/workspaces/drifterapps-seed-work",
+    "shutdownAction": "none",
+    "features": {
+        "ghcr.io/devcontainers/features/dotnet:2": {
+            "version": "latest",
+            "additionalVersions": "lts"
+        },
+        "ghcr.io/devcontainers/features/git-lfs:1": {
+            "autoPull": true,
+            "version": "latest"
+        },
+        "ghcr.io/devcontainers/features/github-cli:1": {
+            "installDirectlyFromGitHubRelease": true,
+            "version": "latest"
+        },
+        "ghcr.io/devcontainers/features/common-utils:2": {
+            "installZsh": true,
+            "username": "vscode",
+            "uid": "1000",
+            "gid": "1000",
+            "installOhMyZsh": true,
+            "upgradePackages": true
+        },
+        "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+    },
+    "postCreateCommand": "/workspaces/drifterapps-seed-work/.devcontainer/setup.sh",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-dotnettools.csdevkit",
+                "ms-azuretools.vscode-docker",
+                "eamodio.gitlens",
+                "esbenp.prettier-vscode",
+                "davidanson.vscode-markdownlint",
+                "ms-vscode-remote.remote-containers"
+            ]
+        }
+    }
+}
