@@ -125,7 +125,7 @@ public readonly partial struct QueryParams : IEquatable<QueryParams>
     public static Result<QueryParams> Create(IRequestQuery requestQuery) =>
         // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
         requestQuery is null
-            ? Result<QueryParams>.Failure(QueryParamsErrors.RequestIsRequired)
+            ? QueryParamsErrors.RequestIsRequired
             : Create(requestQuery.Offset, requestQuery.Limit, requestQuery.Sort, requestQuery.Filter);
 
     /// <summary>
@@ -148,15 +148,14 @@ public readonly partial struct QueryParams : IEquatable<QueryParams>
         EnsureSortValidation(result, sort);
         EnsureFilterValidation(result, filter);
 
-        return result.Switch(
-            () => Result<QueryParams>.Success(new QueryParams
+        return result.OnSuccess<QueryParams>(
+            () => new QueryParams
             {
                 Offset = offset,
                 Limit = limit,
                 Sort = sort,
                 Filter = filter
-            }),
-            Result<QueryParams>.Failure);
+            });
     }
 
     private static void EnsureSortValidation(ResultAggregate aggregate, IEnumerable<string> sorts)
@@ -166,11 +165,11 @@ public readonly partial struct QueryParams : IEquatable<QueryParams>
             var match = SortPatternRegex().Match(sort);
             if (match.Success)
             {
-                aggregate.AddResult(Result<Nothing>.Success());
+                aggregate.AddResult(Nothing.Value);
                 continue;
             }
 
-            aggregate.AddResult(Result<Nothing>.Failure(QueryParamsErrors.SortInvalidPattern(sort)));
+            aggregate.AddResult(QueryParamsErrors.SortInvalidPattern(sort));
         }
     }
 
@@ -181,11 +180,11 @@ public readonly partial struct QueryParams : IEquatable<QueryParams>
             var match = FilterPatternRegex().Match(filter);
             if (match.Success)
             {
-                aggregate.AddResult(Result<Nothing>.Success());
+                aggregate.AddResult(Nothing.Value);
                 continue;
             }
 
-            aggregate.AddResult(Result<Nothing>.Failure(QueryParamsErrors.FilterInvalidPattern(filter)));
+            aggregate.AddResult(QueryParamsErrors.FilterInvalidPattern(filter));
         }
     }
 

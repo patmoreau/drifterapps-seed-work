@@ -378,22 +378,26 @@ public class MediatRServiceConfigurationExtensionsTests : IAsyncDisposable
             PingWithPongResultHandler : IRequestHandler<TestRequests.PingWithPongResult, Result<TestResponses.Pong>>
         {
             public Task<Result<TestResponses.Pong>> Handle(TestRequests.PingWithPongResult request,
-                CancellationToken cancellationToken) =>
-                Task.FromResult(
-                    request.Missed
-                        ? Result<TestResponses.Pong>.Failure(new ResultError("Ping.Pong", "Missed"))
-                        : Result<TestResponses.Pong>.Success(new TestResponses.Pong($"{request.Message} Pong")));
+                CancellationToken cancellationToken)
+            {
+                Result<TestResponses.Pong> result = request.Missed
+                    ? new ResultError("Ping.Pong", "Missed")
+                    : new TestResponses.Pong($"{request.Message} Pong");
+                return result;
+            }
         }
 
         internal class
             PingWithResultHandler : IRequestHandler<TestRequests.PingWithResult, Result<Nothing>>
         {
             public Task<Result<Nothing>> Handle(TestRequests.PingWithResult request,
-                CancellationToken cancellationToken) =>
-                Task.FromResult(
-                    request.Missed
-                        ? Result<Nothing>.Failure(new ResultError("Ping.Pong", "Missed"))
-                        : Result<Nothing>.Success());
+                CancellationToken cancellationToken)
+            {
+                Result<Nothing> result = request.Missed
+                    ? new ResultError("Ping.Pong", "Missed")
+                    : Nothing.Value;
+                return result;
+            }
         }
     }
 
