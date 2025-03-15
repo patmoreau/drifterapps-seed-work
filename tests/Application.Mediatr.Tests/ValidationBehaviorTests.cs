@@ -8,7 +8,7 @@ namespace DrifterApps.Seeds.Application.Mediatr.Tests;
 [UnitTest]
 public class ValidationBehaviorTests
 {
-    private const string DelegateSuccess = "Delegate.Success";
+    private static readonly Result<string> DelegateSuccess = "Delegate.Success";
     private readonly Driver _driver = new();
 
     [Fact]
@@ -78,7 +78,7 @@ public class ValidationBehaviorTests
 
         public Driver WithRequestDelegateReturningSuccess(out RequestHandlerDelegate<Result<string>> next)
         {
-            next = () => Task.FromResult(Result<string>.Success(DelegateSuccess));
+            next = () => Task.FromResult(DelegateSuccess);
             return this;
         }
     }

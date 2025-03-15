@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Reflection;
 using DrifterApps.Seeds.FluentResult;
 using FluentValidation;
@@ -93,11 +94,12 @@ public sealed class ValidationBehavior<TRequest, TResponse>(IEnumerable<IValidat
     private static TResponse CreateGenericResultFailureInstance(IReadOnlyList<ValidationFailure> validationFailures)
     {
         var genericType = typeof(TResponse).GetGenericArguments()[0];
-        var failureInstance = typeof(Result<>)
-            .MakeGenericType(genericType)
-            .GetMethod("Failure", BindingFlags.Static | BindingFlags.Public)
-            ?.Invoke(null, [FluentValidationErrors.ValidationErrors(typeof(TRequest), validationFailures)]);
+        var errorAggregate = FluentValidationErrors.ValidationErrors(typeof(TRequest), validationFailures);
+        var resultType = typeof(Result<>).MakeGenericType(genericType);
+        var implicitOperator = resultType.GetMethod("op_Implicit", BindingFlags.Static | BindingFlags.Public, null,
+            [typeof(ResultError)], null);
+        var failureInstance = implicitOperator?.Invoke(null, [errorAggregate]);
 
-        return (TResponse) failureInstance!;
+        return (TResponse)failureInstance!;
     }
 }
