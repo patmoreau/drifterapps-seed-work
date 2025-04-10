@@ -78,7 +78,7 @@ public class ValidationBehaviorTests
 
         public Driver WithRequestDelegateReturningSuccess(out RequestHandlerDelegate<Result<string>> next)
         {
-            next = () => Task.FromResult(DelegateSuccess);
+            next = (cancellationToken) => Task.FromResult(DelegateSuccess);
             return this;
         }
     }

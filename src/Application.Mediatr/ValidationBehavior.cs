@@ -49,7 +49,7 @@ public sealed class ValidationBehavior<TRequest, TResponse>(IEnumerable<IValidat
         var validationFailures = await Validate(request, cancellationToken).ConfigureAwait(false);
         return validationFailures.Count != 0
             ? ReturnValidationErrors(validationFailures)
-            : await next().ConfigureAwait(false);
+            : await next(cancellationToken).ConfigureAwait(false);
     }
 
     /// <summary>

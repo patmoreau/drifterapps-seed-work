@@ -29,7 +29,7 @@ public sealed class UnitOfWorkBehavior<TRequest, TResponse>(IUnitOfWork unitOfWo
 
         try
         {
-            var response = await next().ConfigureAwait(false);
+            var response = await next(cancellationToken).ConfigureAwait(false);
 
             await unitOfWork.CommitWorkAsync(cancellationToken).ConfigureAwait(false);
 
