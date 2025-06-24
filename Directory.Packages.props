@@ -38,14 +38,14 @@
     <PackageVersion Include="Respawn" Version="6.2.1" />
     <PackageVersion Include="System.Linq.Async" Version="6.0.3" />
     <PackageVersion Include="System.Linq.Dynamic.Core" Version="1.6.6" />
-    <PackageVersion Include="Testcontainers" Version="4.4.0" />
-    <PackageVersion Include="Testcontainers.MariaDb" Version="4.4.0" />
-    <PackageVersion Include="Testcontainers.PostgreSql" Version="4.4.0" />
-    <PackageVersion Include="WireMock.Net" Version="1.8.9" />
+    <PackageVersion Include="Testcontainers" Version="4.6.0" />
+    <PackageVersion Include="Testcontainers.MariaDb" Version="4.6.0" />
+    <PackageVersion Include="Testcontainers.PostgreSql" Version="4.6.0" />
+    <PackageVersion Include="WireMock.Net" Version="1.8.13" />
     <PackageVersion Include="xunit" Version="2.9.3" />
-    <PackageVersion Include="xunit.analyzers" Version="1.21.0" />
+    <PackageVersion Include="xunit.analyzers" Version="1.22.0" />
     <PackageVersion Include="xunit.categories" Version="3.0.1" />
-    <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.0">
+    <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.1">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageVersion>
