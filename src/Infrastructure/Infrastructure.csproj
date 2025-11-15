@@ -10,7 +10,6 @@
         <PackageReference Include="Hangfire"/>
         <PackageReference Include="MediatR"/>
         <PackageReference Include="MediatR.Contracts"/>
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions"/>
         <PackageReference Include="Refit" />
     </ItemGroup>
 
