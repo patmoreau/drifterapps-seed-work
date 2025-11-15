@@ -8,7 +8,15 @@ public class FeatureManagerDriver : IFeatureManagerDriver, IFeatureManager
     private readonly Dictionary<string, bool> _featureFlags = [];
 
     /// <inheritdoc />
-    public IAsyncEnumerable<string> GetFeatureNamesAsync() => _featureFlags.Keys.ToAsyncEnumerable();
+    public async IAsyncEnumerable<string> GetFeatureNamesAsync()
+    {
+        foreach (var key in _featureFlags.Keys)
+        {
+            yield return key;
+        }
+
+        await Task.CompletedTask.ConfigureAwait(false);
+    }
 
     /// <inheritdoc />
     public Task<bool> IsEnabledAsync(string feature) =>

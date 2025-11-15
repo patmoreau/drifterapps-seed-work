@@ -13,6 +13,14 @@
     <ItemGroup>
         <PackageReference Include="DrifterApps.Seeds.FluentResult"/>
         <PackageReference Include="DrifterApps.Seeds.FluentResult.FluentAssertions"/>
+        <PackageReference Update="xunit.runner.visualstudio">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Update="xunit.analyzers">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
     </ItemGroup>
 
 </Project>
