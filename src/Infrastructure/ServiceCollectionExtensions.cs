@@ -21,7 +21,6 @@ public static class ServiceCollectionExtensions
     {
         services
             .AddTransient<IRequestScheduler, RequestScheduler>()
-            .AddTransient<IRequestExecutor, RequestExecutor>()
             .AddSingleton<IJsonSerializerOptionsFactory>(new JsonSerializerOptionsFactory(jsonOptions));
 
         return services;

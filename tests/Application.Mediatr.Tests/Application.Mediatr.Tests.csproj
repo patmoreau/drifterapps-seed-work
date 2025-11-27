@@ -6,7 +6,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\src\Application.Mediatr\Application.Mediatr.csproj"/>
         <ProjectReference Include="..\..\src\Testing\Testing.csproj"/>
     </ItemGroup>
 
