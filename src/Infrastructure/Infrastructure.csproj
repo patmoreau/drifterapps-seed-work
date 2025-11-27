@@ -8,8 +8,6 @@
 
     <ItemGroup>
         <PackageReference Include="Hangfire"/>
-        <PackageReference Include="MediatR"/>
-        <PackageReference Include="MediatR.Contracts"/>
         <PackageReference Include="Refit" />
     </ItemGroup>
 

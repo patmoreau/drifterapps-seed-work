@@ -6,8 +6,4 @@
         <PackageId>DrifterApps.Seeds.Domain</PackageId>
     </PropertyGroup>
 
-    <ItemGroup>
-        <PackageReference Include="MediatR.Contracts"/>
-    </ItemGroup>
-
 </Project>

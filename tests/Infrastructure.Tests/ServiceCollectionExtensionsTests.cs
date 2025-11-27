@@ -18,13 +18,8 @@ public class ServiceCollectionExtensionsTests
 
         // asset
         serviceCollection.Should().Contain(descriptor =>
-                descriptor.ServiceType == typeof(IRequestExecutor) &&
-                descriptor.ImplementationType == typeof(RequestExecutor) &&
-                descriptor.Lifetime == ServiceLifetime.Transient)
-            .And
-            .Contain(descriptor =>
-                descriptor.ServiceType == typeof(IRequestScheduler) &&
-                descriptor.ImplementationType == typeof(RequestScheduler) &&
-                descriptor.Lifetime == ServiceLifetime.Transient);
+            descriptor.ServiceType == typeof(IRequestScheduler) &&
+            descriptor.ImplementationType == typeof(RequestScheduler) &&
+            descriptor.Lifetime == ServiceLifetime.Transient);
     }
 }
