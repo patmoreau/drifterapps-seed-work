@@ -41,3 +41,6 @@ dotnet_diagnostic.IDE0058.severity = none
 dotnet_diagnostic.IDE0130.severity = silent
 dotnet_diagnostic.IDE0160.severity = none
 dotnet_diagnostic.IDE0161.severity = warning
+
+[*.{yml,yaml,xaml,json}]
+indent_size = 2
