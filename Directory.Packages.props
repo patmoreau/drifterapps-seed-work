@@ -19,8 +19,8 @@
     </PackageVersion>
     <PackageVersion Include="FluentValidation" Version="12.1.1" />
     <PackageVersion Include="Hangfire" Version="1.8.22" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="10.0.0" />
-    <PackageVersion Include="Microsoft.FeatureManagement.AspNetCore" Version="4.3.0" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="10.0.1" />
+    <PackageVersion Include="Microsoft.FeatureManagement.AspNetCore" Version="4.4.0" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
     <PackageVersion Include="MySqlConnector" Version="2.5.0" />
     <PackageVersion Include="Nito.AsyncEx" Version="5.1.2" />
@@ -33,7 +33,7 @@
     <PackageVersion Include="Refit" Version="9.0.2" />
     <PackageVersion Include="Respawn" Version="7.0.0" />
     <PackageVersion Include="System.Linq.Async" Version="7.0.0" />
-    <PackageVersion Include="System.Linq.Dynamic.Core" Version="1.7.0" />
+    <PackageVersion Include="System.Linq.Dynamic.Core" Version="1.7.1" />
     <PackageVersion Include="Testcontainers" Version="4.9.0" />
     <PackageVersion Include="Testcontainers.MariaDb" Version="4.9.0" />
     <PackageVersion Include="Testcontainers.PostgreSql" Version="4.9.0" />
