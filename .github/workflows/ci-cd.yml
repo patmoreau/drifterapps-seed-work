@@ -195,7 +195,7 @@ jobs:
         run: dotnet restore
 
       - name: Build
-          echo "From outputs - nuget-version: ${{ needs.set-version.outputs.nuget-version }}"
+        run: dotnet build --no-restore --configuration Release /property:Version=${{ env.ASSEMBLY_VERSION }}
 
       - name: Pack NuGet packages
         run: dotnet pack /property:Version=${{ env.NUGET_VERSION }} --no-build --include-symbols --configuration Release -o ./nuget-packages
