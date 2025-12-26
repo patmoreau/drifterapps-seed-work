@@ -6,8 +6,8 @@ patch-version-bump-message: '\+semver:\s?(fix|patch)'
 commit-message-incrementing: Enabled
 next-version: 1.0.0
 branches:
-  pull-request:
-    tag: beta
+    pull-request:
+        label: beta
 ignore:
-  sha: []
-  commits-before: 2021-03-01T00:00:00Z
+    sha: [ ]
+    commits-before: 2021-03-01T00:00:00Z
