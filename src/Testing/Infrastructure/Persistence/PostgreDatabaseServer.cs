@@ -19,10 +19,10 @@ public class PostgreDatabaseServer : IDatabaseServer
     /// </summary>
     /// <param name="databaseName">The name of the database.</param>
     /// <param name="port">The port to bind the database server to (optional).</param>
-    /// <param name="image">The Docker image to use for the database server (optional).</param>
-    private PostgreDatabaseServer(string databaseName, int? port = null, string? image = null)
+    /// <param name="image">The Docker image to use for the database server.</param>
+    private PostgreDatabaseServer(string databaseName, int? port = null, string image = "postgres:18")
     {
-        var builder = new PostgreSqlBuilder()
+        var builder = new PostgreSqlBuilder(image)
             .WithDatabase(databaseName)
             .WithUsername(RootUser)
             .WithPassword(RootPassword)
@@ -31,11 +31,6 @@ public class PostgreDatabaseServer : IDatabaseServer
         if (port is not null)
         {
             builder = builder.WithPortBinding(port.Value);
-        }
-
-        if (!string.IsNullOrWhiteSpace(image))
-        {
-            builder = builder.WithImage(image);
         }
 
         _container = builder.Build();
