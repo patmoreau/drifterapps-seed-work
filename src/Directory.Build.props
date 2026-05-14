@@ -4,4 +4,14 @@
         <DocumentationFile>bin/$(Configuration)/net7.0/tests.xml</DocumentationFile>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     </PropertyGroup>
+
+    <!-- Include docs/ and ARCHITECTURE.md in every NuGet package -->
+    <ItemGroup>
+        <None Include="$(MSBuildThisFileDirectory)..\docs\**\*"
+              Pack="true"
+              PackagePath="docs\%(RecursiveDir)%(Filename)%(Extension)" />
+        <None Include="$(MSBuildThisFileDirectory)..\ARCHITECTURE.md"
+              Pack="true"
+              PackagePath="docs\" />
+    </ItemGroup>
 </Project>
