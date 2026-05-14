@@ -69,7 +69,7 @@ public class ApiResponseAssertionsTests(ApiResponseDriver driver) : IClassFixtur
 
     [Theory]
     [ClassData(typeof(BecauseData))]
-    public async Task GivenBeSuccessful_WhenResponseIsNotSuccessful_ShouldThrow(string because, object[] becauseArgs)
+    public async Task GivenBeSuccessful_WhenResponseIsNotSuccessful_ShouldThrow(string because, string[] becauseArgs)
     {
         // Arrange
         var response = await Api.GetIsNotSuccessfulAsync();
@@ -98,7 +98,7 @@ public class ApiResponseAssertionsTests(ApiResponseDriver driver) : IClassFixtur
 
     [Theory]
     [ClassData(typeof(BecauseData))]
-    public async Task GivenBeFailure_WhenResponseIsNotFailure_ShouldThrow(string because, object[] becauseArgs)
+    public async Task GivenBeFailure_WhenResponseIsNotFailure_ShouldThrow(string because, string[] becauseArgs)
     {
         // Arrange
         var response = await Api.GetIsNotFailureAsync();
@@ -128,7 +128,7 @@ public class ApiResponseAssertionsTests(ApiResponseDriver driver) : IClassFixtur
     [Theory]
     [ClassData(typeof(BecauseData))]
     public async Task GivenBeAuthorized_WhenResponseIsForbiddenOrUnauthorized_ShouldThrow(string because,
-        object[] becauseArgs)
+        string[] becauseArgs)
     {
         // Arrange
         var response = await Api.GetIsNotAuthorizedAsync();
@@ -158,7 +158,7 @@ public class ApiResponseAssertionsTests(ApiResponseDriver driver) : IClassFixtur
 
     [Theory]
     [ClassData(typeof(BecauseData))]
-    public async Task GivenBeForbidden_WhenResponseIsNotForbidden_ShouldThrow(string because, object[] becauseArgs)
+    public async Task GivenBeForbidden_WhenResponseIsNotForbidden_ShouldThrow(string because, string[] becauseArgs)
     {
         // Arrange
         var response = await Api.GetIsNotForbiddenAsync();
@@ -189,7 +189,7 @@ public class ApiResponseAssertionsTests(ApiResponseDriver driver) : IClassFixtur
     [Theory]
     [ClassData(typeof(BecauseData))]
     public async Task GivenNotBeAuthorized_WhenResponseIsNotUnauthorized_ShouldThrow(string because,
-        object[] becauseArgs)
+        string[] becauseArgs)
     {
         // Arrange
         var response = await Api.GetIsNotUnauthorizedAsync();
@@ -219,7 +219,7 @@ public class ApiResponseAssertionsTests(ApiResponseDriver driver) : IClassFixtur
 
     [Theory]
     [ClassData(typeof(BecauseData))]
-    public async Task GivenHaveStatusCode_WhenResponseHaveNot_ShouldThrow(string because, object[] becauseArgs)
+    public async Task GivenHaveStatusCode_WhenResponseHaveNot_ShouldThrow(string because, string[] becauseArgs)
     {
         // Arrange
         var response = await Api.GetIsWithStatusCodeAsync();
@@ -249,7 +249,7 @@ public class ApiResponseAssertionsTests(ApiResponseDriver driver) : IClassFixtur
 
     [Theory]
     [ClassData(typeof(BecauseData))]
-    public async Task GivenNotHaveStatusCode_WhenResponseHave_ShouldThrow(string because, object[] becauseArgs)
+    public async Task GivenNotHaveStatusCode_WhenResponseHave_ShouldThrow(string because, string[] becauseArgs)
     {
         // Arrange
         var response = await Api.GetIsNotWithStatusCodeAsync();
@@ -279,7 +279,7 @@ public class ApiResponseAssertionsTests(ApiResponseDriver driver) : IClassFixtur
 
     [Theory]
     [ClassData(typeof(BecauseData))]
-    public async Task GivenHaveError_WhenResponseHaveNot_ShouldThrow(string because, object[] becauseArgs)
+    public async Task GivenHaveError_WhenResponseHaveNot_ShouldThrow(string because, string[] becauseArgs)
     {
         // Arrange
         var error = _faker.Lorem.Sentence();
@@ -309,7 +309,7 @@ public class ApiResponseAssertionsTests(ApiResponseDriver driver) : IClassFixtur
     [Theory]
     [ClassData(typeof(BecauseData))]
     public async Task GivenHaveContent_WhenResponseDoesNotHaveSameContent_ShouldThrow(string because,
-        object[] becauseArgs)
+        string[] becauseArgs)
     {
         // Arrange
         var content = _faker.Random.Guid();
@@ -326,7 +326,7 @@ public class ApiResponseAssertionsTests(ApiResponseDriver driver) : IClassFixtur
     [Theory]
     [ClassData(typeof(BecauseData))]
     public async Task GivenHaveContent_WhenResponseDoesNotHaveContent_ShouldThrow(string because,
-        object[] becauseArgs)
+        string[] becauseArgs)
     {
         // Arrange
         var content = _faker.Random.Guid();
@@ -358,7 +358,7 @@ public class ApiResponseAssertionsTests(ApiResponseDriver driver) : IClassFixtur
     [Theory]
     [ClassData(typeof(BecauseData))]
     public async Task GivenHaveEquivalentContent_WhenResponseDoesNotHaveSameContent_ShouldThrow(string because,
-        object[] becauseArgs)
+        string[] becauseArgs)
     {
         // Arrange
         var content = new FakeClassBuilder().BuildCollection();

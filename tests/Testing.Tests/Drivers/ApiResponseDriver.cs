@@ -72,14 +72,14 @@ public sealed class ApiResponseDriver : WireMockDriver
 
     internal IList<FakeClass> EquivalentContent { get; } = [.. new FakeClassBuilder().BuildCollection()];
 
-    public override async Task InitializeAsync()
+    public override async ValueTask InitializeAsync()
     {
         await base.InitializeAsync();
 
         Configure();
     }
 
-    public override Task DisposeAsync()
+    public override ValueTask DisposeAsync()
     {
         _client?.Dispose();
 

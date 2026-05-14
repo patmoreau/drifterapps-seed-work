@@ -1,9 +1,4 @@
-// ReSharper disable once CheckNamespace
-
-#pragma warning disable IDE0130
-// ReSharper disable once CheckNamespace
-namespace Xunit.Categories;
-#pragma warning restore IDE0130
+namespace DrifterApps.Seeds.Testing.Attributes;
 
 /// <summary>
 ///     Attribute to categorize end to end tests

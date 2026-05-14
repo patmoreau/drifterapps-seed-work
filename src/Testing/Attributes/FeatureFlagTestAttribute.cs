@@ -1,10 +1,6 @@
-using Xunit.Abstractions;
-using Xunit.Sdk;
+using Xunit.v3;
 
-#pragma warning disable IDE0130
-// ReSharper disable once CheckNamespace
-namespace Xunit.Categories;
-#pragma warning restore IDE0130
+namespace DrifterApps.Seeds.Testing.Attributes;
 
 /// <summary>
 ///     Attribute to categorize feature flag tests
@@ -12,7 +8,6 @@ namespace Xunit.Categories;
 /// <example>
 ///     [FeatureFlagTest(FeatureFlags.Temporary.MyNewFeature)]
 /// </example>
-[TraitDiscoverer(FeatureFlagTestDiscoverer.DiscovererTypeName, "Common")]
 [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, AllowMultiple = true)]
 public sealed class FeatureFlagTestAttribute : Attribute, ITraitAttribute
 {
@@ -30,22 +25,11 @@ public sealed class FeatureFlagTestAttribute : Attribute, ITraitAttribute
     ///     Feature flag identifier
     /// </summary>
     public string Identifier { get; }
-}
 
-internal sealed class FeatureFlagTestDiscoverer : ITraitDiscoverer
-{
-    internal const string DiscovererTypeName = "Xunit.Categories.FeatureFlagTestDiscoverer";
-
-    public IEnumerable<KeyValuePair<string, string>> GetTraits(IAttributeInfo traitAttribute)
-
-    {
-        var name = traitAttribute.GetNamedArgument<string>("Identifier");
-
-        yield return new KeyValuePair<string, string>("Category", FeatureFlagTestAttribute.Type);
-
-        if (!string.IsNullOrWhiteSpace(name))
-        {
-            yield return new KeyValuePair<string, string>(FeatureFlagTestAttribute.Type, name);
-        }
-    }
+    /// <inheritdoc />
+    public IReadOnlyCollection<KeyValuePair<string, string>> GetTraits() =>
+    [
+        new("Category", Type),
+        new(Type, Identifier)
+    ];
 }

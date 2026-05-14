@@ -5,15 +5,18 @@ using Microsoft.Extensions.Logging;
 
 namespace DrifterApps.Seeds.Infrastructure;
 
-internal sealed class RequestScheduler(
+internal sealed partial class RequestScheduler(
     IBackgroundJobClientFactoryV2 backgroundJobClientFactoryV2,
     ILogger<RequestScheduler> logger)
     : IRequestScheduler
 {
     public string QueueHandler<THandler>(Expression<Func<THandler, Task>> methodCall, string description)
     {
-        logger.LogInformation("{RequestExecutor}: {Description}", nameof(QueueHandler), description);
+        LogRequestexecutorDescription(nameof(QueueHandler), description);
         var job = backgroundJobClientFactoryV2.GetClientV2(JobStorage.Current);
         return job.Enqueue(methodCall);
     }
+
+    [LoggerMessage(LogLevel.Information, "{RequestExecutor}: {Description}")]
+    partial void LogRequestexecutorDescription(string requestExecutor, string description);
 }

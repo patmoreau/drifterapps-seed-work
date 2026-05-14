@@ -4,12 +4,12 @@ namespace DrifterApps.Seeds.Testing.Attributes;
 ///     Attribute to categorize component tests
 /// </summary>
 [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, AllowMultiple = true)]
-public sealed class ComponentTestAttribute : CategoryAttribute
+public sealed class UnitTestAttribute : CategoryAttribute
 {
     private const string Type = "ComponentTest";
 
     /// <inheritdoc />
-    public ComponentTestAttribute() : base(Type)
+    public UnitTestAttribute() : base(Type)
     {
     }
 }
