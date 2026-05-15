@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
+        <OutputType>Exe</OutputType>
         <RootNamespace>DrifterApps.Seeds.Domain.Tests</RootNamespace>
         <AssemblyName>DrifterApps.Seeds.Domain.Tests</AssemblyName>
     </PropertyGroup>
@@ -8,10 +9,6 @@
     <ItemGroup>
         <ProjectReference Include="..\..\src\Domain\Domain.csproj"/>
         <ProjectReference Include="..\..\src\Testing\Testing.csproj"/>
-    </ItemGroup>
-
-    <ItemGroup>
-        <PackageReference Include="Bogus"/>
     </ItemGroup>
 
 </Project>

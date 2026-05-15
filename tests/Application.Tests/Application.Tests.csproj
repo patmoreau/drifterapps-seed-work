@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
+        <OutputType>Exe</OutputType>
         <RootNamespace>DrifterApps.Seeds.Application.Tests</RootNamespace>
         <AssemblyName>DrifterApps.Seeds.Application.Tests</AssemblyName>
     </PropertyGroup>
