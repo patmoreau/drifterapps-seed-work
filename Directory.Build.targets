@@ -1,4 +1,20 @@
 <Project>
+    <!--
+        Refit 12 added a transitive dependency on ReactiveUI.Primitives, whose bundled
+        R3Bridge source generator emits an internal 'PrimitivesR3BridgeGeneratedAttribute'
+        into every assembly that references it. Because each source project exposes its
+        internals to '<AssemblyName>.Tests' (see Directory.Build.props InternalsVisibleTo),
+        the test assembly sees two copies of that generated type - its own and the one
+        imported from the source assembly - which fails the build with CS0436.
+        This library does not use ReactiveUI, so remove the generator from compilation.
+    -->
+    <Target Name="RemoveReactiveUiR3BridgeGenerator" BeforeTargets="CoreCompile">
+        <ItemGroup>
+            <Analyzer Remove="@(Analyzer)"
+                      Condition="$([System.String]::Copy('%(Analyzer.Identity)').Contains('ReactiveUI.Primitives.R3Bridge.Generator'))" />
+        </ItemGroup>
+    </Target>
+
     <ItemGroup>
         <Compile Update="**/*.Handler.cs">
             <DependentUpon>$([System.String]::Copy(%(FileName)).Replace('.Handler', '.cs'))</DependentUpon>

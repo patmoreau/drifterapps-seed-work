@@ -174,10 +174,10 @@ public abstract class BaseApiResponseAssertions<TValue, TAssertions>(TValue inst
         Execute.Assertion
             .BecauseOf(because, becauseArgs)
             .UsingLineBreaks
-            .ForCondition(Subject.Error is not null &&
-                          (Subject.Error.Content?.Contains(error, StringComparison.InvariantCulture) ?? false))
+            .ForCondition(Subject.Error is ApiException apiException &&
+                          (apiException.Content?.Contains(error, StringComparison.InvariantCulture) ?? false))
             .FailWith(Reason("Expected {context:response} to have error {0}{reason}, but found {1}.", error,
-                Subject.Error?.Content!));
+                (Subject.Error as ApiException)?.Content!));
 
         return new AndConstraint<TAssertions>((TAssertions)(object)this);
     }
@@ -197,13 +197,13 @@ public abstract class BaseApiResponseAssertions<TValue, TAssertions>(TValue inst
         Execute.Assertion
             .BecauseOf(because, becauseArgs)
             .UsingLineBreaks
-            .ForCondition(Subject.Headers.Location is not null)
+            .ForCondition(Subject.Headers?.Location is not null)
             .FailWith(Reason("Expected {context:response} to have Location header{reason}, but it did not."));
 
         return new AndConstraint<TAssertions>((TAssertions)(object)this);
     }
 
-    private Func<FailReason> Reason(string message, params object[] args) =>
+    private Func<FailReason> Reason(string message, params object?[] args) =>
         () => HasMonitoringMessage(out var monitoringMessage)
             ? new FailReason(message + $"{{{args.Length}}}", [.. args, .. new[] { monitoringMessage! }])
             : new FailReason(message, args);
@@ -219,7 +219,8 @@ public abstract class BaseApiResponseAssertions<TValue, TAssertions>(TValue inst
             requestCorrelationId = requestCorrelationIds.FirstOrDefault();
         }
 
-        if (Subject.Headers.TryGetValues("X-Correlation-ID", out var responseCorrelationIds))
+        if (Subject.Headers is not null &&
+            Subject.Headers.TryGetValues("X-Correlation-ID", out var responseCorrelationIds))
         {
             responseCorrelationId = responseCorrelationIds.FirstOrDefault();
         }
