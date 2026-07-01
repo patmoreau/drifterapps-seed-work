@@ -27,7 +27,7 @@
             "installOhMyZsh": true,
             "upgradePackages": true
         },
-        "ghcr.io/devcontainers/features/docker-in-docker:3": {}
+        "ghcr.io/devcontainers/features/docker-in-docker:4": {}
     },
     "postCreateCommand": "/workspaces/drifterapps-seed-work/.devcontainer/setup.sh",
     "customizations": {
