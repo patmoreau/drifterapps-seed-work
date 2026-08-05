@@ -1,9 +1,9 @@
 <Project>
   <ItemGroup>
     <PackageVersion Include="Bogus" Version="35.6.5" />
-    <PackageVersion Include="DrifterApps.Seeds.FluentResult" Version="1.1.20" />
-    <PackageVersion Include="DrifterApps.Seeds.FluentResult.FluentAssertions" Version="1.1.20" />
-    <PackageVersion Include="DrifterApps.Seeds.FluentScenario" Version="1.0.23" />
+    <PackageVersion Include="DrifterApps.Seeds.FluentResult" Version="1.1.27" />
+    <PackageVersion Include="DrifterApps.Seeds.FluentResult.FluentAssertions" Version="1.1.27" />
+    <PackageVersion Include="DrifterApps.Seeds.FluentScenario" Version="1.0.26" />
     <PackageVersion Include="FluentAssertions" Version="7.2.2" />
     <PackageVersion Include="FluentAssertions.Analyzers" Version="0.34.1">
       <PrivateAssets>all</PrivateAssets>
