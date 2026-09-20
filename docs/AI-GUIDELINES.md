@@ -44,8 +44,8 @@ public async Task<Result<OrderDto>> Handle(GetOrderQuery query, CancellationToke
 {
     var order = await _repository.FindAsync(query.Id, ct);
     return order is null
-        ? ResultError.NotFound("Order.NotFound", $"Order {query.Id} not found")
-        : Result<OrderDto>.Success(MapToDto(order));
+        ? new ResultError("Order.NotFound", $"Order {query.Id} not found")   // implicit -> Result<OrderDto>
+        : MapToDto(order);                                                  // implicit -> Result<OrderDto>
 }
 
 // Incorrect — throwing for expected outcomes
@@ -61,7 +61,7 @@ Build query requests by implementing `IRequestQuery` and validating with `QueryP
 ```csharp
 // Correct
 var result = QueryParams.Create(request);  // returns Result<QueryParams>
-if (result.IsFailure) return result.Error.ToProblemDetails();
+if (result.IsFailure) return result.Error.ToProblemDetails(StatusCodes.Status400BadRequest);
 
 var items = await dbContext.Orders.Query(result.Value).ToListAsync(ct);
 
@@ -137,7 +137,7 @@ throw new ValidationException("Name is required");
 
 **Right:**
 ```csharp
-return ResultError.Validation("Order.NameRequired", "Name is required");
+return new ResultError("Order.NameRequired", "Name is required");
 ```
 
 ### Manually specifying sort/filter strings without validation
@@ -267,7 +267,7 @@ app.MapGet("/orders", async (HttpContext ctx, IMediator mediator, CancellationTo
     var result = await mediator.Send(request, ct);
     return result.IsSuccess
         ? Results.Ok(result.Value)
-        : result.Error.ToProblemDetails();
+        : result.Error.ToProblemDetails(StatusCodes.Status400BadRequest);
 });
 ```
 
@@ -283,6 +283,6 @@ public async Task<Result<QueryResult<OrderDto>>> Handle(GetOrdersQuery query, Ca
     var total = await queryable.CountAsync(ct);
     var items = await queryable.Query(paramsResult.Value).ToListAsync(ct);
 
-    return Result<QueryResult<OrderDto>>.Success(new QueryResult<OrderDto>(total, items.Select(MapToDto)));
+    return new QueryResult<OrderDto>(total, items.Select(MapToDto));   // implicit -> Result<QueryResult<OrderDto>>
 }
 ```

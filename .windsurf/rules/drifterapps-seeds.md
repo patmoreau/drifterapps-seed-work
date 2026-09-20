@@ -1,0 +1,134 @@
+---
+trigger: glob
+glob: "**/*.cs"
+---
+
+# DrifterApps.Seeds — Windsurf Rules
+
+DDD / Vertical Slice building blocks for ASP.NET Core on .NET 10.
+
+**Packages:** `DrifterApps.Seeds.Domain`, `.Application`, `.Application.Mediatr`, `.Infrastructure`, `.Testing`
+**Companions:** `DrifterApps.Seeds.FluentResult`, `DrifterApps.Seeds.FluentScenario`
+
+## Package Map
+
+| Package | Use it for |
+|---|---|
+| `Domain` | `IAggregateRoot<TId>`, `IRepository<TAggregate>`, `IUnitOfWork`, `StronglyTypedId<T>` |
+| `Application` | `QueryParams`, `QueryResult<T>`, `IRequestQuery`, `MultiplePoliciesRequirement`, endpoint filters, converters |
+| `Application.Mediatr` | `LoggingBehavior`, `UnitOfWorkBehavior`, `ValidationBehavior`, `IUnitOfWorkRequest` |
+| `Infrastructure` | Hangfire `IRequestScheduler`, Refit helpers |
+| `Testing` | `FakerBuilder<T>`, `DatabaseDriver<TDbContext>`, `WireMockDriver`, `AuthorityDriver`, trait attributes |
+
+## Strongly-typed IDs
+
+```csharp
+public record OrderId : StronglyTypedId<OrderId>;
+
+public class Order : IAggregateRoot<OrderId>
+{
+    public OrderId Id { get; private set; } = OrderId.New;
+}
+```
+
+Base record gives `New`, `Empty`, `Create(Guid)`, `Parse`, `TryParse`, comparisons, implicit `Guid`/`string`.
+Register both converters or IDs serialize as `{"value":"…"}` and EF Core queries break:
+
+```csharp
+options.SerializerOptions.Converters.Add(new StronglyTypedIdJsonConverterFactory());
+builder.Property(x => x.Id).HasConversion(new StronglyTypedIdValueConverter<OrderId>());
+```
+
+## Result pattern
+
+```csharp
+internal static class OrderErrors
+{
+    internal static ResultError NotFound(OrderId id) =>
+        new("Order.NotFound", $"Order '{id}' was not found.");
+}
+
+public async Task<Result<OrderDto>> Handle(GetOrderQuery q, CancellationToken ct)
+{
+    var order = await _repository.FindAsync(q.Id, ct);
+    return order is null ? OrderErrors.NotFound(q.Id) : MapToDto(order);  // implicit both ways
+}
+
+// HTTP boundary
+return result.IsSuccess
+    ? Results.Ok(result.Value)
+    : result.Error.ToProblemDetails(StatusCodes.Status404NotFound);
+```
+
+Programmer errors still throw (`ArgumentNullException.ThrowIfNull`); expected outcomes never do.
+
+## Pagination
+
+```csharp
+public record GetOrdersQuery(int Offset, int Limit, string[] Sort, string[] Filter) : IRequestQuery;
+
+var paramsResult = QueryParams.Create(query);
+if (paramsResult.IsFailure) return paramsResult.Error;
+var items = await _dbContext.Orders.Query(paramsResult.Value).ToListAsync(ct);
+return new QueryResult<OrderDto>(total, items.Select(MapToDto));
+```
+
+Bind with `ctx.ToQueryRequest<GetOrdersQuery>((offset, limit, sort, filter) => new(...))`.
+`Query<T>` uses `System.Linq.Dynamic.Core` — index filterable/sortable columns, whitelist names.
+
+## MediatR
+
+```csharp
+services.AddMediatR(config =>
+{
+    config.RegisterServicesFromApplicationSeeds();        // seeds behaviors FIRST
+    config.AddOpenBehavior(typeof(MyBehavior<,>));        // yours after
+});
+
+public record CreateOrderCommand(CustomerId CustomerId, decimal Total)
+    : IUnitOfWorkRequest, IRequest<Result<OrderId>>;      // mutations only
+```
+
+Order is logging → unit of work → validation. Without MediatR use `ValidationFilter<TRequest>`
+and `UnitOfWorkFilter` as endpoint filters.
+
+## Authorization and scheduling
+
+```csharp
+policy.AddRequirements(MultiplePoliciesRequirement.ForAllOf("Admin", "Moderator"));   // or ForAnyOf
+services.AddSingleton<IAuthorizationHandler, MultiplePoliciesHandler>();
+services.AddUserContext();                        // IHttpUserContext
+
+services.AddHangfireRequestScheduler();
+_scheduler.QueueHandler<IOrderProcessor>(h => h.ProcessAsync(orderId), "Process order");
+```
+
+## Testing
+
+```csharp
+public class FakeOrderBuilder : FakerBuilder<Order>
+{
+    protected override Faker<Order> Faker => CreateUninitializedFaker<Order>()
+        .RuleFor(o => o.Id, _ => OrderId.New);
+}
+
+var order = new FakeOrderBuilder().Build();
+var saved = await new FakeOrderBuilder().SavedInDbAsync(_databaseDriver);
+```
+
+`CreateFaker` / `CreatePrivateFaker` / `CreateUninitializedFaker` by constructor visibility.
+`DatabaseDriver<TDbContext>` is `IAsyncLifetime` — xUnit calls `InitializeAsync`, you don't.
+Categorize with `[UnitTest]`, `[ComponentTest]`, `[EndToEndTest]`.
+
+## Rules
+
+- Strongly-typed ID for every aggregate; never a raw `Guid`
+- `Result<T>` for anything failable; errors as static members near their type, always `Code` + `Description`
+- Never read `result.Value` without checking `IsSuccess`; never return `null`
+- Paging goes through `QueryParams.Create` + `Query<T>`
+- `RegisterServicesFromApplicationSeeds()` before your own behaviors
+- `IUnitOfWorkRequest` on commands only; no HTTP or file I/O inside those handlers
+- `IRepository<T>` writes only (`SaveAsync`) — read from `DbContext` or a query service
+- NuGet versions live in `Directory.Packages.props`, never in a csproj
+
+Full reference: `docs/API.md`, `docs/EXAMPLES.md`, `docs/AI-GUIDELINES.md`, `ARCHITECTURE.md`.

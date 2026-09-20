@@ -21,7 +21,19 @@ constantly refactor it in order to acquired new knowledge and perfecting my skil
 
 ## Libraries
 
-- [Application](./src/Application/README.md)
-- [Domain](./src/Domain/README.md)
-- [Infrastructure.Hangfire](./src/Infrastructure.Hangfire/README.md)
-- [Testing](./src/Testing/README.md)
+- [Domain](./src/Domain/README.md) — `DrifterApps.Seeds.Domain`
+- [Application](./src/Application/README.md) — `DrifterApps.Seeds.Application`
+- [Application.Mediatr](./src/Application.Mediatr/README.md) — `DrifterApps.Seeds.Application.Mediatr`
+- [Infrastructure](./src/Infrastructure/README.md) — `DrifterApps.Seeds.Infrastructure`
+- [Testing](./src/Testing/README.md) — `DrifterApps.Seeds.Testing`
+
+## Documentation
+
+- [Architecture](./ARCHITECTURE.md) — package map, dependency graph, design decisions
+- [API reference](./docs/API.md) — every public type and signature
+- [Examples](./docs/EXAMPLES.md) — end-to-end usage patterns
+- [AI guidelines](./docs/AI-GUIDELINES.md) — patterns, anti-patterns, gotchas for assistants
+- [Local NuGet testing](./docs/local-nuget-testing-guide.md) — consuming locally packed builds
+- [llms.txt](./llms.txt) — doc map for AI tooling
+
+Contributors: [AGENTS.md](./AGENTS.md) and [docs/contributing/](./docs/contributing).

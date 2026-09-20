@@ -376,7 +376,7 @@ public static class ValidatorExtensions
 }
 ```
 
-Returns `Result<T>.Success(instance)` if valid; otherwise a `ResultErrorAggregate` failure.
+Returns `instance` if valid; otherwise a `ResultErrorAggregate` failure.
 
 #### `ServiceCollectionExtensions`
 

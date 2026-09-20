@@ -136,7 +136,7 @@ public class GetOrdersHandler(AppDbContext dbContext)
             .Select(o => new OrderDto(o.Id, o.CustomerId, o.Total, o.CreatedAt))
             .ToListAsync(cancellationToken);
 
-        return Result<QueryResult<OrderDto>>.Success(new QueryResult<OrderDto>(total, items));
+        return new QueryResult<OrderDto>(total, items);
     }
 }
 ```
@@ -165,7 +165,7 @@ public class CreateOrderHandler(IOrderRepository repository)
     {
         var order = Order.Create(command.CustomerId, command.Total);
         await repository.SaveAsync(order, cancellationToken);
-        return Result<OrderId>.Success(order.Id);
+        return order.Id;
     }
 }
 ```
@@ -185,7 +185,7 @@ app.MapGet("/orders", async (HttpContext ctx, IMediator mediator, CancellationTo
     var result = await mediator.Send(request, ct);
     return result.IsSuccess
         ? Results.Ok(result.Value)
-        : result.Error.ToProblemDetails();
+        : result.Error.ToProblemDetails(StatusCodes.Status400BadRequest);
 })
 .WithName("GetOrders")
 .Produces<QueryResult<OrderDto>>()
@@ -196,7 +196,7 @@ app.MapPost("/orders", async (CreateOrderCommand command, IMediator mediator, Ca
     var result = await mediator.Send(command, ct);
     return result.IsSuccess
         ? Results.Created($"/orders/{result.Value}", result.Value)
-        : result.Error.ToProblemDetails();
+        : result.Error.ToProblemDetails(StatusCodes.Status400BadRequest);
 })
 .AddEndpointFilter<ValidationFilter<CreateOrderCommand>>()
 .WithName("CreateOrder");
@@ -256,14 +256,14 @@ LoggingBehavior (log start)
 
 ```csharp
 // Registration
-builder.Services.AddHangfireRequestScheduler(services,
+builder.Services.AddHangfireRequestScheduler(
     () => new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
 
 // Usage in a handler
 public class ShipOrderHandler(IRequestScheduler scheduler)
     : IRequestHandler<ShipOrderCommand, Result<Nothing>>
 {
-    public async Task<Result<Nothing>> Handle(
+    public Task<Result<Nothing>> Handle(
         ShipOrderCommand command, CancellationToken cancellationToken)
     {
         // Enqueues a Hangfire background job
@@ -271,7 +271,7 @@ public class ShipOrderHandler(IRequestScheduler scheduler)
             svc => svc.SendShipmentConfirmationAsync(command.OrderId),
             "Send shipment confirmation email");
 
-        return await Task.FromResult(Result<Nothing>.Success(Nothing.Value));
+        return Task.FromResult<Result<Nothing>>(Nothing.Value);
     }
 }
 ```

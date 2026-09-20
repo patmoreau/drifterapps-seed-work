@@ -41,6 +41,6 @@ public class GetOrdersHandler(AppDbContext dbContext)
             .Select(o => new OrderDto(o.Id, o.CustomerId, o.Total, o.CreatedAt))
             .ToListAsync(cancellationToken);
 
-        return Result<QueryResult<OrderDto>>.Success(new QueryResult<OrderDto>(total, items));
+        return new QueryResult<OrderDto>(total, items);
     }
 }

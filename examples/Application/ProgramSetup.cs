@@ -51,7 +51,7 @@ app.MapGet("/orders", async (HttpContext ctx, IMediator mediator, CancellationTo
     var result = await mediator.Send(request, ct);
     return result.IsSuccess
         ? Results.Ok(result.Value)
-        : result.Error.ToProblemDetails();
+        : result.Error.ToProblemDetails(StatusCodes.Status400BadRequest);
 });
 
 // POST /orders — ValidationFilter handles 422 before the handler runs
@@ -60,7 +60,7 @@ app.MapPost("/orders", async (CreateOrderCommand command, IMediator mediator, Ca
     var result = await mediator.Send(command, ct);
     return result.IsSuccess
         ? Results.Created($"/orders/{result.Value}", result.Value)
-        : result.Error.ToProblemDetails();
+        : result.Error.ToProblemDetails(StatusCodes.Status400BadRequest);
 })
 .AddEndpointFilter<ValidationFilter<CreateOrderCommand>>()
 .RequireAuthorization("CanManageOrders");

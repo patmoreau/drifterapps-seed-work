@@ -28,7 +28,7 @@ public class CreateOrderHandler(IOrderRepository repository)
     {
         var order = Order.Create(command.CustomerId, command.Total);
         await repository.SaveAsync(order, cancellationToken);
-        return Result<OrderId>.Success(order.Id);
+        return order.Id;
     }
 }
 

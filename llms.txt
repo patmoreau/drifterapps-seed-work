@@ -1,0 +1,29 @@
+# DrifterApps.Seeds
+
+> Opinionated building blocks for DDD / Vertical Slice Architecture ASP.NET Core applications on .NET 10. Five packages: strongly-typed IDs and aggregate contracts, validated query pagination, authorization composition, MediatR pipeline behaviors, Hangfire scheduling, and shared test infrastructure. Fallible operations return `Result<T>` (`DrifterApps.Seeds.FluentResult`) instead of throwing.
+
+Packages:
+- `DrifterApps.Seeds.Domain` — namespace `DrifterApps.Seeds.Domain`
+- `DrifterApps.Seeds.Application` — namespace `DrifterApps.Seeds.Application`
+- `DrifterApps.Seeds.Application.Mediatr` — namespace `DrifterApps.Seeds.Application.Mediatr`
+- `DrifterApps.Seeds.Infrastructure` — namespace `DrifterApps.Seeds.Infrastructure`
+- `DrifterApps.Seeds.Testing` — namespace `DrifterApps.Seeds.Testing`
+
+Companion libraries: `DrifterApps.Seeds.FluentResult`, `DrifterApps.Seeds.FluentScenario`
+
+## Docs
+
+- [README](README.md): Package list, installation, and quickstart
+- [API Reference](docs/API.md): Every public type and signature, per package
+- [Examples](docs/EXAMPLES.md): Domain aggregates, minimal API endpoints, MediatR handlers, EF Core wiring, and test suites
+- [AI Guidelines](docs/AI-GUIDELINES.md): Rules for AI coding assistants — patterns, anti-patterns, performance notes, and integration gotchas
+- [Architecture](docs/ARCHITECTURE.md): Package map, dependency graph, and the design decisions behind each layer
+- [Local NuGet Testing Guide](docs/local-nuget-testing-guide.md): Consuming locally packed alpha builds
+
+## Per-package readmes
+
+- [Domain](src/Domain/README.md): `IAggregateRoot`, `IRepository<T>`, `IUnitOfWork`, `StronglyTypedId<T>`
+- [Application](src/Application/README.md): `QueryParams`, authorization requirements, endpoint filters, converters
+- [Application.Mediatr](src/Application.Mediatr/README.md): `LoggingBehavior`, `UnitOfWorkBehavior`, `ValidationBehavior`
+- [Infrastructure](src/Infrastructure/README.md): Hangfire `IRequestScheduler`, Refit helpers
+- [Testing](src/Testing/README.md): `FakerBuilder<T>`, `DatabaseDriver<TDbContext>`, `WireMockDriver`, `AuthorityDriver`, trait attributes
