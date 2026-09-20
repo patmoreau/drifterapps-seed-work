@@ -385,7 +385,7 @@ public class ApiResponseAssertionsTests(ApiResponseDriver driver) : IClassFixtur
     private static string FormatHttpCodeMessage(HttpStatusCode statusCode) =>
         string.Format(CultureInfo.InvariantCulture, "HttpStatusCode.{0} {{{{value: {1}}}}}",
             Enum.GetName(statusCode) ?? "Unknown",
-            (int) statusCode);
+            (int)statusCode);
 
     internal class BecauseData : TheoryData<string, string[]>
     {

@@ -143,7 +143,7 @@ public class UserContextTests
         public UserContextDriver WhenUserHasNoClaims()
         {
             _httpContextAccessor.HttpContext =
-                new DefaultHttpContext {User = new ClaimsPrincipal(new ClaimsIdentity())};
+                new DefaultHttpContext { User = new ClaimsPrincipal(new ClaimsIdentity()) };
 
             return this;
         }

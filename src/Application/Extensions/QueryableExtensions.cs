@@ -45,12 +45,12 @@ public static class QueryableExtensions
                 switch (match.Success)
                 {
                     case true:
-                    {
-                        var field = match.Groups["field"].Value;
-                        var direction = string.IsNullOrWhiteSpace(match.Groups["desc"].Value) ? "ASC" : "DESC";
+                        {
+                            var field = match.Groups["field"].Value;
+                            var direction = string.IsNullOrWhiteSpace(match.Groups["desc"].Value) ? "ASC" : "DESC";
 
-                        return $"{field} {direction}";
-                    }
+                            return $"{field} {direction}";
+                        }
                     default:
                         return string.Empty;
                 }

@@ -89,7 +89,7 @@ public abstract partial class FakerBuilder
         /// </summary>
         /// <param name="fi">The field to check.</param>
         /// <returns><c>true</c> if the field is private; otherwise, <c>false</c>.</returns>
-        private static bool FieldIsPrivate(FieldInfo fi) => fi is {IsPrivate: true};
+        private static bool FieldIsPrivate(FieldInfo fi) => fi is { IsPrivate: true };
 
         /// <summary>
         /// Determines if the specified field is a backing field.

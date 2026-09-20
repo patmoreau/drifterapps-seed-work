@@ -9,7 +9,7 @@ public class StronglyTypedIdJsonConverterOfTTests
 {
     private readonly JsonSerializerOptions _options = new()
     {
-        Converters = {new StronglyTypedIdJsonConverter<SampleStronglyTypedId>()}
+        Converters = { new StronglyTypedIdJsonConverter<SampleStronglyTypedId>() }
     };
 
     [Fact]

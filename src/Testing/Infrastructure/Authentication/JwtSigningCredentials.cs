@@ -26,7 +26,7 @@ internal static class JwtSigningCredentials
     ///     Gets the signing credentials for the JWT token.
     /// </summary>
     internal static SigningCredentials SigningCredentials { get; } =
-        new(new RsaSecurityKey(Rsa) {KeyId = Kid}, SignatureAlgorithm);
+        new(new RsaSecurityKey(Rsa) { KeyId = Kid }, SignatureAlgorithm);
 
     private static string Base64UrlEncode(byte[] arg)
     {

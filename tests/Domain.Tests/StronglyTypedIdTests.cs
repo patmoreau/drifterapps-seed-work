@@ -253,7 +253,7 @@ public class StronglyTypedIdTests
         var id = MyId.New;
 
         // act
-        var result = (Guid) id;
+        var result = (Guid)id;
 
         // assert
         result.Should().Be(id.Value);
@@ -266,7 +266,7 @@ public class StronglyTypedIdTests
         var id = _faker.Random.Guid();
 
         // act
-        var result = (MyId) id;
+        var result = (MyId)id;
 
         // assert
         result.Should().BeOfType<MyId>();

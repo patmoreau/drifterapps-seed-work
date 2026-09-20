@@ -23,6 +23,6 @@ public class StronglyTypedIdJsonConverterFactory : JsonConverterFactory
     /// <param name="options">The serializer options.</param>
     /// <returns>A JSON converter for the specified type.</returns>
     public override JsonConverter CreateConverter(Type typeToConvert, JsonSerializerOptions options) =>
-        (JsonConverter) Activator.CreateInstance(
+        (JsonConverter)Activator.CreateInstance(
             typeof(StronglyTypedIdJsonConverter<>).MakeGenericType(typeToConvert))!;
 }

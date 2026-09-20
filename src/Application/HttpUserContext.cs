@@ -35,7 +35,7 @@ internal sealed class HttpUserContext(IHttpContextAccessor httpContextAccessor) 
             // Get the first claim with the specified claim type
             var claim = identity.FindFirst(claimType);
             if (claim != null)
-                // Return the value of the first claim found
+            // Return the value of the first claim found
             {
                 return claim.Value;
             }

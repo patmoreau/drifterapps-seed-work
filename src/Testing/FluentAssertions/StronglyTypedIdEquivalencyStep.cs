@@ -22,10 +22,10 @@ public class StronglyTypedIdEquivalencyStep : IEquivalencyStep
     {
         switch (comparands)
         {
-            case {Subject: Guid subjectGuid, Expectation: IStronglyTypedId expectedStronglyTypedId}:
+            case { Subject: Guid subjectGuid, Expectation: IStronglyTypedId expectedStronglyTypedId }:
                 subjectGuid.Should().Be(expectedStronglyTypedId.Value);
                 return EquivalencyResult.AssertionCompleted; // Indicating that the comparison is handled
-            case {Subject: IStronglyTypedId subjectStronglyTypedId, Expectation: Guid expectedGuid}:
+            case { Subject: IStronglyTypedId subjectStronglyTypedId, Expectation: Guid expectedGuid }:
                 subjectStronglyTypedId.Value.Should().Be(expectedGuid);
                 return EquivalencyResult.AssertionCompleted; // Indicating that the comparison is handled
             default:

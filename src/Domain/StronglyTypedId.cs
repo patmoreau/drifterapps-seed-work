@@ -16,12 +16,12 @@ public abstract record StronglyTypedId<T> : IStronglyTypedId, IEqualityComparer<
     /// <summary>
     ///     Creates a new instance of the strongly-typed identifier with a new GUID value.
     /// </summary>
-    public static T New => new() {Value = Guid.NewGuid()};
+    public static T New => new() { Value = Guid.NewGuid() };
 
     /// <summary>
     ///     Creates a new instance of the strongly-typed identifier with an empty GUID value.
     /// </summary>
-    public static T Empty => new() {Value = Guid.Empty};
+    public static T Empty => new() { Value = Guid.Empty };
 
     /// <summary>
     ///     Compares the current instance with another strongly-typed identifier.
@@ -103,7 +103,7 @@ public abstract record StronglyTypedId<T> : IStronglyTypedId, IEqualityComparer<
     /// </summary>
     /// <param name="value">The GUID value.</param>
     /// <returns>A new instance of the strongly-typed identifier.</returns>
-    public static T Create(Guid value) => new() {Value = value};
+    public static T Create(Guid value) => new() { Value = value };
 
     /// <summary>
     ///     Determines whether the current instance is equal to another strongly-typed identifier.
@@ -129,7 +129,7 @@ public abstract record StronglyTypedId<T> : IStronglyTypedId, IEqualityComparer<
         {
             null => false,
             not null when b is null => true,
-            _ => a.CompareTo((T?) b) > 0
+            _ => a.CompareTo((T?)b) > 0
         };
 
     /// <summary>
@@ -144,7 +144,7 @@ public abstract record StronglyTypedId<T> : IStronglyTypedId, IEqualityComparer<
             null when b is null => false,
             not null when b is null => false,
             null => true,
-            _ => a.CompareTo((T?) b) < 0
+            _ => a.CompareTo((T?)b) < 0
         };
 
     /// <summary>
@@ -159,7 +159,7 @@ public abstract record StronglyTypedId<T> : IStronglyTypedId, IEqualityComparer<
             null when b is null => true,
             null => false,
             not null when b is null => true,
-            _ => a.CompareTo((T?) b) >= 0
+            _ => a.CompareTo((T?)b) >= 0
         };
 
     /// <summary>
@@ -174,7 +174,7 @@ public abstract record StronglyTypedId<T> : IStronglyTypedId, IEqualityComparer<
             null when b is null => true,
             not null when b is null => false,
             null => true,
-            _ => a.CompareTo((T?) b) <= 0
+            _ => a.CompareTo((T?)b) <= 0
         };
 
     /// <summary>
@@ -189,7 +189,7 @@ public abstract record StronglyTypedId<T> : IStronglyTypedId, IEqualityComparer<
     ///     Implicitly converts a GUID to a strongly-typed identifier.
     /// </summary>
     /// <param name="value">The GUID value.</param>
-    public static implicit operator StronglyTypedId<T>(Guid value) => new T {Value = value};
+    public static implicit operator StronglyTypedId<T>(Guid value) => new T { Value = value };
 
     /// <summary>
     ///     Implicitly converts a strongly-typed identifier to a GUID.

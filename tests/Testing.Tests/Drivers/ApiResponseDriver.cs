@@ -50,10 +50,10 @@ public sealed class ApiResponseDriver : WireMockDriver
     internal Guid CorrelationId { get; } = Fake.Random.Guid();
 
     internal HttpStatusCode FailedStatusCode { get; } =
-        Fake.PickRandom(Enum.GetValues<HttpStatusCode>().Where(x => (int) x is >= 300));
+        Fake.PickRandom(Enum.GetValues<HttpStatusCode>().Where(x => (int)x is >= 300));
 
     internal HttpStatusCode SuccessStatusCode { get; } =
-        Fake.PickRandom(Enum.GetValues<HttpStatusCode>().Where(x => (int) x is >= 200 and < 300));
+        Fake.PickRandom(Enum.GetValues<HttpStatusCode>().Where(x => (int)x is >= 200 and < 300));
 
     internal HttpStatusCode StatusCode { get; } = Fake.PickRandom<HttpStatusCode>();
 

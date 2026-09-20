@@ -52,10 +52,10 @@ public sealed class AuthorityDriver : WireMockDriver
                         "code", "token", "id_token", "code token", "code id_token", "token id_token",
                         "code token id_token"
                     ],
-                    code_challenge_methods_supported = (string[]) ["S256", "plain"],
-                    response_modes_supported = (string[]) ["query", "fragment", "form_post"],
-                    subject_types_supported = (string[]) ["public"],
-                    id_token_signing_alg_values_supported = (string[]) ["HS256", "RS256", "PS256"],
+                    code_challenge_methods_supported = (string[])["S256", "plain"],
+                    response_modes_supported = (string[])["query", "fragment", "form_post"],
+                    subject_types_supported = (string[])["public"],
+                    id_token_signing_alg_values_supported = (string[])["HS256", "RS256", "PS256"],
                     token_endpoint_auth_methods_supported = (string[])
                         ["client_secret_basic", "client_secret_post", "private_key_jwt"],
                     claims_supported = (string[])
@@ -65,7 +65,7 @@ public sealed class AuthorityDriver : WireMockDriver
                     ],
                     request_uri_parameter_supported = false,
                     request_parameter_supported = false,
-                    token_endpoint_auth_signing_alg_values_supported = (string[]) ["RS256", "RS384", "PS256"],
+                    token_endpoint_auth_signing_alg_values_supported = (string[])["RS256", "RS384", "PS256"],
                     backchannel_logout_supported = true,
                     backchannel_logout_session_supported = true
                 })
