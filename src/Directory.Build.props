@@ -8,6 +8,7 @@
     <!-- Include docs/ and ARCHITECTURE.md in every NuGet package -->
     <ItemGroup>
         <None Include="$(MSBuildThisFileDirectory)..\docs\**\*"
+              Exclude="$(MSBuildThisFileDirectory)..\docs\contributing\**\*"
               Pack="true"
               PackagePath="docs\%(RecursiveDir)%(Filename)%(Extension)" />
         <None Include="$(MSBuildThisFileDirectory)..\ARCHITECTURE.md"
