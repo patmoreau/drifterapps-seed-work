@@ -35,7 +35,8 @@ jobs:
 
       - name: Lint C# files with dotnet format
         id: lint
-        run: dotnet format --severity error --verbosity diagnostic --report ./linter-report || true
+        continue-on-error: true
+        run: dotnet format --verify-no-changes --severity error --verbosity diagnostic --report ./linter-report
 
       - name: Save report
         if: always()
@@ -46,13 +47,24 @@ jobs:
 
       - name: Check for errors
         if: ${{ steps.lint.outcome != 'success' }}
-        run: echo "::error::dotnet format found issues in the code. Please fix them."
+        run: |
+          echo "::error::dotnet format found issues in the code. Run 'dotnet format --severity error' and commit the result."
+          exit 1
+
+  agent_files:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Check generated assistant command files are in sync
+        run: scripts/sync-agent-files.sh --check
 
   create_check:
-    needs: [check_changes, csharp]
+    needs: [check_changes, csharp, agent_files]
     uses: patmoreau/workflow-config/.github/workflows/create-check.yml@main
     if: always() && needs.check_changes.result == 'success'
     with:
       code_was_changed: ${{ needs.check_changes.outputs.code_was_changed }}
       check_name: 'linter-completed'
-      check_result: ${{ needs.csharp.result }}
+      check_result: ${{ needs.agent_files.result == 'success' && needs.csharp.result || needs.agent_files.result }}
