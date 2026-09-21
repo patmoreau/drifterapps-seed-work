@@ -55,16 +55,25 @@ public sealed class ApiResponseDriver : WireMockDriver
     internal HttpStatusCode SuccessStatusCode { get; } =
         Fake.PickRandom(Enum.GetValues<HttpStatusCode>().Where(x => (int)x is >= 200 and < 300));
 
-    internal HttpStatusCode StatusCode { get; } = Fake.PickRandom<HttpStatusCode>();
+    // 1xx codes are informational: HttpClient keeps waiting for the final response, so a stub
+    // answering one hangs until the 30s timeout and the assertions see a null status code.
+    private static readonly HttpStatusCode[] RespondableStatusCodes =
+        [.. Enum.GetValues<HttpStatusCode>().Where(x => (int)x >= 200)];
 
+    internal HttpStatusCode StatusCode { get; } = Fake.PickRandom(RespondableStatusCodes);
+
+    // Compare numerically: HttpStatusCode has aliases sharing a value (Found/Redirect = 302,
+    // MovedPermanently/Moved = 301, ...), so excluding by enum member alone can still pick a
+    // code that is equal on the wire.
     internal HttpStatusCode NotStatusCode =>
-        _notStatusCode ??= Fake.PickRandom(Enum.GetValues<HttpStatusCode>().Where(x => x != StatusCode));
+        _notStatusCode ??=
+            Fake.PickRandom(RespondableStatusCodes.Where(x => (int)x != (int)StatusCode));
 
     internal HttpStatusCode NotAuthorizedStatusCode { get; } =
         Fake.PickRandom(HttpStatusCode.Forbidden, HttpStatusCode.Unauthorized);
 
     internal HttpStatusCode NotForbiddenStatusCode { get; } =
-        Fake.PickRandom(Enum.GetValues<HttpStatusCode>().Where(x => x is not HttpStatusCode.Forbidden));
+        Fake.PickRandom(RespondableStatusCodes.Where(x => x is not HttpStatusCode.Forbidden));
 
     internal string ErrorMessage { get; } = Fake.Lorem.Sentence();
 
