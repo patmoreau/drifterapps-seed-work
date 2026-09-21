@@ -23,7 +23,6 @@ constantly refactor it in order to acquired new knowledge and perfecting my skil
 
 - [Domain](./src/Domain/README.md) — `DrifterApps.Seeds.Domain`
 - [Application](./src/Application/README.md) — `DrifterApps.Seeds.Application`
-- [Application.Mediatr](./src/Application.Mediatr/README.md) — `DrifterApps.Seeds.Application.Mediatr`
 - [Infrastructure](./src/Infrastructure/README.md) — `DrifterApps.Seeds.Infrastructure`
 - [Testing](./src/Testing/README.md) — `DrifterApps.Seeds.Testing`
 

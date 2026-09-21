@@ -9,7 +9,6 @@ Guidelines for AI assistants (and developers) working with or generating code th
 These packages provide opinionated building blocks for DDD/ASP.NET Core applications:
 - **Domain** — strongly-typed IDs, aggregate root contracts, unit-of-work
 - **Application** — query pagination, authorization composition, JSON/EF Core converters, endpoint filters
-- **Application.Mediatr** — MediatR pipeline behaviors (logging, validation, unit-of-work)
 - **Infrastructure** — Hangfire-backed job scheduler, Refit response helpers
 - **Testing** — Bogus builders, Testcontainers database drivers, WireMock authority, JWT helpers
 
@@ -52,7 +51,7 @@ public async Task<Result<OrderDto>> Handle(GetOrderQuery query, CancellationToke
 throw new OrderNotFoundException(query.Id);
 ```
 
-The `ValidationBehavior` automatically maps FluentValidation failures to `Result<T>` before your handler runs. The `UnitOfWorkBehavior` rolls back the transaction on any exception.
+`ValidationFilter<TRequest>` maps FluentValidation failures to a problem-details response before your endpoint runs, and `UnitOfWorkFilter` rolls the transaction back on any exception.
 
 ### Query pagination
 
@@ -72,28 +71,23 @@ var items = await dbContext.Orders
     .ToListAsync(ct);
 ```
 
-### MediatR pipeline registration
+### Endpoint filters for validation and transactions
 
-Always call `RegisterServicesFromApplicationSeeds()` first. Add your own behaviors after it.
-
-```csharp
-services.AddMediatR(config =>
-{
-    config.RegisterServicesFromApplicationSeeds();          // Seeds behaviors first
-    config.AddOpenBehavior(typeof(MyCustomBehavior<,>));   // Your behaviors after
-    config.RegisterServicesFromAssemblyContaining<MyAssemblyMarker>();
-});
-```
-
-### Unit-of-work commands
-
-Mark commands that mutate state with `IUnitOfWorkRequest`. The `UnitOfWorkBehavior` opens the transaction and commits (or rolls back) around the handler automatically.
+Attach the filters per endpoint, validation before unit of work, so an invalid request never opens a transaction.
 
 ```csharp
-public record CreateOrderCommand(CustomerId CustomerId, ...) : IUnitOfWorkRequest, IRequest<Result<OrderId>>;
+app.MapPost("/orders", CreateOrder)
+    .AddEndpointFilter<ValidationFilter<CreateOrderCommand>>()   // outermost
+    .AddEndpointFilter<UnitOfWorkFilter>();
 ```
 
-Query handlers should not implement `IUnitOfWorkRequest` — they don't mutate state.
+`ValidationFilter<TRequest>` resolves `IValidator<TRequest>` from the request services and
+short-circuits with `ValidationProblem` on failure; it is a no-op when no validator is
+registered. `UnitOfWorkFilter` resolves `IUnitOfWork` and wraps the endpoint with
+`BeginWorkAsync` / `CommitWorkAsync`, calling `RollbackWorkAsync` and rethrowing on any
+exception. Add filters of your own alongside them — both are plain `IEndpointFilter`s.
+
+Read endpoints take neither filter: they mutate nothing.
 
 ### Authorization composition
 
@@ -153,9 +147,9 @@ var queryParams = QueryParams.Create(offset, limit, sort, filter).Value;
 var sorted = dbContext.Orders.Query(queryParams);
 ```
 
-### Adding behaviors before `RegisterServicesFromApplicationSeeds`
+### Opening a transaction before validating
 
-Pipeline order matters. Logging wraps everything, then unit-of-work, then validation. Inserting a behavior before the seeds registration changes that order.
+Filter order matters. `UnitOfWorkFilter` placed before `ValidationFilter<TRequest>` opens a transaction for requests that are about to be rejected. Validation goes first.
 
 ### Calling `IRepository<T>` for reads
 
@@ -190,9 +184,9 @@ builder.Property(x => x.Id)
 
 `RequestScheduler.QueueHandler` uses Hangfire's JSON serialization. Large argument objects increase the size of the job payload stored in the Hangfire database. Keep job arguments small — pass IDs, not full entities.
 
-### UnitOfWorkBehavior transaction scope
+### UnitOfWorkFilter transaction scope
 
-`UnitOfWorkBehavior` wraps the entire handler in a transaction. Avoid doing slow or non-transactional work (HTTP calls, file I/O) inside a `IUnitOfWorkRequest` handler. Move external calls outside the unit-of-work boundary or use a saga/outbox pattern.
+`UnitOfWorkFilter` wraps the entire endpoint in a transaction. Avoid doing slow or non-transactional work (HTTP calls, file I/O) inside an endpoint that carries it. Move external calls outside the unit-of-work boundary or use a saga/outbox pattern.
 
 ---
 
@@ -257,14 +251,14 @@ var order = await dbContext.Orders.FirstOrDefaultAsync(o => o.Id.Value == orderI
 ### Minimal API endpoint with pagination
 
 ```csharp
-app.MapGet("/orders", async (HttpContext ctx, IMediator mediator, CancellationToken ct) =>
+app.MapGet("/orders", async (HttpContext ctx, GetOrdersHandler handler, CancellationToken ct) =>
 {
     var request = await ctx.ToQueryRequest<GetOrdersQuery>(
         (offset, limit, sort, filter) => new GetOrdersQuery(offset, limit, sort, filter));
 
     if (request is null) return Results.BadRequest();
 
-    var result = await mediator.Send(request, ct);
+    var result = await handler.HandleAsync(request, ct);
     return result.IsSuccess
         ? Results.Ok(result.Value)
         : result.Error.ToProblemDetails(StatusCodes.Status400BadRequest);

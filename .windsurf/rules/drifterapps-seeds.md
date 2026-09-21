@@ -7,7 +7,7 @@ glob: "**/*.cs"
 
 DDD / Vertical Slice building blocks for ASP.NET Core on .NET 10.
 
-**Packages:** `DrifterApps.Seeds.Domain`, `.Application`, `.Application.Mediatr`, `.Infrastructure`, `.Testing`
+**Packages:** `DrifterApps.Seeds.Domain`, `.Application`, `.Infrastructure`, `.Testing`
 **Companions:** `DrifterApps.Seeds.FluentResult`, `DrifterApps.Seeds.FluentScenario`
 
 ## Package Map
@@ -15,8 +15,7 @@ DDD / Vertical Slice building blocks for ASP.NET Core on .NET 10.
 | Package | Use it for |
 |---|---|
 | `Domain` | `IAggregateRoot<TId>`, `IRepository<TAggregate>`, `IUnitOfWork`, `StronglyTypedId<T>` |
-| `Application` | `QueryParams`, `QueryResult<T>`, `IRequestQuery`, `MultiplePoliciesRequirement`, endpoint filters, converters |
-| `Application.Mediatr` | `LoggingBehavior`, `UnitOfWorkBehavior`, `ValidationBehavior`, `IUnitOfWorkRequest` |
+| `Application` | `QueryParams`, `QueryResult<T>`, `IRequestQuery`, `MultiplePoliciesRequirement`, `ValidationFilter<TRequest>`, `UnitOfWorkFilter`, converters |
 | `Infrastructure` | Hangfire `IRequestScheduler`, Refit helpers |
 | `Testing` | `FakerBuilder<T>`, `DatabaseDriver<TDbContext>`, `WireMockDriver`, `AuthorityDriver`, trait attributes |
 
@@ -76,21 +75,20 @@ return new QueryResult<OrderDto>(total, items.Select(MapToDto));
 Bind with `ctx.ToQueryRequest<GetOrdersQuery>((offset, limit, sort, filter) => new(...))`.
 `Query<T>` uses `System.Linq.Dynamic.Core` — index filterable/sortable columns, whitelist names.
 
-## MediatR
+## Endpoint filters
 
 ```csharp
-services.AddMediatR(config =>
-{
-    config.RegisterServicesFromApplicationSeeds();        // seeds behaviors FIRST
-    config.AddOpenBehavior(typeof(MyBehavior<,>));        // yours after
-});
-
-public record CreateOrderCommand(CustomerId CustomerId, decimal Total)
-    : IUnitOfWorkRequest, IRequest<Result<OrderId>>;      // mutations only
+app.MapPost("/orders", CreateOrder)
+    .AddEndpointFilter<ValidationFilter<CreateOrderCommand>>()   // outermost, runs first
+    .AddEndpointFilter<UnitOfWorkFilter>();
 ```
 
-Order is logging → unit of work → validation. Without MediatR use `ValidationFilter<TRequest>`
-and `UnitOfWorkFilter` as endpoint filters.
+`ValidationFilter<TRequest>` resolves `IValidator<TRequest>` and short-circuits with
+`ValidationProblem` on failure (no-op when no validator is registered). `UnitOfWorkFilter`
+wraps the endpoint with `BeginWorkAsync` / `CommitWorkAsync` and rolls back on any
+exception. Validation always goes first, so an invalid request never opens a transaction.
+Read endpoints take neither. `QueryValidatorRoot<TRequest>` already covers
+`Offset`/`Limit`/`Sort`/`Filter` — do not restate those rules.
 
 ## Authorization and scheduling
 
@@ -126,8 +124,7 @@ Categorize with `[UnitTest]`, `[ComponentTest]`, `[EndToEndTest]`.
 - `Result<T>` for anything failable; errors as static members near their type, always `Code` + `Description`
 - Never read `result.Value` without checking `IsSuccess`; never return `null`
 - Paging goes through `QueryParams.Create` + `Query<T>`
-- `RegisterServicesFromApplicationSeeds()` before your own behaviors
-- `IUnitOfWorkRequest` on commands only; no HTTP or file I/O inside those handlers
+- `ValidationFilter<TRequest>` before `UnitOfWorkFilter`; no HTTP or file I/O inside a transactional endpoint
 - `IRepository<T>` writes only (`SaveAsync`) — read from `DbContext` or a query service
 - NuGet versions live in `Directory.Packages.props`, never in a csproj
 

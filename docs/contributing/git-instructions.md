@@ -22,8 +22,8 @@ Always make structural changes first when both are needed.
 
 - Use Conventional Commits (`type(scope): subject`)
 - Types: feat, fix, refactor, test, docs, chore, build, ci
-- Scopes: the package touched — `domain`, `application`, `mediatr`, `infrastructure`,
-  `testing` — or `docs`, `ci`, `deps` for cross-cutting work
+- Scopes: the package touched — `domain`, `application`, `infrastructure`, `testing`
+  — or `docs`, `ci`, `deps` for cross-cutting work
 - Structural changes use `refactor` or `chore`; behavioral changes use `feat` or `fix`
 - Subject line max 50 characters, capitalized, no trailing period
 - Separate subject from body with blank line

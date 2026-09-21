@@ -45,10 +45,9 @@ applications. You are working *on* the libraries, not merely *with* them.
 |---|---|
 | `src/Domain/` | DDD contracts: `IAggregateRoot`, `IAggregateRoot<T>`, `IRepository<T>`, `IUnitOfWork`, `IStronglyTypedId`/`StronglyTypedId`, `IPrimitiveType` |
 | `src/Application/` | ASP.NET Core application layer: `Authorization/`, `EndpointFilters/`, `Converters/` (EF Core + JSON), `Context/`, `QueryParams`/`QueryResult`, `IRequestScheduler`, `IHttpUserContext`, DI extensions |
-| `src/Application.Mediatr/` | MediatR behaviors: `ValidationBehavior`, `LoggingBehavior`, `UnitOfWorkBehavior`; FluentValidation error mapping. **Not in the solution — see below** |
 | `src/Infrastructure/` | Hangfire-backed `RequestScheduler`, `RefitExtensions`, `JsonSerializerOptionsFactory`, DI extensions |
 | `src/Testing/` | Test infrastructure for consumers: `FakerBuilder`, `DatabaseDriver` (Testcontainers + Respawn), `WireMockDriver`, drivers, FluentAssertions extensions, trait attributes (`[UnitTest]`, `[ComponentTest]`, `[EndToEndTest]`, `FeatureFlagTestAttribute`) |
-| `tests/*.Tests/` | xUnit v3 suites, one per source project (no Mediatr suite) |
+| `tests/*.Tests/` | xUnit v3 suites, one per source project |
 | `examples/` | Illustrative sources (`Domain`, `Application`, `Testing`) — **not a compiled project**, no csproj |
 | `README.md`, `ARCHITECTURE.md`, `docs/` | Published documentation, for people **using** the packages — packed into every NuGet package |
 | `docs/contributing/` | Process docs, for people **working on** this repo — never packed |
@@ -61,26 +60,15 @@ projects must not override it. SDK pinned in `global.json` (10.0.400,
 Package dependency graph — one-directional, keep it that way:
 
 ```
-Domain  ←  Application  ←  Application.Mediatr
-               ↑
-         Infrastructure
+Domain  ←  Application  ←  Infrastructure
 Testing  →  Domain, Infrastructure
 ```
 
-### Application.Mediatr is orphaned from the solution
-
-`DrifterApps.Seeds.sln` does not list `src/Application.Mediatr/Application.Mediatr.csproj`
-(dropped in `3c56a3c refactor: removing mediator`). Because every root command
-resolves the solution, that project is **not built, not tested, and not published** —
-nuget.org still serves 1.0.150 of it while the others are at 1.0.170+. Build it
-explicitly when touching it:
-
-```bash
-dotnet build src/Application.Mediatr
-```
-
-Deciding its fate (restore to the solution, or remove the source) is the user's
-call, not a side effect of other work.
+MediatR support is gone: `src/Application.Mediatr` was removed (it had been orphaned
+from the solution since `3c56a3c`, unbuilt and unpublished since 1.0.150). The package
+`DrifterApps.Seeds.Application.Mediatr` stays on nuget.org at 1.0.150 for existing
+consumers — do not resurrect it here. `ValidationFilter<TRequest>` and `UnitOfWorkFilter`
+in `src/Application/EndpointFilters/` cover what its behaviors did.
 
 ## Build and test
 
@@ -191,8 +179,8 @@ Treat a doc-only correction as its own `docs:` commit, separate from behavior.
 See `ARCHITECTURE.md` before changing any of these:
 
 - **Result pattern over exceptions** — `DrifterApps.Seeds.FluentResult` carries
-  expected failures (`Application`, `Application.Mediatr`); programmer errors stay
-  exceptions (`ArgumentNullException.ThrowIfNull`).
+  expected failures; programmer errors stay exceptions
+  (`ArgumentNullException.ThrowIfNull`).
 - **Scenario testing** — `DrifterApps.Seeds.FluentScenario` backs `src/Testing`
   (`StepDefinitions/`, `Extensions/RefitExtensions.cs`).
 - The graph above is load-bearing: `Domain` takes no dependency on another seed

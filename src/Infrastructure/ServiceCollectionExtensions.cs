@@ -7,7 +7,7 @@ namespace DrifterApps.Seeds.Infrastructure;
 public static class ServiceCollectionExtensions
 {
     /// <summary>
-    ///     Add Hangfire Request Scheduler support for MediatR
+    ///     Add Hangfire Request Scheduler support
     /// </summary>
     /// <param name="services">
     ///     <see cref="IServiceCollection" />

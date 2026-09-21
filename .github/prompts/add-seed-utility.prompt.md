@@ -18,17 +18,14 @@ ship with the package.
 The dependency graph is one-directional and must stay that way:
 
 ```
-Domain  ←  Application  ←  Application.Mediatr
-               ↑
-         Infrastructure
+Domain  ←  Application  ←  Infrastructure
 Testing  →  Domain, Infrastructure
 ```
 
 | Put it in | When |
 |---|---|
 | `src/Domain/` | DDD contracts and primitives — aggregate roots, strongly-typed IDs, repositories, unit of work. No ASP.NET, no infrastructure. |
-| `src/Application/` | Application-layer plumbing on ASP.NET Core — authorization, endpoint filters, converters, query params, DI extensions |
-| `src/Application.Mediatr/` | MediatR pipeline behaviors and FluentValidation mapping only |
+| `src/Application/` | Application-layer plumbing on ASP.NET Core — authorization, endpoint filters (`ValidationFilter`, `UnitOfWorkFilter`), converters, query params, DI extensions |
 | `src/Infrastructure/` | Outbound technology adapters — Hangfire scheduling, Refit HTTP support |
 | `src/Testing/` | Test infrastructure consumers use in *their* test suites — `FakerBuilder`, drivers, assertions, trait attributes |
 
@@ -40,12 +37,6 @@ a cycle or points a lower package at a higher one.
 
 Test projects mirror the source projects: `tests/Domain.Tests`,
 `tests/Application.Tests`, `tests/Infrastructure.Tests`, `tests/Testing.Tests`.
-
-`src/Application.Mediatr` has **no test project and is not in the solution**, so
-CI never builds it and the release never publishes it (stuck at 1.0.150). If the
-change lands there, say so explicitly and build it directly
-(`dotnet build src/Application.Mediatr`); putting it back in the solution, or
-adding its test project, is separate work that needs approval.
 
 Follow the existing suite's conventions (see `AGENTS.md` → "Test conventions"):
 `[UnitTest]`, a `private readonly Faker _faker = new();`,

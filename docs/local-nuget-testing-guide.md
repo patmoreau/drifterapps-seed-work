@@ -112,7 +112,6 @@ In your test project's `nuget.config`:
 Your solution creates these NuGet packages:
 
 - `DrifterApps.Seeds.Application`
-- `DrifterApps.Seeds.Application.Mediatr`
 - `DrifterApps.Seeds.Domain`
 - `DrifterApps.Seeds.Infrastructure`
 - `DrifterApps.Seeds.Testing`

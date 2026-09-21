@@ -3,8 +3,8 @@ using DrifterApps.Seeds.Application.Authorization;
 using DrifterApps.Seeds.Application.Converters;
 using DrifterApps.Seeds.Application.EndpointFilters;
 using DrifterApps.Seeds.Application.Extensions;
-using DrifterApps.Seeds.Application.Mediatr;
 using DrifterApps.Seeds.Infrastructure;
+using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,12 +20,11 @@ builder.Services.ConfigureHttpJsonOptions(opts =>
 // User context from JWT claims
 builder.Services.AddUserContext();
 
-// MediatR — seeds behaviors first, then your own handlers
-builder.Services.AddMediatR(config =>
-{
-    config.RegisterServicesFromApplicationSeeds();
-    config.RegisterServicesFromAssemblyContaining<Program>();
-});
+// Handlers and validators
+builder.Services.AddScoped<GetOrdersHandler>();
+builder.Services.AddScoped<CreateOrderHandler>();
+builder.Services.AddScoped<IValidator<CreateOrderCommand>, CreateOrderValidator>();
+builder.Services.AddScoped<IValidator<GetOrdersQuery>, GetOrdersQueryValidator>();
 
 // Authorization — compose existing policies with AND/OR
 builder.Services.AddAuthorization(options =>
@@ -41,28 +40,30 @@ builder.Services.AddHangfireRequestScheduler();
 var app = builder.Build();
 
 // GET /orders?offset=0&limit=20&sort=-createdAt&filter=total:gt:100
-app.MapGet("/orders", async (HttpContext ctx, IMediator mediator, CancellationToken ct) =>
+app.MapGet("/orders", async (HttpContext ctx, GetOrdersHandler handler, CancellationToken ct) =>
 {
     var request = await ctx.ToQueryRequest<GetOrdersQuery>(
         (offset, limit, sort, filter) => new GetOrdersQuery(offset, limit, sort, filter));
 
     if (request is null) return Results.BadRequest();
 
-    var result = await mediator.Send(request, ct);
+    var result = await handler.HandleAsync(request, ct);
     return result.IsSuccess
         ? Results.Ok(result.Value)
         : result.Error.ToProblemDetails(StatusCodes.Status400BadRequest);
 });
 
-// POST /orders — ValidationFilter handles 422 before the handler runs
-app.MapPost("/orders", async (CreateOrderCommand command, IMediator mediator, CancellationToken ct) =>
+// POST /orders — ValidationFilter answers 400/422 before the handler runs,
+// UnitOfWorkFilter wraps it in a transaction
+app.MapPost("/orders", async (CreateOrderCommand command, CreateOrderHandler handler, CancellationToken ct) =>
 {
-    var result = await mediator.Send(command, ct);
+    var result = await handler.HandleAsync(command, ct);
     return result.IsSuccess
         ? Results.Created($"/orders/{result.Value}", result.Value)
         : result.Error.ToProblemDetails(StatusCodes.Status400BadRequest);
 })
 .AddEndpointFilter<ValidationFilter<CreateOrderCommand>>()
+.AddEndpointFilter<UnitOfWorkFilter>()
 .RequireAuthorization("CanManageOrders");
 
 app.Run();

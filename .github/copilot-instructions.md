@@ -2,7 +2,7 @@
 
 Opinionated building blocks for DDD / Vertical Slice Architecture ASP.NET Core applications.
 
-**Packages:** `DrifterApps.Seeds.Domain`, `.Application`, `.Application.Mediatr`, `.Infrastructure`, `.Testing`
+**Packages:** `DrifterApps.Seeds.Domain`, `.Application`, `.Infrastructure`, `.Testing`
 **Companions:** `DrifterApps.Seeds.FluentResult`, `DrifterApps.Seeds.FluentScenario`
 **Targets:** .NET 10
 
@@ -13,12 +13,11 @@ Opinionated building blocks for DDD / Vertical Slice Architecture ASP.NET Core a
 | Package | Use it for |
 |---|---|
 | `Domain` | `IAggregateRoot`, `IAggregateRoot<TId>`, `IRepository<TAggregate>`, `IUnitOfWork`, `StronglyTypedId<T>`, `IPrimitiveType<T>` |
-| `Application` | `QueryParams`, `QueryResult<T>`, `IRequestQuery`, `MultiplePoliciesRequirement`, endpoint filters, EF Core + JSON converters, `IHttpUserContext`, `IRequestScheduler` |
-| `Application.Mediatr` | `LoggingBehavior`, `UnitOfWorkBehavior`, `ValidationBehavior`, `IUnitOfWorkRequest` |
+| `Application` | `QueryParams`, `QueryResult<T>`, `IRequestQuery`, `MultiplePoliciesRequirement`, `ValidationFilter<TRequest>`, `UnitOfWorkFilter`, EF Core + JSON converters, `IHttpUserContext`, `IRequestScheduler` |
 | `Infrastructure` | Hangfire-backed `IRequestScheduler`, Refit helpers, `IJsonSerializerOptionsFactory` |
 | `Testing` | `FakerBuilder<T>`, `DatabaseDriver<TDbContext>`, `WireMockDriver`, `AuthorityDriver`, `FeatureManagerDriver`, `JwtTokenBuilder`, trait attributes, Refit assertions |
 
-Dependency direction: `Domain` ← `Application` ← `Application.Mediatr`; `Application` ← `Infrastructure`; `Testing` → `Domain` + `Infrastructure`.
+Dependency direction: `Domain` ← `Application` ← `Infrastructure`; `Testing` → `Domain` + `Infrastructure`.
 
 ---
 
@@ -100,10 +99,9 @@ Implement `IRequestQuery` (`Offset`, `Limit`, `Sort[]`, `Filter[]`), validate th
 `QueryParams.Create`, then apply with `Query<T>`. Never pass raw offset/limit down the stack.
 
 ```csharp
-public record GetOrdersQuery(int Offset, int Limit, string[] Sort, string[] Filter)
-    : IRequestQuery, IRequest<Result<QueryResult<OrderDto>>>;
+public record GetOrdersQuery(int Offset, int Limit, string[] Sort, string[] Filter) : IRequestQuery;
 
-public async Task<Result<QueryResult<OrderDto>>> Handle(GetOrdersQuery query, CancellationToken ct)
+public async Task<Result<QueryResult<OrderDto>>> HandleAsync(GetOrdersQuery query, CancellationToken ct)
 {
     var paramsResult = QueryParams.Create(query);
     if (paramsResult.IsFailure) return paramsResult.Error;
@@ -119,13 +117,13 @@ public async Task<Result<QueryResult<OrderDto>>> Handle(GetOrdersQuery query, Ca
 Bind the query string with `HttpContext.ToQueryRequest`:
 
 ```csharp
-app.MapGet("/orders", async (HttpContext ctx, IMediator mediator, CancellationToken ct) =>
+app.MapGet("/orders", async (HttpContext ctx, GetOrdersHandler handler, CancellationToken ct) =>
 {
     var request = await ctx.ToQueryRequest<GetOrdersQuery>(
         (offset, limit, sort, filter) => new GetOrdersQuery(offset, limit, sort, filter));
     if (request is null) return Results.BadRequest();
 
-    var result = await mediator.Send(request, ct);
+    var result = await handler.HandleAsync(request, ct);
     return result.IsSuccess
         ? Results.Ok(result.Value)
         : result.Error.ToProblemDetails(StatusCodes.Status400BadRequest);
@@ -137,43 +135,38 @@ every filterable and sortable column, and whitelist which column names a request
 
 ---
 
-## MediatR pipeline
+## Endpoint filters
 
-Register the seeds behaviors **first** — they establish the order logging → unit of work
-→ validation. `QueryValidatorRoot<TRequest>` already validates `Offset`/`Limit`/`Sort`/`Filter`;
+Cross-cutting concerns attach per endpoint, validation before unit of work so an invalid
+request never opens a transaction:
+
+```csharp
+app.MapPost("/orders", CreateOrder)
+    .AddEndpointFilter<ValidationFilter<CreateOrderCommand>>()   // outermost
+    .AddEndpointFilter<UnitOfWorkFilter>()
+    .RequireAuthorization("CanManageOrders");
+```
+
+| Filter | Effect |
+|---|---|
+| `ValidationFilter<TRequest>` | Resolves `IValidator<TRequest>`; on failure short-circuits with `ValidationProblem` and never calls the endpoint. No-op when no validator is registered |
+| `UnitOfWorkFilter` | Resolves `IUnitOfWork`; `BeginWorkAsync` → endpoint → `CommitWorkAsync`, with `RollbackWorkAsync` and a rethrow on any exception |
+
+`QueryValidatorRoot<TRequest>` already validates `Offset`/`Limit`/`Sort`/`Filter` —
 subclasses must not restate those rules.
 
-```csharp
-services.AddMediatR(config =>
-{
-    config.RegisterServicesFromApplicationSeeds();        // seeds behaviors first
-    config.AddOpenBehavior(typeof(MyCustomBehavior<,>));  // yours after
-    config.RegisterServicesFromAssemblyContaining<MyAssemblyMarker>();
-});
-```
+The transaction spans the whole endpoint, so keep HTTP calls, file I/O and other slow
+non-transactional work outside it (outbox or saga instead). Read endpoints take neither
+filter.
 
-Mark state-mutating commands with `IUnitOfWorkRequest`; `UnitOfWorkBehavior` begins,
-commits and rolls back around the handler. Query handlers never implement it.
-
-```csharp
-public record CreateOrderCommand(CustomerId CustomerId, decimal Total)
-    : IUnitOfWorkRequest, IRequest<Result<OrderId>>;
-```
-
-The transaction spans the whole handler — keep HTTP calls, file I/O and other slow
-non-transactional work outside it (outbox or saga instead).
-
-Not using MediatR? `ValidationFilter<TRequest>` and `UnitOfWorkFilter` give the same two
-guarantees as minimal-API endpoint filters.
-
----
+Both are plain `IEndpointFilter` implementations — add your own alongside them.
 
 ## Repositories and unit of work
 
 `IRepository<TAggregate>` exposes `SaveAsync` only — writes go through it, reads do not.
 Read with `DbContext`, Dapper or a dedicated query service straight from the query handler.
-`IUnitOfWork` is `BeginWorkAsync` / `CommitWorkAsync` / `RollbackWorkAsync`, driven by the
-behavior or filter rather than by hand.
+`IUnitOfWork` is `BeginWorkAsync` / `CommitWorkAsync` / `RollbackWorkAsync`, driven by
+`UnitOfWorkFilter` rather than by hand.
 
 ---
 
@@ -254,8 +247,8 @@ Categorize tests with `[UnitTest]`, `[ComponentTest]` or `[EndToEndTest]`.
 - Give every aggregate a `StronglyTypedId<T>`, and register both converters
 - Return `Result<T>` from anything that can fail; define errors as static members near their type
 - Validate paging through `QueryParams.Create` and apply it with `Query<T>`
-- Call `RegisterServicesFromApplicationSeeds()` before your own behaviors
-- Mark mutating commands `IUnitOfWorkRequest`; leave queries unmarked
+- Put `ValidationFilter<TRequest>` before `UnitOfWorkFilter` on mutating endpoints
+- Leave both filters off read endpoints
 - Keep NuGet versions in `Directory.Packages.props` (central package management)
 - `sealed` by default, `record` for IDs and value objects, async all the way down
 
@@ -266,8 +259,8 @@ Categorize tests with `[UnitTest]`, `[ComponentTest]` or `[EndToEndTest]`.
 - Construct a `ResultError` without both `Code` and `Description`
 - Pass unvalidated `offset`/`limit`/`sort`/`filter` strings into a query
 - Call `IRepository<T>` for reads — it only has `SaveAsync`
-- Register a behavior before `RegisterServicesFromApplicationSeeds()`
-- Do slow or external work inside an `IUnitOfWorkRequest` handler
+- Open a transaction before validating — `UnitOfWorkFilter` never goes first
+- Do slow or external work inside an endpoint wrapped in `UnitOfWorkFilter`
 - Put a `Version` attribute on a `<PackageReference>`
 
 ---

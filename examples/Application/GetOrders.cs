@@ -1,14 +1,12 @@
 using DrifterApps.Seeds.Application;
 using DrifterApps.Seeds.FluentResult;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
 using SampleApp.Domain;
 
 namespace SampleApp.Application.Orders;
 
 // The query record implements IRequestQuery so ASP.NET Core can bind and validate it.
-public record GetOrdersQuery(int Offset, int Limit, string[] Sort, string[] Filter)
-    : IRequestQuery, IRequest<Result<QueryResult<OrderDto>>>;
+public record GetOrdersQuery(int Offset, int Limit, string[] Sort, string[] Filter) : IRequestQuery;
 
 public record OrderDto(OrderId Id, CustomerId CustomerId, decimal Total, DateTimeOffset CreatedAt);
 
@@ -25,9 +23,8 @@ public class GetOrdersQueryValidator : QueryValidatorRoot<GetOrdersQuery>
 }
 
 public class GetOrdersHandler(AppDbContext dbContext)
-    : IRequestHandler<GetOrdersQuery, Result<QueryResult<OrderDto>>>
 {
-    public async Task<Result<QueryResult<OrderDto>>> Handle(
+    public async Task<Result<QueryResult<OrderDto>>> HandleAsync(
         GetOrdersQuery query, CancellationToken cancellationToken)
     {
         var paramsResult = QueryParams.Create(query);

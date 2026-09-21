@@ -12,9 +12,7 @@ Creating a release is what publishes to nuget.org: the `ci-cd` workflow runs its
 `https://api.nuget.org/v3/index.json`. Pushing a package version is **permanent**
 — nuget.org does not allow re-uploading a version, only unlisting it. Four
 packages ship together from this repo, all on the same version: Domain,
-Application, Infrastructure, Testing. `src/Application.Mediatr` is **not in the
-solution**, so `dotnet pack` never sees it and the release does not publish it —
-its last published version is 1.0.150. Confirm with the user before creating the
+Application, Infrastructure, Testing. Confirm with the user before creating the
 release, and never create one from a red build.
 
 ## 1. Preconditions

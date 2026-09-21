@@ -120,9 +120,8 @@ public class GetOrdersQueryValidator : QueryValidatorRoot<GetOrdersQuery>
 
 ```csharp
 public class GetOrdersHandler(AppDbContext dbContext)
-    : IRequestHandler<GetOrdersQuery, Result<QueryResult<OrderDto>>>
 {
-    public async Task<Result<QueryResult<OrderDto>>> Handle(
+    public async Task<Result<QueryResult<OrderDto>>> HandleAsync(
         GetOrdersQuery query, CancellationToken cancellationToken)
     {
         var paramsResult = QueryParams.Create(query);
@@ -144,9 +143,7 @@ public class GetOrdersHandler(AppDbContext dbContext)
 ### Command with unit-of-work
 
 ```csharp
-// IUnitOfWorkRequest marks this command as requiring a transaction
-public record CreateOrderCommand(CustomerId CustomerId, decimal Total)
-    : IUnitOfWorkRequest, IRequest<Result<OrderId>>;
+public record CreateOrderCommand(CustomerId CustomerId, decimal Total);
 
 public class CreateOrderValidator : AbstractValidator<CreateOrderCommand>
 {
@@ -158,9 +155,8 @@ public class CreateOrderValidator : AbstractValidator<CreateOrderCommand>
 }
 
 public class CreateOrderHandler(IOrderRepository repository)
-    : IRequestHandler<CreateOrderCommand, Result<OrderId>>
 {
-    public async Task<Result<OrderId>> Handle(
+    public async Task<Result<OrderId>> HandleAsync(
         CreateOrderCommand command, CancellationToken cancellationToken)
     {
         var order = Order.Create(command.CustomerId, command.Total);
@@ -170,19 +166,21 @@ public class CreateOrderHandler(IOrderRepository repository)
 }
 ```
 
-The `UnitOfWorkBehavior` begins the transaction before this handler runs and commits after it returns. If the handler throws, the transaction is rolled back automatically.
+`UnitOfWorkFilter` on the endpoint begins the transaction before the handler runs
+and commits after it returns; any exception rolls it back. `ValidationFilter<TRequest>`
+runs `CreateOrderValidator` first, so the transaction never opens for an invalid request.
 
 ### Minimal API endpoint
 
 ```csharp
-app.MapGet("/orders", async (HttpContext ctx, IMediator mediator, CancellationToken ct) =>
+app.MapGet("/orders", async (HttpContext ctx, GetOrdersHandler handler, CancellationToken ct) =>
 {
     var request = await ctx.ToQueryRequest<GetOrdersQuery>(
         (offset, limit, sort, filter) => new GetOrdersQuery(offset, limit, sort, filter));
 
     if (request is null) return Results.BadRequest();
 
-    var result = await mediator.Send(request, ct);
+    var result = await handler.HandleAsync(request, ct);
     return result.IsSuccess
         ? Results.Ok(result.Value)
         : result.Error.ToProblemDetails(StatusCodes.Status400BadRequest);
@@ -191,14 +189,15 @@ app.MapGet("/orders", async (HttpContext ctx, IMediator mediator, CancellationTo
 .Produces<QueryResult<OrderDto>>()
 .ProducesValidationProblem();
 
-app.MapPost("/orders", async (CreateOrderCommand command, IMediator mediator, CancellationToken ct) =>
+app.MapPost("/orders", async (CreateOrderCommand command, CreateOrderHandler handler, CancellationToken ct) =>
 {
-    var result = await mediator.Send(command, ct);
+    var result = await handler.HandleAsync(command, ct);
     return result.IsSuccess
         ? Results.Created($"/orders/{result.Value}", result.Value)
         : result.Error.ToProblemDetails(StatusCodes.Status400BadRequest);
 })
 .AddEndpointFilter<ValidationFilter<CreateOrderCommand>>()
+.AddEndpointFilter<UnitOfWorkFilter>()
 .WithName("CreateOrder");
 ```
 
@@ -221,36 +220,30 @@ app.MapPost("/orders", ...)
 
 ---
 
-## 3. MediatR Pipeline Setup
+## 3. Endpoint Filters
+
+Cross-cutting concerns attach per endpoint, outermost filter first:
 
 ```csharp
-// Program.cs
-builder.Services.AddMediatR(config =>
-{
-    // Seeds behaviors must be registered first (sets pipeline order)
-    config.RegisterServicesFromApplicationSeeds();
-
-    // Add your own behaviors after
-    config.AddOpenBehavior(typeof(PerformanceBehavior<,>));
-
-    // Register handlers from your assembly
-    config.RegisterServicesFromAssemblyContaining<Program>();
-});
+app.MapPost("/orders", CreateOrder)
+    .AddEndpointFilter<ValidationFilter<CreateOrderCommand>>()   // runs first
+    .AddEndpointFilter<UnitOfWorkFilter>()                       // runs second
+    .RequireAuthorization("CanManageOrders");
 ```
 
-The resulting pipeline for a `CreateOrderCommand` (which implements `IUnitOfWorkRequest`):
+What each one does:
 
-```
-LoggingBehavior (log start)
-  → UnitOfWorkBehavior (BeginWork)
-    → ValidationBehavior (validate command)
-      → CreateOrderHandler (your code)
-    ← ValidationBehavior
-  ← UnitOfWorkBehavior (CommitWork / RollbackWork)
-← LoggingBehavior (log end)
-```
+| Filter | Effect |
+|---|---|
+| `ValidationFilter<TRequest>` | Resolves `IValidator<TRequest>`; on failure short-circuits with `ValidationProblem` (or `Problem` 500 when the error is not an aggregate) and never calls the endpoint |
+| `UnitOfWorkFilter` | Resolves `IUnitOfWork`, `BeginWorkAsync` → endpoint → `CommitWorkAsync`, `RollbackWorkAsync` and rethrow on any exception |
 
----
+Order matters: put `ValidationFilter<TRequest>` before `UnitOfWorkFilter` so an invalid
+request never opens a transaction. `ValidationFilter<TRequest>` is a no-op when the
+request type is absent from the arguments or no validator is registered for it.
+
+Both are plain `IEndpointFilter` implementations — add your own alongside them for
+logging, metrics or anything else the endpoint needs.
 
 ## 4. Infrastructure — Background Jobs
 
@@ -261,17 +254,15 @@ builder.Services.AddHangfireRequestScheduler(
 
 // Usage in a handler
 public class ShipOrderHandler(IRequestScheduler scheduler)
-    : IRequestHandler<ShipOrderCommand, Result<Nothing>>
 {
-    public Task<Result<Nothing>> Handle(
-        ShipOrderCommand command, CancellationToken cancellationToken)
+    public Result<Nothing> Handle(ShipOrderCommand command)
     {
         // Enqueues a Hangfire background job
         scheduler.QueueHandler<IEmailService>(
             svc => svc.SendShipmentConfirmationAsync(command.OrderId),
             "Send shipment confirmation email");
 
-        return Task.FromResult<Result<Nothing>>(Nothing.Value);
+        return Nothing.Value;
     }
 }
 ```
@@ -291,8 +282,11 @@ public class FakeOrderBuilder : FakerBuilder<Order>
         .RuleFor(o => o.Total, f => f.Finance.Amount(1, 10_000))
         .RuleFor(o => o.CreatedAt, f => f.Date.PastOffset());
 
-    public FakeOrderBuilder WithCustomer(CustomerId customerId) =>
-        WithFakerSet(f => f.RuleFor(o => o.CustomerId, _ => customerId));
+    public FakeOrderBuilder WithCustomer(CustomerId customerId)
+    {
+        Faker.RuleFor(o => o.CustomerId, _ => customerId);
+        return this;
+    }
 }
 
 // In tests

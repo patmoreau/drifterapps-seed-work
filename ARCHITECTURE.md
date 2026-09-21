@@ -9,8 +9,6 @@ DrifterApps.Seeds.Domain          (no seed dependencies)
     ↑
 DrifterApps.Seeds.Application     → Domain
     ↑
-DrifterApps.Seeds.Application.Mediatr → Application, Domain
-    ↑
 DrifterApps.Seeds.Infrastructure  → Application
 
 DrifterApps.Seeds.Testing         → Domain, Infrastructure
@@ -65,20 +63,6 @@ Each package is an independent NuGet library. Install only what your layer needs
 
 **Sort syntax:** `field` (ascending) or `-field` (descending)
 - Example: `name`, `-createdAt`
-
-### Application.Mediatr
-
-**Purpose:** MediatR pipeline behaviors for cross-cutting concerns.
-
-| Behavior | Trigger | Effect |
-|---|---|---|
-| `LoggingBehavior<TReq, TRes>` | All `IRequest<TResponse>` | Structured log at start and end |
-| `ValidationBehavior<TReq, TRes>` | All requests with registered validators | Returns `Result<T>` failure or throws `ValidationException` |
-| `UnitOfWorkBehavior<TReq, TRes>` | Requests implementing `IUnitOfWorkRequest` | Wraps handler with `BeginWork` → handler → `CommitWork`; rolls back on exception |
-
-Registration order matters: `LoggingBehavior` runs first (outermost), then `UnitOfWorkBehavior`, then `ValidationBehavior`. `RegisterServicesFromApplicationSeeds()` sets this order automatically — call it before adding your own behaviors.
-
-**Key decision — validation before unit-of-work commit.** If the request fails validation, no transaction is opened. If the handler fails at runtime, the unit of work is rolled back.
 
 ### Infrastructure
 
@@ -136,7 +120,7 @@ All NuGet version pins live in `Directory.Packages.props`. Individual `.csproj` 
 
 | What to extend | How |
 |---|---|
-| Add a MediatR behavior | Implement `IPipelineBehavior<TRequest, TResponse>` and register via `AddOpenBehavior` after `RegisterServicesFromApplicationSeeds()` |
+| Add a cross-cutting concern to an endpoint | Implement `IEndpointFilter` and add it with `AddEndpointFilter`, next to `ValidationFilter<TRequest>` and `UnitOfWorkFilter` |
 | Custom authorization policy | Implement `IAuthorizationRequirement` + `AuthorizationHandler<T>`; compose with `MultiplePoliciesRequirement` |
 | New database server for testing | Implement `IDatabaseServer`; pass to `DatabaseDriver<TDbContext>` |
 | Custom Bogus fake | Subclass `FakerBuilder<T>`; override `Faker` property |
