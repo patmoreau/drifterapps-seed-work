@@ -23,7 +23,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageVersion>
-    <PackageVersion Include="Refit" Version="15.2.0" />
+    <PackageVersion Include="Refit" Version="16.1.0" />
     <PackageVersion Include="Respawn" Version="7.0.0" />
     <PackageVersion Include="System.Linq.Async" Version="7.0.1" />
     <PackageVersion Include="System.Linq.Dynamic.Core" Version="1.7.4" />
