@@ -49,7 +49,7 @@
         <Authors>Patrick Moreau</Authors>
         <Copyright>Drifter Apps Inc.</Copyright>
         <PackageProjectUrl>https://github.com/patmoreau/drifterapps-seed-work</PackageProjectUrl>
-        <PackageLicense>https://github.com/patmoreau/drifterapps-seed-work/blob/main/LICENSE</PackageLicense>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PackageIcon>icon.png</PackageIcon>
         <RepositoryUrl>https://github.com/patmoreau/drifterapps-seed-work</RepositoryUrl>
         <PackageReadmeFile>README.md</PackageReadmeFile>
