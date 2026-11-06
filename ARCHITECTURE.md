@@ -87,8 +87,8 @@ Each package is an independent NuGet library. Install only what your layer needs
 | `AuthorityDriver` | Mock OpenID Connect authority (JWKS + `.well-known`) |
 | `JwtTokenBuilder` | Fluent builder for signed JWT tokens using the mock authority's key |
 | `[UnitTest]`, `[ComponentTest]`, `[EndToEndTest]` | xUnit trait attributes for test categorization |
-| `ApiResponseAssertions<T>` | FluentAssertions extension for `IApiResponse<T>` from Refit |
-| `StronglyTypedIdEquivalencyStep` | FluentAssertions equivalency step for `StronglyTypedId<T>` |
+| `ApiResponseAssertions<T>` | AwesomeAssertions extension for `IApiResponse<T>` from Refit |
+| `StronglyTypedIdEquivalencyStep` | AwesomeAssertions equivalency step for `StronglyTypedId<T>` |
 
 ---
 

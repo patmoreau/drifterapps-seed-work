@@ -1,7 +1,7 @@
 using Refit;
 
 // ReSharper disable once CheckNamespace
-namespace FluentAssertions;
+namespace AwesomeAssertions;
 
 /// <summary>
 ///     Provides extension methods for asserting <see cref="ApiResponse{T}" /> instances.

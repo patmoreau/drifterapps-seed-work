@@ -1,8 +1,8 @@
 // ReSharper disable UnusedAutoPropertyAccessor.Local
 // ReSharper disable AutoPropertyCanBeMadeGetOnly.Local
 
+using AwesomeAssertions.Execution;
 using Bogus;
-using FluentAssertions.Execution;
 
 namespace DrifterApps.Seeds.Testing.Tests.Builders;
 

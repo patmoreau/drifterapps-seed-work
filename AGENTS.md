@@ -46,7 +46,7 @@ applications. You are working *on* the libraries, not merely *with* them.
 | `src/Domain/` | DDD contracts: `IAggregateRoot`, `IAggregateRoot<T>`, `IRepository<T>`, `IUnitOfWork`, `IStronglyTypedId`/`StronglyTypedId`, `IPrimitiveType` |
 | `src/Application/` | ASP.NET Core application layer: `Authorization/`, `EndpointFilters/`, `Converters/` (EF Core + JSON), `Context/`, `QueryParams`/`QueryResult`, `IRequestScheduler`, `IHttpUserContext`, DI extensions |
 | `src/Infrastructure/` | Hangfire-backed `RequestScheduler`, `RefitExtensions`, `JsonSerializerOptionsFactory`, DI extensions |
-| `src/Testing/` | Test infrastructure for consumers: `FakerBuilder`, `DatabaseDriver` (Testcontainers + Respawn), `WireMockDriver`, drivers, FluentAssertions extensions, trait attributes (`[UnitTest]`, `[ComponentTest]`, `[EndToEndTest]`, `FeatureFlagTestAttribute`) |
+| `src/Testing/` | Test infrastructure for consumers: `FakerBuilder`, `DatabaseDriver` (Testcontainers + Respawn), `WireMockDriver`, drivers, AwesomeAssertions extensions, trait attributes (`[UnitTest]`, `[ComponentTest]`, `[EndToEndTest]`, `FeatureFlagTestAttribute`) |
 | `tests/*.Tests/` | xUnit v3 suites, one per source project |
 | `examples/` | Illustrative sources (`Domain`, `Application`, `Testing`) — **not a compiled project**, no csproj |
 | `README.md`, `ARCHITECTURE.md`, `docs/` | Published documentation, for people **using** the packages — packed into every NuGet package |
@@ -125,8 +125,9 @@ Versions are centralized — `ManagePackageVersionsCentrally=true`. Add a
 and the `<PackageVersion>` to `Directory.Packages.props`. Per the engineering
 principles, do not add a new dependency without approval.
 
-`FluentAssertions` is pinned to 7.x deliberately (8.x changed its license). Do not
-bump it to 8 or beyond. Renovate opens the routine dependency PRs; `NuGetAuditMode`
+Assertions use `AwesomeAssertions` (Apache-2.0), the community fork of
+FluentAssertions — 8.x of the latter changed its license. Do not reintroduce
+`FluentAssertions`. Renovate opens the routine dependency PRs; `NuGetAuditMode`
 is `direct`.
 
 ## Test conventions
@@ -136,15 +137,15 @@ Match the existing suites:
 - Class carries `[UnitTest]` (from `DrifterApps.Seeds.Testing.Attributes`, a
   `CategoryAttribute` trait).
 - `GlobalUsings.cs` in each test project already covers
-  `DrifterApps.Seeds.Testing.Attributes`, `FluentAssertions` and `Xunit` — do not
+  `DrifterApps.Seeds.Testing.Attributes`, `AwesomeAssertions` and `Xunit` — do not
   re-import them per file.
 - Random data comes from `private readonly Faker _faker = new();`, never hard-coded
   literals, unless the literal is the thing under test.
 - Test names describe behavior: `GivenNew_WhenInvoked_ThenReturnNewId`.
 - Bodies use explicit lowercase `// arrange` / `// act` / `// assert` sections.
 - Parameterized cases use `public static TheoryData<…>` properties with `[Theory]`.
-- Assert with FluentAssertions, plus the assertion helpers in
-  `src/Testing/FluentAssertions/` where they fit.
+- Assert with AwesomeAssertions, plus the assertion helpers in
+  `src/Testing/AwesomeAssertions/` where they fit.
 - Test files mirror the source file they cover; test projects are `OutputType=Exe`
   with `RootNamespace`/`AssemblyName` set to `DrifterApps.Seeds.<Project>.Tests`.
 

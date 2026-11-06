@@ -372,7 +372,7 @@ public class AuthenticatedApiTests : IAsyncLifetime
 }
 ```
 
-### FluentAssertions for Refit API responses
+### AwesomeAssertions for Refit API responses
 
 ```csharp
 // Assuming IOrderApi is a Refit interface

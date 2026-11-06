@@ -550,7 +550,9 @@ public record SigningKeyInfo(string Modulus, string Exponent, string Kid, string
 
 ### `ApiResponseAssertions<TValue>`
 
-FluentAssertions extension for `IApiResponse<TValue>` (Refit).
+AwesomeAssertions extension for `IApiResponse<TValue>` (Refit), in the
+`AwesomeAssertions` namespace. Its base class `BaseApiResponseAssertions` lives in
+`DrifterApps.Seeds.Testing.AwesomeAssertions`.
 
 ```csharp
 public class ApiResponseAssertions<TValue>
@@ -564,8 +566,8 @@ public class ApiResponseAssertions<TValue>
 
     AndConstraint<ApiResponseAssertions<TValue>> HaveEquivalentContent(
         TValue expectedValue,
-        Func<EquivalencyAssertionOptions<TValue>,
-            EquivalencyAssertionOptions<TValue>>? config = null,
+        Func<EquivalencyOptions<TValue>,
+            EquivalencyOptions<TValue>>? config = null,
         string because = "", params object[] becauseArgs);
 }
 ```

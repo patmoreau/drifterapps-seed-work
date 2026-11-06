@@ -1,8 +1,8 @@
-using DrifterApps.Seeds.Testing.FluentAssertions;
+using DrifterApps.Seeds.Testing.AwesomeAssertions;
 using Refit;
 
 // ReSharper disable CheckNamespace
-namespace FluentAssertions;
+namespace AwesomeAssertions;
 
 /// <summary>
 ///     Provides assertion methods for <see cref="IApiResponse" /> instances.

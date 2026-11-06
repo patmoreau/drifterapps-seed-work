@@ -1,13 +1,13 @@
-using DrifterApps.Seeds.Testing.FluentAssertions;
-using FluentAssertions.Equivalency;
-using FluentAssertions.Execution;
+using AwesomeAssertions.Equivalency;
+using AwesomeAssertions.Execution;
+using DrifterApps.Seeds.Testing.AwesomeAssertions;
 using Refit;
 
 #pragma warning disable CS1587 // XML comment is not placed on a valid language element
 #pragma warning disable S125 // Sections of code should not be commented out
 
 // ReSharper disable CheckNamespace
-namespace FluentAssertions;
+namespace AwesomeAssertions;
 
 /// <summary>
 ///     Provides assertion methods for <see cref="IApiResponse{TValue}" /> instances.
@@ -31,7 +31,7 @@ public class ApiResponseAssertions<TValue>(IApiResponse<TValue> instance)
     [CustomAssertion]
     public AndConstraint<ApiResponseAssertions<TValue>> HaveContent(string because = "", params object[] becauseArgs)
     {
-        Execute.Assertion
+        CurrentAssertionChain
             .BecauseOf(because, becauseArgs)
             .UsingLineBreaks
             .ForCondition(HasContentCondition())
@@ -53,7 +53,7 @@ public class ApiResponseAssertions<TValue>(IApiResponse<TValue> instance)
     public AndConstraint<ApiResponseAssertions<TValue>> HaveContent(TValue expectedValue,
         string because = "", params object[] becauseArgs)
     {
-        Execute.Assertion
+        CurrentAssertionChain
             .BecauseOf(because, becauseArgs)
             .UsingLineBreaks
             .ForCondition(HasContentCondition())
@@ -77,10 +77,10 @@ public class ApiResponseAssertions<TValue>(IApiResponse<TValue> instance)
     [CustomAssertion]
     public AndConstraint<ApiResponseAssertions<TValue>> HaveEquivalentContent(
         TValue expectedValue,
-        Func<EquivalencyAssertionOptions<TValue>, EquivalencyAssertionOptions<TValue>>? config = null,
+        Func<EquivalencyOptions<TValue>, EquivalencyOptions<TValue>>? config = null,
         string because = "", params object[] becauseArgs)
     {
-        Execute.Assertion
+        CurrentAssertionChain
             .BecauseOf(because, becauseArgs)
             .UsingLineBreaks
             .ForCondition(HasContentCondition())

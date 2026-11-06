@@ -13,7 +13,7 @@
 
     <ItemGroup>
         <PackageReference Include="DrifterApps.Seeds.FluentResult"/>
-        <PackageReference Include="DrifterApps.Seeds.FluentResult.FluentAssertions"/>
+        <PackageReference Include="DrifterApps.Seeds.FluentResult.AwesomeAssertions"/>
     </ItemGroup>
 
 </Project>

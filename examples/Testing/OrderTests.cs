@@ -1,7 +1,7 @@
 using Bogus;
 using DrifterApps.Seeds.Testing;
 using DrifterApps.Seeds.Testing.Drivers;
-using FluentAssertions;
+using AwesomeAssertions;
 using Microsoft.Net.Http.Headers;
 using SampleApp.Domain;
 using System.Net.Http.Headers;
