@@ -6,7 +6,7 @@ using DrifterApps.Seeds.Testing.Tests.Drivers;
 using DrifterApps.Seeds.Testing.Tests.Fakes;
 using Xunit.Sdk;
 
-namespace DrifterApps.Seeds.Testing.Tests.FluentAssertions;
+namespace DrifterApps.Seeds.Testing.Tests.AwesomeAssertions;
 
 [UnitTest]
 public class ApiResponseAssertionsTests(ApiResponseDriver driver) : IClassFixture<ApiResponseDriver>

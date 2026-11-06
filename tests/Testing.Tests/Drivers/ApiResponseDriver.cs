@@ -2,12 +2,12 @@ using System.Net;
 using System.Text.Json;
 using Bogus;
 using DrifterApps.Seeds.Testing.Drivers;
+using DrifterApps.Seeds.Testing.Tests.AwesomeAssertions;
 using DrifterApps.Seeds.Testing.Tests.Fakes;
-using DrifterApps.Seeds.Testing.Tests.FluentAssertions;
 using Refit;
 using WireMock.RequestBuilders;
 using WireMock.ResponseBuilders;
-using static DrifterApps.Seeds.Testing.Tests.FluentAssertions.IApiResponseWireMock;
+using static DrifterApps.Seeds.Testing.Tests.AwesomeAssertions.IApiResponseWireMock;
 
 namespace DrifterApps.Seeds.Testing.Tests.Drivers;
 

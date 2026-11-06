@@ -1,7 +1,7 @@
 using DrifterApps.Seeds.Testing.Tests.Fakes;
 using Refit;
 
-namespace DrifterApps.Seeds.Testing.Tests.FluentAssertions;
+namespace DrifterApps.Seeds.Testing.Tests.AwesomeAssertions;
 
 internal interface IApiResponseWireMock
 {
